@@ -11,16 +11,17 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 header {
     background-color: #1f1f1f;
-    padding: 15px 20px;
+    padding: 12px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #333;
+    flex-shrink: 0;
 }
 
 .logo {
@@ -172,4 +173,61 @@ input {
     background-color: #00e676;
     color: black;
     font-weight: bold;
+}
+
+.ad-container {
+    max-width: 280px;
+    max-height: 100px;
+    overflow: hidden;
+    margin: 10px auto;
+    text-align: center;
+    border-radius: 8px;
+}
+
+/* ==========================================
+   إعدادات التجاوب الشاملة للهواتف والموبايل
+========================================== */
+@media (max-width: 768px) {
+    body {
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
+    }
+
+    .main-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .video-section {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .videos {
+        flex-direction: row;
+        height: 200px;
+        gap: 8px;
+    }
+
+    .controls {
+        gap: 6px;
+    }
+
+    .btn {
+        padding: 10px 6px;
+        font-size: 13px;
+        flex: 1;
+    }
+
+    .chat-section {
+        width: 100%;
+        border-right: none;
+        border-top: 1px solid #333;
+        height: 300px;
+    }
+
+    #chatBox {
+        height: 220px;
+    }
 }
