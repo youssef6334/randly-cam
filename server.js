@@ -1,26 +1,27 @@
 const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
-const io = require('socket.io')(http, {
+const { Server } = require('socket.io');
+
+const io = new Server(http, {
     cors: {
-        origin: "*", // السماح بالاتصال من أي جهاز أو متصفح
+        origin: "*",
         methods: ["GET", "POST"]
     }
 });
 
 app.use(express.static(__dirname));
 
-let activeUsers = new Map(); // لتخزين جميع المتصلين بالمنصة
-let waitingQueue = [];      // قائمة انتظار المطابقة
+let activeUsers = new Map();
+let waitingQueue = [];
 
 io.on('connection', (socket) => {
-    // 1. تسجيل المستخدم الجديد وتحديث عداد المتصلين للجميع فوراً
+    // تسجيل جديد وتحديث العداد فوراً
     activeUsers.set(socket.id, { room: null, peer: null });
     io.emit('online-count', activeUsers.size);
 
-    // 2. طلب البحث عن شات ومطابقة
+    // طلب مطابقة
     socket.on('find-match', (data) => {
-        // تنظيف المستخدم من قائمة الانتظار إن كان مضافاً سابقاً
         waitingQueue = waitingQueue.filter(id => id !== socket.id);
 
         if (waitingQueue.length > 0) {
@@ -46,7 +47,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // 3. تمرير إشارات WebRTC بين الطرفين
+    // WebRTC Signals
     socket.on('signal', (data) => {
         const user = activeUsers.get(socket.id);
         if (user && user.peer) {
@@ -54,7 +55,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // 4. إرسال وتلقي رسائل الشات
+    // Chat
     socket.on('send-message', (data) => {
         const user = activeUsers.get(socket.id);
         if (user && user.peer) {
@@ -62,7 +63,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // 5. لعبة XO
+    // XO Game
     socket.on('game-request', () => {
         const user = activeUsers.get(socket.id);
         if (user && user.peer) {
@@ -78,12 +79,11 @@ io.on('connection', (socket) => {
         }
     });
 
-    // 6. عند مغادرة الجلسة
+    // Disconnection handlers
     socket.on('leave-room', () => {
         handleUserDisconnect(socket);
     });
 
-    // 7. عند إغلاق الصفحة أو انقطاع الاتصال
     socket.on('disconnect', () => {
         handleUserDisconnect(socket);
         activeUsers.delete(socket.id);
@@ -103,7 +103,8 @@ function handleUserDisconnect(socket) {
     }
 }
 
+// التوافق مع Railway و Render (0.0.0.0 binding)
 const PORT = process.env.PORT || 3000;
-http.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+http.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server is running on port ${PORT}`);
 });
