@@ -272,11 +272,11 @@ html, body {
     border-color: var(--accent-red);
 }
 
-/* Bottom Action Bar (Reversed to put button on left and input on right) */
+/* Bottom Action Bar (Normal direction: Button on Right, Input on Left) */
 .bottom-action-bar {
     padding: 10px 12px;
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction: row;
     gap: 8px;
     align-items: center;
     border-top: 1px solid var(--border-color);

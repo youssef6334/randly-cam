@@ -134,16 +134,16 @@
                     </div>
                 </div>
 
-                <!-- Bottom Input & Big Start Button Row -->
+                <!-- Bottom Action Bar: Start/Skip على اليمين، وخانة الكتابة والإرسال على اليسار -->
                 <div class="bottom-action-bar">
+                    <button class="btn-start-main" id="nextBtn" onclick="handleMainButton()">Start</button>
+                    
                     <div class="input-container">
                         <input type="text" id="msgInput" placeholder="اكتب رسالتك هنا..." onkeydown="if(event.key === 'Enter') sendMsg()">
                         <button class="btn-send-inside" onclick="sendMsg()">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                         </button>
                     </div>
-
-                    <button class="btn-start-main" id="nextBtn" onclick="handleMainButton()">Start</button>
                 </div>
 
             </div>
