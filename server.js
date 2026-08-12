@@ -2,7 +2,6 @@ const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
 const { Server } = require('socket.io');
-const axios = require('axios'); // تأكد من تثبيته أو استخدم fetch المدمج في نود الحديثة
 
 const io = new Server(http, {
     cors: {
@@ -20,13 +19,14 @@ async function getCountryFromIP(req) {
     try {
         let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
         if (ip && ip.includes(',')) ip = ip.split(',')[0].trim();
-        if (ip === '::1' || ip === '127.0.0.1') return { country: 'Egypt', code: 'eg' }; // افتراضي محلياً
+        if (ip === '::1' || ip === '127.0.0.1') return { country: 'Egypt', code: 'eg' };
         
-        const response = await axios.get(`http://ip-api.com/json/${ip}`);
-        if (response.data && response.data.status === 'success') {
+        const response = await fetch(`http://ip-api.com/json/${ip}`);
+        const data = await response.json();
+        if (data && data.status === 'success') {
             return {
-                country: response.data.country || 'Unknown',
-                code: (response.data.countryCode || 'us').toLowerCase()
+                country: data.country || 'Unknown',
+                code: (data.countryCode || 'us').toLowerCase()
             };
         }
     } catch (e) {
@@ -79,14 +79,6 @@ io.on('connection', async (socket) => {
         const user = activeUsers.get(socket.id);
         if (user && user.peer) {
             io.to(user.peer).emit('receive-message', data);
-        }
-    });
-
-    // أحداث ألعاب X/O والدارك مود تفاعلية
-    socket.on('game-move', (data) => {
-        const user = activeUsers.get(socket.id);
-        if (user && user.peer) {
-            io.to(user.peer).emit('game-move', data);
         }
     });
 
