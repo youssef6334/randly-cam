@@ -19,6 +19,7 @@ let isMicMuted = false;
 let isCamOff = false;
 let myGameSymbol = null;
 let isMyTurn = false;
+let buttonState = 'start'; // 'start', 'skip', 'really'
 
 // Elements
 const landingPage = document.getElementById('landingPage');
@@ -50,7 +51,7 @@ function clearRemoteVideo() {
     }
 }
 
-// --- 2. Session Management ---
+// --- 2. Session Management & Umingle Button Logic ---
 
 async function startSession(mode) {
     currentMode = mode;
@@ -72,11 +73,39 @@ async function startSession(mode) {
     nextUser();
 }
 
+function handleMainButton() {
+    const btn = document.getElementById('nextBtn');
+
+    if (buttonState === 'start') {
+        startSession(currentMode);
+        buttonState = 'skip';
+        btn.textContent = 'Skip';
+    } else if (buttonState === 'skip') {
+        buttonState = 'really';
+        btn.textContent = 'Really?';
+    } else if (buttonState === 'really') {
+        nextUser();
+        buttonState = 'skip';
+        btn.textContent = 'Skip';
+    }
+}
+
 function nextUser() {
     clearRemoteVideo();
     chatBox.innerHTML = '';
-    appendSystemMessage('جاري البحث عن شخص جديد...');
-    statusDiv.textContent = 'جاري البحث...';
+    
+    // محاكاة جلب الدولة للطرف الآخر
+    const countries = [
+        { name: 'Egypt', code: 'EG', flag: '🇪🇬' },
+        { name: 'United States', code: 'US', flag: '🇺🇸' },
+        { name: 'Saudi Arabia', code: 'SA', flag: '🇸🇦' },
+        { name: 'Germany', code: 'DE', flag: '🇩🇪' },
+        { name: 'France', code: 'FR', flag: '🇫🇷' }
+    ];
+    const randomCountry = countries[Math.floor(Math.random() * countries.length)];
+
+    appendSystemMessage(`✨ You're now chatting with someone new\n${randomCountry.flag} ${randomCountry.name}`);
+    statusDiv.textContent = 'متصل الآن!';
 
     const interests = document.getElementById('interestsInput').value;
     const selectedCountry = countrySelect.value;
@@ -95,6 +124,9 @@ function leaveSession() {
         localStream = null;
     }
     landingPage.style.display = 'flex';
+    buttonState = 'start';
+    const btn = document.getElementById('nextBtn');
+    if (btn) btn.textContent = 'Start';
     socket.emit('leave-room');
 }
 
@@ -133,7 +165,6 @@ socket.on('online-count', (count) => {
 
 socket.on('matched', async (data) => {
     statusDiv.textContent = 'متصل الآن!';
-    appendSystemMessage('تم العثور على شخص!');
 
     if (currentMode === 'video') {
         createPeerConnection();
@@ -194,6 +225,7 @@ function appendMessage(text, type) {
 function appendSystemMessage(text) {
     const msgDiv = document.createElement('div');
     msgDiv.classList.add('msg', 'msg-sys');
+    msgDiv.style.whiteSpace = 'pre-line';
     msgDiv.textContent = text;
     chatBox.appendChild(msgDiv);
 }

@@ -5,8 +5,8 @@
     --bg-card: #282830;
     --text-main: #ffffff;
     --text-muted: #a0a0ab;
-    --accent-purple: #00b894; /* تم التعديل للأخضر */
-    --accent-purple-hover: #00a181; /* درجة أخضر داكنة عند التحويم */
+    --accent-purple: #00b894;
+    --accent-purple-hover: #00a181;
     --accent-green: #00b894;
     --accent-red: #ff7675;
     --border-color: #2d2d38;
@@ -272,10 +272,11 @@ html, body {
     border-color: var(--accent-red);
 }
 
-/* Bottom Action Bar */
+/* Bottom Action Bar (Reversed to put button on left and input on right) */
 .bottom-action-bar {
     padding: 10px 12px;
     display: flex;
+    flex-direction: row-reverse;
     gap: 8px;
     align-items: center;
     border-top: 1px solid var(--border-color);
@@ -500,7 +501,7 @@ html, body {
     }
 
     .btn-start-main {
-        width: 80px;
+        width: 90px;
         height: 44px;
         font-size: 1rem;
     }
