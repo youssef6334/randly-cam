@@ -3,125 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Randly - شات فيديو عشوا بالذكاء الاصطناعي</title>
+    <title>Randly - شات فيديو ورسائل عشوائي</title>
     <link rel="stylesheet" href="style.css">
     
-    <!-- TensorFlow & NSFWJS CDNs -->
+    <!-- TensorFlow & NSFWJS Libraries for AI Moderation -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/nsfwjs@2.4.1/dist/nsfwjs.min.js"></script>
+    
+    <!-- Socket.IO -->
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
 
-    <!-- Header / Navbar -->
-    <header class="app-header">
-        <div class="logo-area">
-            <h1>Randly</h1>
-            <span class="online-badge">🟢 المتصلون: <strong id="headerOnlineCount">0</strong></span>
-        </div>
-        <div class="header-actions">
-            <button class="btn btn-outline" onclick="requestGame()">🎮 لعب XO</button>
-            <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
-        </div>
-    </header>
-
-    <!-- Main Container -->
-    <main class="main-container">
-
-        <!-- Landing Screen -->
-        <div id="landingPage" class="landing-card">
-            <h2>مرحباً بك في Randly 👋</h2>
-            <p>تحدث مع أشخاص عشوائيين عبر الفيديو أو الشات الكتابي بآمان وسرعة.</p>
+    <!-- Landing Page / الصفحة الرئيسية -->
+    <div id="landingPage" class="landing-container">
+        <div class="landing-card">
+            <h1>Randly 🎲</h1>
+            <p>تحدث مع أناس عشوائيين حول العالم بكل أمان وسرعة!</p>
             
-            <div class="input-group">
-                <label for="interestsInput">الاهتمامات (اختياري):</label>
-                <input type="text" id="interestsInput" placeholder="مثال: برمجة, أفلام, ألعاب">
+            <div class="online-counter">
+                🔴 المتصلون الآن: <span id="landingOnlineCount">0</span>
             </div>
 
-            <div class="landing-buttons">
-                <button class="btn btn-primary btn-large" onclick="startSession('video')">📹 بدء شات فيديو</button>
-                <button class="btn btn-secondary btn-large" onclick="startSession('text')">💬 بدء شات كتابي</button>
+            <div class="interests-box">
+                <input type="text" id="interestsInput" placeholder="أدخل اهتماماتك (مثال: كرة قدم، برمجة)...">
             </div>
 
-            <div class="landing-stats">
-                <span>🟢 متصل الآن: <strong id="landingOnlineCount">0</strong> مستخدم</span>
+            <div class="start-buttons">
+                <button class="btn btn-primary" onclick="startSession('video')">📹 شات فيديو</button>
+                <button class="btn btn-secondary" onclick="startSession('text')">💬 شات كتابي</button>
             </div>
         </div>
+    </div>
 
-        <!-- App Layout (Video + Chat) -->
-        <div class="app-content">
+    <!-- Main Chat Container / شاشة الشات الرئيسية -->
+    <div class="main-container">
 
+        <!-- Top Header Controls -->
+        <header class="app-header">
+            <div class="logo">Randly</div>
+            <div class="header-right">
+                <span class="online-badge">🟢 المتصلون: <span id="headerOnlineCount">0</span></span>
+                <button class="btn-icon" onclick="requestGame()">🎮 لعب XO</button>
+                <button class="btn-icon theme-toggle" onclick="toggleTheme()">🌙</button>
+            </div>
+        </header>
+
+        <!-- Top Adsterra Native Banner Area -->
+        <div class="top-ad-bar">
+            <script async="async" data-cfasync="false" src="https://pl30790391.effectivecpmnetwork.com/f66aa4bb4789b5ab486c7c42e435623d/invoke.js"></script>
+            <div id="container-f66aa4bb4789b5ab486c7c42e435623d"></div>
+        </div>
+
+        <div class="content-wrapper">
             <!-- Video Section -->
-            <section id="videoSection" class="video-section">
-                <div class="video-grid">
-                    <div class="video-wrapper">
-                        <video id="remoteVideo" autoplay playsinline></video>
-                        <span class="video-label">الطرف الآخر</span>
-                    </div>
-                    <div class="video-wrapper">
-                        <video id="localVideo" autoplay playsinline muted></video>
-                        <span class="video-label">أنت</span>
-                    </div>
+            <div id="videoSection" class="video-section">
+                <div class="video-box">
+                    <video id="remoteVideo" autoplay playsinline></video>
+                    <span class="video-label">الطرف الآخر</span>
                 </div>
-
-                <!-- Media Controls -->
-                <div class="controls-bar">
-                    <button id="micBtn" class="btn btn-icon" onclick="toggleMic()">🎤 المايك</button>
-                    <button id="camBtn" class="btn btn-icon" onclick="toggleCam()">📹 الكاميرا</button>
-                    <button id="screenBtn" class="btn btn-icon" onclick="toggleScreenShare()">🖥️ الشاشة</button>
-                    <button class="btn btn-next" onclick="nextUser()">⏭️ التالي</button>
-                    <button class="btn btn-danger" onclick="reportUser()">⚠️ إبلاغ</button>
-                    <button class="btn btn-stop" onclick="leaveSession()">❌ خروج</button>
+                <div class="video-box local-box">
+                    <video id="localVideo" autoplay playsinline muted></video>
+                    <span class="video-label">أنت</span>
                 </div>
-            </section>
+            </div>
 
-            <!-- Chat Section -->
-            <section id="chatSection" class="chat-section">
-                <div class="chat-header">
-                    <span id="status">متوقف...</span>
-                </div>
-
-                <div id="chatBox" class="chat-box">
+            <!-- Chat & Controls Section -->
+            <div id="chatSection" class="chat-section">
+                <div class="status-bar" id="status">متوقف...</div>
+                
+                <div class="chat-box" id="chatBox">
                     <div class="msg msg-sys">مرحباً بك! انقر على "التالي" لبدء الشات.</div>
                 </div>
 
-                <!-- Text-only control bar for text mode -->
-                <div id="textOnlyControls" class="text-controls" style="display: none;">
+                <!-- Input Area -->
+                <div class="input-bar">
+                    <input type="text" id="msgInput" placeholder="اكتب رسالتك هنا..." onkeydown="if(event.key === 'Enter') sendMsg()">
+                    <button class="btn btn-send" onclick="sendMsg()">إرسال</button>
+                </div>
+
+                <!-- Action Controls Bar -->
+                <div class="controls-bar">
                     <button class="btn btn-next" onclick="nextUser()">⏭️ شخص جديد</button>
-                    <button class="btn btn-danger" onclick="reportUser()">⚠️ إبلاغ</button>
-                    <button class="btn btn-stop" onclick="leaveSession()">❌ خروج</button>
+                    <button class="btn btn-report" onclick="reportUser()">⚠️ إبلاغ</button>
+                    <button class="btn btn-leave" onclick="leaveSession()">❌ خروج</button>
+                    
+                    <button id="micBtn" class="btn btn-media" onclick="toggleMic()">🎤 المايك</button>
+                    <button id="camBtn" class="btn btn-media" onclick="toggleCam()">📹 الكاميرا</button>
+                    <button id="screenBtn" class="btn btn-media" onclick="toggleScreenShare()">🖥️ الشاشة</button>
                 </div>
-
-                <div class="chat-input-bar">
-                    <input type="text" id="msgInput" placeholder="اكتب رسالتك هنا..." onkeypress="if(event.key==='Enter') sendMsg()">
-                    <button class="btn btn-primary" onclick="sendMsg()">إرسال</button>
-                </div>
-            </section>
-
+            </div>
         </div>
-
-    </main>
+    </div>
 
     <!-- XO Mini-Game Overlay -->
     <div id="gameBoardOverlay" class="game-overlay" style="display: none;">
         <div class="game-card">
-            <h3>لعبة XO 🎮</h3>
-            <p id="gameStatusText">جاري الانتظار...</p>
-            <div class="xo-board">
-                <button class="xo-cell" onclick="makeMove(0)"></button>
-                <button class="xo-cell" onclick="makeMove(1)"></button>
-                <button class="xo-cell" onclick="makeMove(2)"></button>
-                <button class="xo-cell" onclick="makeMove(3)"></button>
-                <button class="xo-cell" onclick="makeMove(4)"></button>
-                <button class="xo-cell" onclick="makeMove(5)"></button>
-                <button class="xo-cell" onclick="makeMove(6)"></button>
-                <button class="xo-cell" onclick="makeMove(7)"></button>
-                <button class="xo-cell" onclick="makeMove(8)"></button>
+            <div class="game-header">
+                <h3>لعبة XO 🎮</h3>
+                <button class="close-game" onclick="closeGame()">✕</button>
             </div>
-            <button class="btn btn-secondary" onclick="closeGame()" style="margin-top: 15px;">إغلاق اللعبة</button>
+            <p id="gameStatusText">جاري الانتظار...</p>
+            <div class="xo-grid">
+                <div class="xo-cell" onclick="makeMove(0)"></div>
+                <div class="xo-cell" onclick="makeMove(1)"></div>
+                <div class="xo-cell" onclick="makeMove(2)"></div>
+                <div class="xo-cell" onclick="makeMove(3)"></div>
+                <div class="xo-cell" onclick="makeMove(4)"></div>
+                <div class="xo-cell" onclick="makeMove(5)"></div>
+                <div class="xo-cell" onclick="makeMove(6)"></div>
+                <div class="xo-cell" onclick="makeMove(7)"></div>
+                <div class="xo-cell" onclick="makeMove(8)"></div>
+            </div>
         </div>
     </div>
 
     <script src="script.js"></script>
+
+    <!-- Adsterra Social Bar Script (Right above closing body tag) -->
+    <script src="https://pl30790288.effectivecpmnetwork.com/af/01/4f/af014f7d78a0555fd804897f8175cc44.js"></script>
 </body>
 </html>
