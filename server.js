@@ -14,10 +14,9 @@ let queues = {
 };
 
 const usersData = new Map();
-// قائمة المحظورين { "IP_ADDRESS": expiration_timestamp }
 const bannedIPs = new Map();
 
-// Middleware للتحقق من الـ IP المحظور عند الدخول
+// Middleware للتحقق من الحظر الزمني
 io.use((socket, next) => {
     const clientIP = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address;
     const banUntil = bannedIPs.get(clientIP);
@@ -25,9 +24,9 @@ io.use((socket, next) => {
     if (banUntil) {
         if (Date.now() < banUntil) {
             const hoursLeft = Math.ceil((banUntil - Date.now()) / (1000 * 60 * 60));
-            return next(new Error(`أنت محظور من استخدام الخدمة لمدة ${hoursLeft} ساعة بسبب البلاغات.`));
+            return next(new Error(`أنت محظور من استخدام الخدمة لمدة ${hoursLeft} ساعة.`));
         } else {
-            bannedIPs.delete(clientIP); // انقضاء مدة الحظر
+            bannedIPs.delete(clientIP);
         }
     }
     next();
@@ -62,7 +61,7 @@ io.on('connection', (socket) => {
         io.to(data.to).emit('chat-message', { message: data.message });
     });
 
-    // معالجة البلاغات والحظر الزمني
+    // بلاغ يدوي من مستخدم
     socket.on('report-user', (data) => {
         const targetSocket = io.sockets.sockets.get(data.targetId);
         if (targetSocket) {
@@ -73,6 +72,16 @@ io.on('connection', (socket) => {
             targetSocket.emit('banned', { reason: 'تم حظرك لمدة 24 ساعة بسبب تلقي بلاغ عن إساءة.' });
             targetSocket.disconnect(true);
         }
+    });
+
+    // حظر تلقائي من الذكاء الاصطناعي
+    socket.on('ai-auto-ban', () => {
+        const clientIP = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address;
+        const banDuration = 24 * 60 * 60 * 1000; // 24 ساعة
+        bannedIPs.set(clientIP, Date.now() + banDuration);
+
+        socket.emit('banned', { reason: 'تم حظرك لمدة 24 ساعة تلقائياً بواسطة الذكاء الاصطناعي.' });
+        socket.disconnect(true);
     });
 
     // أحداث لعبة XO

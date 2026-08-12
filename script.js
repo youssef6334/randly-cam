@@ -14,7 +14,11 @@ let isCamOn = true;
 let isSharingScreen = false;
 let currentMode = 'video';
 
-// متغيرات لعبة XO
+// AI Moderation Variables
+let nsfwModel = null;
+let aiCheckInterval = null;
+
+// Mini-Game (XO) Variables
 let mySymbol = null;
 let currentTurn = null;
 let gameBoard = Array(9).fill(null);
@@ -25,6 +29,18 @@ const configuration = {
         { urls: 'stun:stun1.l.google.com:19302' }
     ]
 };
+
+// Load AI Model for NSFW Detection
+async function loadAIModel() {
+    try {
+        console.log('جاري تحميل نموذج الذكاء الاصطناعي لفحص المحتوى...');
+        nsfwModel = await nsfwjs.load();
+        console.log('تم تحميل نموذج الذكاء الاصطناعي بنجاح!');
+    } catch (err) {
+        console.error('خطأ في تحميل نموذج الذكاء الاصطناعي:', err);
+    }
+}
+loadAIModel();
 
 // Theme Management
 function toggleTheme() {
@@ -50,7 +66,7 @@ if (savedTheme === 'light') {
     updateThemeToggleIcons('light');
 }
 
-// Session Control
+// Session Controls
 async function startSession(mode) {
     currentMode = mode;
     const landing = document.getElementById('landingPage');
@@ -77,6 +93,7 @@ async function startSession(mode) {
 }
 
 function leaveSession() {
+    if (aiCheckInterval) clearInterval(aiCheckInterval);
     if (peerConnection) {
         peerConnection.close();
         peerConnection = null;
@@ -96,7 +113,7 @@ function leaveSession() {
     socket.emit('leave-session');
 }
 
-// WebRTC & Camera
+// Camera & AI Scanning
 async function initCamera() {
     try {
         if (!localStream) {
@@ -104,12 +121,41 @@ async function initCamera() {
             if (localVideo) localVideo.srcObject = localStream;
         }
         if (statusText) statusText.innerText = 'جاهز للبحث...';
+
+        startAICameraScan();
     } catch (err) {
         console.error('Camera Error:', err);
         if (statusText) statusText.innerText = 'يرجى السماح باستخدام الكاميرا!';
     }
 }
 
+function startAICameraScan() {
+    if (aiCheckInterval) clearInterval(aiCheckInterval);
+
+    aiCheckInterval = setInterval(async () => {
+        if (nsfwModel && localVideo && localStream && isCamOn) {
+            try {
+                const predictions = await nsfwModel.classify(localVideo);
+                
+                // تعديل نسبة الثقة إلى 0.90 (90%) لتجنب الحظر الخاطئ
+                const unsafe = predictions.find(p => 
+                    (p.className === 'Porn' || p.className === 'Hentai' || p.className === 'Sexy') && p.probability > 0.90
+                );
+
+                if (unsafe) {
+                    console.warn('تم اكتشاف محتوى غير لائق:', unsafe);
+                    alert('تم حظرك تلقائياً بواسطة الذكاء الاصطناعي بسبب عرض محتوى غير لائق!');
+                    socket.emit('ai-auto-ban');
+                    leaveSession();
+                }
+            } catch (e) {
+                // Ignore transient frame grab errors
+            }
+        }
+    }, 3000);
+}
+
+// WebRTC Signaling
 socket.on('match', async (data) => {
     if (statusText) statusText.innerText = 'متصل الآن!';
     currentPeerId = data.peerId;
@@ -213,7 +259,7 @@ function toggleCam() {
     document.getElementById('camBtn').innerText = isCamOn ? '📹 الكاميرا' : '📷 معطلة';
 }
 
-// Chat
+// Messaging
 function sendMsg() {
     if (!msgInput) return;
     const text = msgInput.value.trim();
@@ -249,7 +295,7 @@ function nextUser() {
     socket.emit('next-user', { mode: currentMode });
 }
 
-// Reporting & Banning
+// Report & Ban
 function reportUser() {
     if (!currentPeerId) {
         alert('لا يوجد شخص متصل للإبلاغ عنه حالياً!');
@@ -341,7 +387,7 @@ function checkGameWinner() {
     for (let win of wins) {
         const [a,b,c] = win;
         if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
-            alert(gameBoard[a] === mySymbol ? '🎉 مبروك! فزت باللعبة!' : '😔 للأسف، خسر اللعبة!');
+            alert(gameBoard[a] === mySymbol ? '🎉 مبروك! فزت باللعبة!' : '😔 للأسف، خسرت اللعبة!');
             return;
         }
     }
