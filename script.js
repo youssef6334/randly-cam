@@ -1,6 +1,7 @@
-// ربط مباشر بالسيرفر باستخدام الرابط الكامل لضمان الاتصال
-const socket = io("https://randly-cam-production.up.railway.app", {
-    transports: ["websocket"]
+// الاتصال التلقائي بنفس عنوان الموقع الحالي لتجنب مشاكل النطاق
+const socket = io(window.location.origin, {
+    transports: ["websocket"],
+    secure: true
 });
 
 // WebRTC Configuration
