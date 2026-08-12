@@ -6,11 +6,8 @@
     <title>Randly - شات فيديو ورسائل عشوائي</title>
     <link rel="stylesheet" href="style.css">
     
-    <!-- TensorFlow & NSFWJS Libraries for AI Moderation -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/nsfwjs@2.4.1/dist/nsfwjs.min.js"></script>
-    
-    <!-- Socket.IO -->
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
@@ -30,35 +27,41 @@
             </div>
 
             <div class="start-buttons">
-                <button class="btn btn-primary" onclick="startSession('video')">📹 شات فيديو</button>
-                <button class="btn btn-secondary" onclick="startSession('text')">💬 شات كتابي</button>
+                <button class="btn btn-primary-lg" onclick="startSession('video')">📹 شات فيديو</button>
+                <button class="btn btn-secondary-lg" onclick="startSession('text')">💬 شات كتابي</button>
             </div>
         </div>
     </div>
 
-    <!-- Main Chat Container -->
+    <!-- App Container -->
     <div class="main-container">
 
-        <!-- Top Header Controls -->
+        <!-- Top Header -->
         <header class="app-header">
-            <div class="logo">Randly</div>
+            <div class="header-left">
+                <div class="logo">Randly</div>
+                <span class="user-display-name" id="userDisplayName">👤 زائر</span>
+            </div>
+            
             <div class="header-right">
-                <span class="online-badge">🟢 المتصلون: <span id="headerOnlineCount">0</span></span>
-                <button class="btn-icon" onclick="requestGame()">🎮 لعب XO</button>
+                <span class="online-badge">🟢 <span id="headerOnlineCount">0</span> online</span>
+                <button class="btn-icon" onclick="requestGame()">🎮</button>
                 <button class="btn-icon theme-toggle" onclick="toggleTheme()">🌙</button>
             </div>
         </header>
 
-        <!-- Top Adsterra Native Banner Area -->
+        <!-- Top Adsterra Area (Native Banner) -->
         <div class="top-ad-bar">
             <script async="async" data-cfasync="false" src="https://pl30790391.effectivecpmnetwork.com/f66aa4bb4789b5ab486c7c42e435623d/invoke.js"></script>
             <div id="container-f66aa4bb4789b5ab486c7c42e435623d"></div>
         </div>
 
+        <!-- Main Viewport Content -->
         <div class="content-wrapper">
-            <!-- Video Section -->
+            
+            <!-- Video Stage -->
             <div id="videoSection" class="video-section">
-                <div class="video-box">
+                <div class="video-box remote-box">
                     <video id="remoteVideo" autoplay playsinline></video>
                     <span class="video-label">الطرف الآخر</span>
                 </div>
@@ -68,29 +71,47 @@
                 </div>
             </div>
 
-            <!-- Chat & Controls Section -->
+            <!-- Chat & Controls Area -->
             <div id="chatSection" class="chat-section">
-                <div class="status-bar" id="status">متوقف...</div>
+                
+                <div class="status-bar" id="status">متصل الآن!</div>
                 
                 <div class="chat-box" id="chatBox">
-                    <div class="msg msg-sys">مرحباً بك! انقر على "شخص جديد" لبدء الشات.</div>
+                    <div class="msg msg-sys">مرحباً بك! انقر على Start لبدء الشات.</div>
                 </div>
 
-                <!-- Input Area -->
-                <div class="input-bar">
-                    <input type="text" id="msgInput" placeholder="اكتب رسالتك هنا..." onkeydown="if(event.key === 'Enter') sendMsg()">
-                    <button class="btn btn-send" onclick="sendMsg()">إرسال</button>
+                <!-- Filters & Controls Bar -->
+                <div class="filter-controls-row">
+                    <div class="select-wrapper">
+                        <select id="countrySelect" class="filter-select">
+                            <option value="global">🌐 Smart Match (الكل)</option>
+                            <option value="EG">🇪🇬 مصر</option>
+                            <option value="SA">🇸🇦 السعودية</option>
+                            <option value="AE">🇦🇪 الإمارات</option>
+                            <option value="US">🇺🇸 أمريكا</option>
+                        </select>
+                    </div>
+
+                    <div class="quick-actions">
+                        <button class="btn-action-icon" id="micBtn" onclick="toggleMic()" title="المايك">🎤</button>
+                        <button class="btn-action-icon" id="camBtn" onclick="toggleCam()" title="الكاميرا">📹</button>
+                        <button class="btn-action-icon" onclick="reportUser()" title="إبلاغ">⚠️</button>
+                        <button class="btn-action-icon btn-close-chat" onclick="leaveSession()" title="خروج">❌</button>
+                    </div>
                 </div>
 
-                <!-- Action Controls Bar -->
-                <div class="controls-bar">
-                    <button class="btn btn-next" onclick="nextUser()">⏭️ شخص جديد</button>
-                    <button class="btn btn-report" onclick="reportUser()">⚠️ إبلاغ</button>
-                    <button class="btn btn-leave" onclick="leaveSession()">❌ خروج</button>
-                    <button id="micBtn" class="btn btn-media" onclick="toggleMic()">🎤</button>
-                    <button id="camBtn" class="btn btn-media" onclick="toggleCam()">📹</button>
-                    <button id="screenBtn" class="btn btn-media" onclick="toggleScreenShare()">🖥️</button>
+                <!-- Bottom Input & Big Start Button Row -->
+                <div class="bottom-action-bar">
+                    <button class="btn-start-main" id="nextBtn" onclick="nextUser()">Start</button>
+                    
+                    <div class="input-container">
+                        <input type="text" id="msgInput" placeholder="اكتب رسالتك هنا..." onkeydown="if(event.key === 'Enter') sendMsg()">
+                        <button class="btn-send-inside" onclick="sendMsg()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        </button>
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -119,7 +140,7 @@
 
     <script src="script.js"></script>
 
-    <!-- Adsterra Social Bar Script -->
-    <script src="https://pl30790288.effectivecpmnetwork.com/af/01/4f/af014f7d78a0555fd804897f8175cc44.js"></script>
+    <!-- Adsterra Social Bar Code -->
+    <script type="text/javascript" src="https://pl30790288.effectivecpmnetwork.com/af/01/4f/af014f7d78a0555fd804897f8175cc44.js"></script>
 </body>
 </html>
