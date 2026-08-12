@@ -30,12 +30,13 @@ const configuration = {
     ]
 };
 
-// Load AI Model for NSFW Detection (باستخدام الرابط المباشر والشغال 100%)
+// Load AI Model for NSFW Detection (مع ضبط الأبعاد لتطابق InceptionV3)
 async function loadAIModel() {
     try {
         console.log('جاري تحميل نموذج الذكاء الاصطناعي لفحص المحتوى...');
         const modelUrl = 'https://cdn.jsdelivr.net/gh/infinitered/nsfwjs@2.4.1/example/nsfw_demo/public/model/';
-        nsfwModel = await nsfwjs.load(modelUrl);
+        // تحديد نوع النموذج ليتطابق مع أبعاد الصورة (299x299)
+        nsfwModel = await nsfwjs.load(modelUrl, { type: 'InceptionV3' });
         console.log('تم تحميل نموذج الذكاء الاصطناعي بنجاح!');
     } catch (err) {
         console.error('خطأ في تحميل نموذج الذكاء الاصطناعي:', err);
