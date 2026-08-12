@@ -30,11 +30,11 @@ const configuration = {
     ]
 };
 
-// Load AI Model for NSFW Detection (باستخدام رابط موديل مباشر ومستقر)
+// Load AI Model for NSFW Detection (باستخدام رابط jsDelivr لتجنب حظر الـ CORS)
 async function loadAIModel() {
     try {
         console.log('جاري تحميل نموذج الذكاء الاصطناعي لفحص المحتوى...');
-        const modelUrl = 'https://unpkg.com/nsfwjs@2.4.1/models/quantized/';
+        const modelUrl = 'https://cdn.jsdelivr.net/npm/nsfwjs@2.4.1/models/quantized/';
         nsfwModel = await nsfwjs.load(modelUrl);
         console.log('تم تحميل نموذج الذكاء الاصطناعي بنجاح!');
     } catch (err) {

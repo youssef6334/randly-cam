@@ -2,121 +2,126 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Randly - Chat with Strangers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Randly - شات فيديو عشوا بالذكاء الاصطناعي</title>
     <link rel="stylesheet" href="style.css">
+    
+    <!-- TensorFlow & NSFWJS CDNs -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nsfwjs@2.4.1/dist/nsfwjs.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
 
-    <!-- Landing Page (صفحة البداية) -->
-    <div id="landingPage" class="landing-overlay">
-        <div class="landing-card">
-            <div class="landing-header">
-                <span class="logo">Randly</span>
-                <div class="header-right-landing">
-                    <button class="theme-toggle" onclick="toggleTheme()" title="تغيير المظهر">🌙</button>
-                    <span class="online-badge"><span class="dot"></span> <span id="landingOnlineCount">1</span> أونلاين</span>
-                </div>
-            </div>
-            
-            <h1>التحدث مع غرباء</h1>
-            <p>هل أنت مستعد للتعرف على شخص جديد؟ Randly يتيح لك الشات الكتابي أو الفيديو بكل سهولة وسرعة!</p>
-
-            <div class="interests-box">
-                <label>عن ماذا تريد أن تتحدث؟ (اختياري)</label>
-                <input type="text" id="interestsInput" placeholder="أدخل اهتماماتك (مثال: ألعاب، موسيقى)...">
-            </div>
-
-            <div class="mode-buttons">
-                <button class="btn btn-mode-text" onclick="startSession('text')">Text (شات كتابي)</button>
-                <span class="or-text">أو</span>
-                <button class="btn btn-mode-video" onclick="startSession('video')">Video (فيديو)</button>
-            </div>
+    <!-- Header / Navbar -->
+    <header class="app-header">
+        <div class="logo-area">
+            <h1>Randly</h1>
+            <span class="online-badge">🟢 المتصلون: <strong id="headerOnlineCount">0</strong></span>
         </div>
-    </div>
-
-    <!-- Application Header -->
-    <header>
-        <div class="logo">Randly</div>
-        <div id="status">جاري الاتصال بالسيرفر...</div>
         <div class="header-actions">
-            <span class="online-badge header-online"><span class="dot"></span> <span id="headerOnlineCount">1</span> أونلاين</span>
-            <button class="theme-toggle" onclick="toggleTheme()" title="تغيير المظهر">🌙</button>
-            <button class="btn btn-leave" onclick="leaveSession()">خروج 🚪</button>
+            <button class="btn btn-outline" onclick="requestGame()">🎮 لعب XO</button>
+            <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
         </div>
     </header>
 
-    <div class="main-container">
-        <div class="video-section" id="videoSection">
-            <div class="videos">
-                <div class="video-box">
-                    <video id="remoteVideo" autoplay playsinline></video>
-                    <div class="label">الشخص الثاني</div>
-                </div>
-                <div class="video-box">
-                    <video id="localVideo" autoplay muted playsinline></video>
-                    <div class="label">كاميرتك</div>
-                </div>
+    <!-- Main Container -->
+    <main class="main-container">
+
+        <!-- Landing Screen -->
+        <div id="landingPage" class="landing-card">
+            <h2>مرحباً بك في Randly 👋</h2>
+            <p>تحدث مع أشخاص عشوائيين عبر الفيديو أو الشات الكتابي بآمان وسرعة.</p>
+            
+            <div class="input-group">
+                <label for="interestsInput">الاهتمامات (اختياري):</label>
+                <input type="text" id="interestsInput" placeholder="مثال: برمجة, أفلام, ألعاب">
             </div>
 
-            <div class="controls">
-                <button class="btn btn-next" onclick="nextUser()">التالي (Next) ⏭️</button>
-                <button class="btn btn-control" id="camBtn" onclick="toggleCam()">📹 الكاميرا</button>
-                <button class="btn btn-control" id="micBtn" onclick="toggleMic()">🎤 المايك</button>
-                <button class="btn btn-control" id="screenBtn" onclick="toggleScreenShare()">🖥️ الشاشة</button>
+            <div class="landing-buttons">
+                <button class="btn btn-primary btn-large" onclick="startSession('video')">📹 بدء شات فيديو</button>
+                <button class="btn btn-secondary btn-large" onclick="startSession('text')">💬 بدء شات كتابي</button>
+            </div>
+
+            <div class="landing-stats">
+                <span>🟢 متصل الآن: <strong id="landingOnlineCount">0</strong> مستخدم</span>
             </div>
         </div>
 
-        <div class="chat-section" id="chatSection">
-            <div class="chat-header-tools">
-                <button class="btn-tool btn-game" onclick="requestGame()">🎮 لعب XO</button>
-                <button class="btn-tool btn-report" onclick="reportUser()">🚩 إبلاغ وحظر</button>
-            </div>
+        <!-- App Layout (Video + Chat) -->
+        <div class="app-content">
 
-            <!-- لوحة لعبة XO -->
-            <div id="gameBoardOverlay" class="game-overlay" style="display: none;">
-                <div class="game-header">
-                    <span id="gameStatusText">لعبة XO</span>
-                    <button class="close-game-btn" onclick="closeGame()">✕</button>
+            <!-- Video Section -->
+            <section id="videoSection" class="video-section">
+                <div class="video-grid">
+                    <div class="video-wrapper">
+                        <video id="remoteVideo" autoplay playsinline></video>
+                        <span class="video-label">الطرف الآخر</span>
+                    </div>
+                    <div class="video-wrapper">
+                        <video id="localVideo" autoplay playsinline muted></video>
+                        <span class="video-label">أنت</span>
+                    </div>
                 </div>
-                <div class="game-grid">
-                    <button class="xo-cell" onclick="makeMove(0)"></button>
-                    <button class="xo-cell" onclick="makeMove(1)"></button>
-                    <button class="xo-cell" onclick="makeMove(2)"></button>
-                    <button class="xo-cell" onclick="makeMove(3)"></button>
-                    <button class="xo-cell" onclick="makeMove(4)"></button>
-                    <button class="xo-cell" onclick="makeMove(5)"></button>
-                    <button class="xo-cell" onclick="makeMove(6)"></button>
-                    <button class="xo-cell" onclick="makeMove(7)"></button>
-                    <button class="xo-cell" onclick="makeMove(8)"></button>
-                </div>
-            </div>
 
-            <div id="chatBox">
-                <div class="msg msg-sys">مرحباً بك! انقر على "التالي" لبدء الشات.</div>
+                <!-- Media Controls -->
+                <div class="controls-bar">
+                    <button id="micBtn" class="btn btn-icon" onclick="toggleMic()">🎤 المايك</button>
+                    <button id="camBtn" class="btn btn-icon" onclick="toggleCam()">📹 الكاميرا</button>
+                    <button id="screenBtn" class="btn btn-icon" onclick="toggleScreenShare()">🖥️ الشاشة</button>
+                    <button class="btn btn-next" onclick="nextUser()">⏭️ التالي</button>
+                    <button class="btn btn-danger" onclick="reportUser()">⚠️ إبلاغ</button>
+                    <button class="btn btn-stop" onclick="leaveSession()">❌ خروج</button>
+                </div>
+            </section>
+
+            <!-- Chat Section -->
+            <section id="chatSection" class="chat-section">
+                <div class="chat-header">
+                    <span id="status">متوقف...</span>
+                </div>
+
+                <div id="chatBox" class="chat-box">
+                    <div class="msg msg-sys">مرحباً بك! انقر على "التالي" لبدء الشات.</div>
+                </div>
+
+                <!-- Text-only control bar for text mode -->
+                <div id="textOnlyControls" class="text-controls" style="display: none;">
+                    <button class="btn btn-next" onclick="nextUser()">⏭️ شخص جديد</button>
+                    <button class="btn btn-danger" onclick="reportUser()">⚠️ إبلاغ</button>
+                    <button class="btn btn-stop" onclick="leaveSession()">❌ خروج</button>
+                </div>
+
+                <div class="chat-input-bar">
+                    <input type="text" id="msgInput" placeholder="اكتب رسالتك هنا..." onkeypress="if(event.key==='Enter') sendMsg()">
+                    <button class="btn btn-primary" onclick="sendMsg()">إرسال</button>
+                </div>
+            </section>
+
+        </div>
+
+    </main>
+
+    <!-- XO Mini-Game Overlay -->
+    <div id="gameBoardOverlay" class="game-overlay" style="display: none;">
+        <div class="game-card">
+            <h3>لعبة XO 🎮</h3>
+            <p id="gameStatusText">جاري الانتظار...</p>
+            <div class="xo-board">
+                <button class="xo-cell" onclick="makeMove(0)"></button>
+                <button class="xo-cell" onclick="makeMove(1)"></button>
+                <button class="xo-cell" onclick="makeMove(2)"></button>
+                <button class="xo-cell" onclick="makeMove(3)"></button>
+                <button class="xo-cell" onclick="makeMove(4)"></button>
+                <button class="xo-cell" onclick="makeMove(5)"></button>
+                <button class="xo-cell" onclick="makeMove(6)"></button>
+                <button class="xo-cell" onclick="makeMove(7)"></button>
+                <button class="xo-cell" onclick="makeMove(8)"></button>
             </div>
-            <div class="chat-input">
-                <input type="text" id="msgInput" placeholder="اكتب رسالة..." onkeydown="if(event.key==='Enter') sendMsg()">
-                <button class="btn btn-send" onclick="sendMsg()">إرسال</button>
-            </div>
-            <div class="text-only-controls" id="textOnlyControls" style="display: none; padding: 10px;">
-                <button class="btn btn-next" style="width: 100%;" onclick="nextUser()">التالي (Next) ⏭️</button>
-            </div>
+            <button class="btn btn-secondary" onclick="closeGame()" style="margin-top: 15px;">إغلاق اللعبة</button>
         </div>
     </div>
 
-    <!-- Ad Section -->
-    <div class="ad-container">
-        <script async="async" data-cfasync="false" src="https://pl30790391.effectivecpmnetwork.com/f66aa4bb4789b5ab486c7c42e435623d/invoke.js"></script>
-        <div id="container-f66aa4bb4789b5ab486c7c42e435623d"></div>
-    </div>
-
-    <!-- مكتبات TensorFlow و NSFWJS للذكاء الاصطناعي -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/nsfwjs@2.4.1/dist/nsfwjs.min.js"></script>
-
-    <script src="/socket.io/socket.io.js"></script>
     <script src="script.js"></script>
-    <script src="https://pl30790288.effectivecpmnetwork.com/af/01/4f/af014f7d78a0555fd804897f8175cc44.js"></script>
 </body>
 </html>
