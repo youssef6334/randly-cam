@@ -1,4 +1,7 @@
-const socket = io();
+// ربط مباشر بالسيرفر باستخدام الرابط الكامل لضمان الاتصال
+const socket = io("https://randly-cam-production.up.railway.app", {
+    transports: ["websocket"]
+});
 
 // WebRTC Configuration
 const rtcConfig = {
@@ -10,7 +13,7 @@ const rtcConfig = {
 
 let localStream = null;
 let peerConnection = null;
-let currentMode = 'text'; // 'video' or 'text'
+let currentMode = 'text'; 
 let isMicMuted = false;
 let isCamOff = false;
 let myGameSymbol = null;
@@ -28,7 +31,6 @@ const videoSection = document.getElementById('videoSection');
 
 // --- 1. Cleanup & Reset Functions ---
 
-// دالة مسح وتفريغ فيديو الطرف الآخر وإغلاق الاتصال
 function clearRemoteVideo() {
     if (remoteVideo) {
         if (remoteVideo.srcObject) {
@@ -59,8 +61,8 @@ async function startSession(mode) {
             localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             if (localVideo) localVideo.srcObject = localStream;
         } catch (err) {
-            console.error('Camera/Mic access error:', err);
-            appendSystemMessage('تعذر الوصول للكاميرا أو المايكرفون.');
+            console.error('Camera access error:', err);
+            appendSystemMessage('تعذر الوصول للكاميرا.');
         }
     } else {
         videoSection.style.display = 'none';
@@ -130,7 +132,7 @@ socket.on('online-count', (count) => {
 
 socket.on('matched', async (data) => {
     statusDiv.textContent = 'متصل الآن!';
-    appendSystemMessage('تم العثور على شخص! يمكنك البدء بالحديث.');
+    appendSystemMessage('تم العثور على شخص!');
 
     if (currentMode === 'video') {
         createPeerConnection();
@@ -163,19 +165,18 @@ socket.on('signal', async (data) => {
 socket.on('peer-disconnected', () => {
     clearRemoteVideo();
     statusDiv.textContent = 'انقطع الاتصال';
-    appendSystemMessage('انقطع الاتصال بالطرف الآخر.');
+    appendSystemMessage('الطرف الآخر غادر.');
 });
 
 socket.on('receive-message', (data) => {
     appendMessage(data.text, 'other');
 });
 
-// --- 5. Chat Functions ---
+// --- 5. Chat & Game Logic ---
 
 function sendMsg() {
     const text = msgInput.value.trim();
     if (!text) return;
-
     appendMessage(text, 'me');
     socket.emit('send-message', { text: text });
     msgInput.value = '';
@@ -183,10 +184,7 @@ function sendMsg() {
 
 function appendMessage(text, type) {
     const msgDiv = document.createElement('div');
-    msgDiv.classList.add('msg');
-    if (type === 'me') msgDiv.classList.add('msg-me');
-    else if (type === 'other') msgDiv.classList.add('msg-other');
-
+    msgDiv.classList.add('msg', type === 'me' ? 'msg-me' : 'msg-other');
     msgDiv.textContent = text;
     chatBox.appendChild(msgDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
@@ -197,90 +195,4 @@ function appendSystemMessage(text) {
     msgDiv.classList.add('msg', 'msg-sys');
     msgDiv.textContent = text;
     chatBox.appendChild(msgDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-// --- 6. Quick Controls ---
-
-function toggleMic() {
-    if (!localStream) return;
-    const audioTrack = localStream.getAudioTracks()[0];
-    if (audioTrack) {
-        isMicMuted = !isMicMuted;
-        audioTrack.enabled = !isMicMuted;
-        document.getElementById('micBtn').textContent = isMicMuted ? '🔇' : '🎤';
-    }
-}
-
-function toggleCam() {
-    if (!localStream) return;
-    const videoTrack = localStream.getVideoTracks()[0];
-    if (videoTrack) {
-        isCamOff = !isCamOff;
-        videoTrack.enabled = !isCamOff;
-        document.getElementById('camBtn').textContent = isCamOff ? '🚫' : '📹';
-    }
-}
-
-function toggleTheme() {
-    const currentTheme = document.body.getAttribute('data-theme');
-    if (currentTheme === 'light') {
-        document.body.removeAttribute('data-theme');
-    } else {
-        document.body.setAttribute('data-theme', 'light');
-    }
-}
-
-function reportUser() {
-    alert('تم إرسال بلاغك وسيتم مراجعته فوراً.');
-}
-
-// --- 7. XO Game Logic ---
-
-function requestGame() {
-    socket.emit('game-request');
-    appendSystemMessage('أرسلت طلب لعب XO...');
-}
-
-socket.on('game-start', (data) => {
-    myGameSymbol = data.symbol;
-    isMyTurn = data.isMyTurn;
-    document.getElementById('gameBoardOverlay').style.display = 'flex';
-    updateGameStatus();
-    resetGameBoard();
-});
-
-socket.on('game-move', (data) => {
-    const cells = document.querySelectorAll('.xo-cell');
-    if (cells[data.index]) {
-        cells[data.index].textContent = data.symbol;
-    }
-    isMyTurn = true;
-    updateGameStatus();
-});
-
-function makeMove(index) {
-    const cells = document.querySelectorAll('.xo-cell');
-    if (!isMyTurn || cells[index].textContent !== '') return;
-
-    cells[index].textContent = myGameSymbol;
-    isMyTurn = false;
-    updateGameStatus();
-
-    socket.emit('game-move', { index: index, symbol: myGameSymbol });
-}
-
-function updateGameStatus() {
-    const statusText = document.getElementById('gameStatusText');
-    if (statusText) {
-        statusText.textContent = isMyTurn ? `دورك الآن (${myGameSymbol})` : 'في انتظار الطرف الآخر...';
-    }
-}
-
-function resetGameBoard() {
-    document.querySelectorAll('.xo-cell').forEach(cell => cell.textContent = '');
-}
-
-function closeGame() {
-    document.getElementById('gameBoardOverlay').style.display = 'none';
 }
