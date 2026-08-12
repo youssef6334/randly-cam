@@ -116,7 +116,8 @@ function broadcastUserCount() {
     io.emit('users-count', io.engine.clientsCount);
 }
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-    console.log(`السيرفر شغال بنجاح على: http://localhost:${PORT}`);
+// تحديد البورت والربط مع 0.0.0.0 لدعم شبكة Railway
+const PORT = 3000;
+server.listen(PORT, '0.0.0.0', () => {
+    console.log(`السيرفر شغال بنجاح على البورت: ${PORT}`);
 });
