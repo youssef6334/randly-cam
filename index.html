@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Randly - شات فيديو ورسائل عشوائي</title>
     <link rel="stylesheet" href="style.css">
     
@@ -15,7 +15,7 @@
 </head>
 <body>
 
-    <!-- Landing Page / الصفحة الرئيسية -->
+    <!-- Landing Page -->
     <div id="landingPage" class="landing-container">
         <div class="landing-card">
             <h1>Randly 🎲</h1>
@@ -36,7 +36,7 @@
         </div>
     </div>
 
-    <!-- Main Chat Container / شاشة الشات الرئيسية -->
+    <!-- Main Chat Container -->
     <div class="main-container">
 
         <!-- Top Header Controls -->
@@ -73,7 +73,7 @@
                 <div class="status-bar" id="status">متوقف...</div>
                 
                 <div class="chat-box" id="chatBox">
-                    <div class="msg msg-sys">مرحباً بك! انقر على "التالي" لبدء الشات.</div>
+                    <div class="msg msg-sys">مرحباً بك! انقر على "شخص جديد" لبدء الشات.</div>
                 </div>
 
                 <!-- Input Area -->
@@ -87,10 +87,9 @@
                     <button class="btn btn-next" onclick="nextUser()">⏭️ شخص جديد</button>
                     <button class="btn btn-report" onclick="reportUser()">⚠️ إبلاغ</button>
                     <button class="btn btn-leave" onclick="leaveSession()">❌ خروج</button>
-                    
-                    <button id="micBtn" class="btn btn-media" onclick="toggleMic()">🎤 المايك</button>
-                    <button id="camBtn" class="btn btn-media" onclick="toggleCam()">📹 الكاميرا</button>
-                    <button id="screenBtn" class="btn btn-media" onclick="toggleScreenShare()">🖥️ الشاشة</button>
+                    <button id="micBtn" class="btn btn-media" onclick="toggleMic()">🎤</button>
+                    <button id="camBtn" class="btn btn-media" onclick="toggleCam()">📹</button>
+                    <button id="screenBtn" class="btn btn-media" onclick="toggleScreenShare()">🖥️</button>
                 </div>
             </div>
         </div>
@@ -120,7 +119,7 @@
 
     <script src="script.js"></script>
 
-    <!-- Adsterra Social Bar Script (Right above closing body tag) -->
+    <!-- Adsterra Social Bar Script -->
     <script src="https://pl30790288.effectivecpmnetwork.com/af/01/4f/af014f7d78a0555fd804897f8175cc44.js"></script>
 </body>
 </html>
