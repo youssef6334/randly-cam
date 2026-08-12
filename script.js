@@ -1,83 +1,199 @@
-const socket = io(window.location.origin, { transports: ["websocket"], secure: true });
-let matchState = 'start';
+// الاتصال التلقائي بنفس عنوان الموقع الحالي لتجنب مشاكل النطاق
+const socket = io(window.location.origin, {
+    transports: ["websocket"],
+    secure: true
+});
+
+// WebRTC Configuration
+const rtcConfig = {
+    iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' }
+    ]
+};
+
+let localStream = null;
+let peerConnection = null;
+let currentMode = 'text'; 
+let isMicMuted = false;
+let isCamOff = false;
 let myGameSymbol = null;
 let isMyTurn = false;
 
-const nextBtn = document.getElementById('nextBtn');
+// Elements
+const landingPage = document.getElementById('landingPage');
+const remoteVideo = document.getElementById('remoteVideo');
+const localVideo = document.getElementById('localVideo');
 const chatBox = document.getElementById('chatBox');
+const msgInput = document.getElementById('msgInput');
+const statusDiv = document.getElementById('status');
 const countrySelect = document.getElementById('countrySelect');
+const videoSection = document.getElementById('videoSection');
 
-// منطق زر Start / Skip / Really
-if (nextBtn) {
-    nextBtn.addEventListener('click', () => {
-        if (matchState === 'start') {
-            matchState = 'skip';
-            nextBtn.textContent = 'Skip';
-            nextBtn.className = 'btn-start-main btn-skip';
-            startMatching();
-        } else if (matchState === 'skip') {
-            matchState = 'really';
-            nextBtn.textContent = 'Really?';
-            nextBtn.className = 'btn-start-main btn-really';
-        } else if (matchState === 'really') {
-            socket.emit('leave-room');
-            matchState = 'skip';
-            nextBtn.textContent = 'Skip';
-            nextBtn.className = 'btn-start-main btn-skip';
-            startMatching();
+// --- 1. Cleanup & Reset Functions ---
+
+function clearRemoteVideo() {
+    if (remoteVideo) {
+        if (remoteVideo.srcObject) {
+            remoteVideo.srcObject.getTracks().forEach(track => track.stop());
+            remoteVideo.srcObject = null;
         }
+        remoteVideo.removeAttribute('src');
+        remoteVideo.load();
+    }
+
+    if (peerConnection) {
+        peerConnection.ontrack = null;
+        peerConnection.onicecandidate = null;
+        peerConnection.close();
+        peerConnection = null;
+    }
+}
+
+// --- 2. Session Management ---
+
+async function startSession(mode) {
+    currentMode = mode;
+    landingPage.style.display = 'none';
+
+    if (mode === 'video') {
+        videoSection.style.display = 'flex';
+        try {
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            if (localVideo) localVideo.srcObject = localStream;
+        } catch (err) {
+            console.error('Camera access error:', err);
+            appendSystemMessage('تعذر الوصول للكاميرا.');
+        }
+    } else {
+        videoSection.style.display = 'none';
+    }
+
+    nextUser();
+}
+
+function nextUser() {
+    clearRemoteVideo();
+    chatBox.innerHTML = '';
+    appendSystemMessage('جاري البحث عن شخص جديد...');
+    statusDiv.textContent = 'جاري البحث...';
+
+    const interests = document.getElementById('interestsInput').value;
+    const selectedCountry = countrySelect.value;
+
+    socket.emit('find-match', {
+        mode: currentMode,
+        interests: interests,
+        country: selectedCountry
     });
 }
 
-function startMatching() {
-    if (chatBox) chatBox.innerHTML = '';
-    const selectedCountry = countrySelect ? countrySelect.value : '';
-    socket.emit('find-match', { country: selectedCountry });
+function leaveSession() {
+    clearRemoteVideo();
+    if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+        localStream = null;
+    }
+    landingPage.style.display = 'flex';
+    socket.emit('leave-room');
 }
 
-socket.on('matched', (data) => {
-    if (chatBox && data.peerCountry) {
-        chatBox.innerHTML += `<div class="msg msg-sys">تم الاتصال بشخص من: 🌍 ${data.peerCountry}</div>`;
+// --- 3. WebRTC Setup ---
+
+function createPeerConnection() {
+    peerConnection = new RTCPeerConnection(rtcConfig);
+
+    if (localStream && currentMode === 'video') {
+        localStream.getTracks().forEach(track => {
+            peerConnection.addTrack(track, localStream);
+        });
     }
-    myGameSymbol = data.isInitiator ? 'X' : 'O';
-    isMyTurn = data.isInitiator;
+
+    peerConnection.ontrack = (event) => {
+        if (remoteVideo && event.streams[0]) {
+            remoteVideo.srcObject = event.streams[0];
+        }
+    };
+
+    peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+            socket.emit('signal', { candidate: event.candidate });
+        }
+    };
+}
+
+// --- 4. Socket Events ---
+
+socket.on('online-count', (count) => {
+    const landingCount = document.getElementById('landingOnlineCount');
+    const headerCount = document.getElementById('headerOnlineCount');
+    if (landingCount) landingCount.textContent = count;
+    if (headerCount) headerCount.textContent = count;
 });
 
-function makeMove(index) {
-    if (!isMyTurn) return;
-    const cells = document.querySelectorAll('.xo-cell');
-    if (cells[index].textContent !== '') return;
-    cells[index].textContent = myGameSymbol;
-    isMyTurn = false;
-    socket.emit('game-move', { index, symbol: myGameSymbol });
-}
+socket.on('matched', async (data) => {
+    statusDiv.textContent = 'متصل الآن!';
+    appendSystemMessage('تم العثور على شخص!');
 
-socket.on('game-move', (data) => {
-    const cells = document.querySelectorAll('.xo-cell');
-    if (cells[data.index]) {
-        cells[data.index].textContent = (data.symbol === 'X' ? 'O' : 'X');
+    if (currentMode === 'video') {
+        createPeerConnection();
+        if (data.isInitiator) {
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            socket.emit('signal', { offer: offer });
+        }
     }
-    isMyTurn = true;
 });
 
-function closeGame() {
-    const overlay = document.getElementById('gameBoardOverlay');
-    if (overlay) overlay.style.display = 'none';
-}
+socket.on('signal', async (data) => {
+    if (data.offer) {
+        if (!peerConnection) createPeerConnection();
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+        socket.emit('signal', { answer: answer });
+    } else if (data.answer) {
+        if (peerConnection) {
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+        }
+    } else if (data.candidate) {
+        if (peerConnection) {
+            await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+        }
+    }
+});
+
+socket.on('peer-disconnected', () => {
+    clearRemoteVideo();
+    statusDiv.textContent = 'انقطع الاتصال';
+    appendSystemMessage('الطرف الآخر غادر.');
+});
+
+socket.on('receive-message', (data) => {
+    appendMessage(data.text, 'other');
+});
+
+// --- 5. Chat & Game Logic ---
 
 function sendMsg() {
-    const msgInput = document.getElementById('msgInput');
-    if (!msgInput || !msgInput.value.trim()) return;
-    const text = msgInput.value;
-    socket.emit('send-message', text);
-    if (chatBox) {
-        chatBox.innerHTML += `<div class="msg my-msg">${text}</div>`;
-    }
+    const text = msgInput.value.trim();
+    if (!text) return;
+    appendMessage(text, 'me');
+    socket.emit('send-message', { text: text });
     msgInput.value = '';
 }
 
-socket.on('receive-message', (text) => {
-    if (chatBox) {
-        chatBox.innerHTML += `<div class="msg peer-msg">${text}</div>`;
-    }
-});
+function appendMessage(text, type) {
+    const msgDiv = document.createElement('div');
+    msgDiv.classList.add('msg', type === 'me' ? 'msg-me' : 'msg-other');
+    msgDiv.textContent = text;
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function appendSystemMessage(text) {
+    const msgDiv = document.createElement('div');
+    msgDiv.classList.add('msg', 'msg-sys');
+    msgDiv.textContent = text;
+    chatBox.appendChild(msgDiv);
+}
