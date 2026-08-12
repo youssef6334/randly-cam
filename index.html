@@ -3,18 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Randly</title>
+    <title>Randly - Chat with Strangers</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <!-- Landing Page (صفحة البداية) -->
+    <div id="landingPage" class="landing-overlay">
+        <div class="landing-card">
+            <div class="landing-header">
+                <span class="logo">Randly</span>
+                <div class="header-right-landing">
+                    <button class="theme-toggle" onclick="toggleTheme()" title="تغيير المظهر">🌙</button>
+                    <span class="online-badge"><span class="dot"></span> <span id="landingOnlineCount">1</span> أونلاين</span>
+                </div>
+            </div>
+            
+            <h1>التحدث مع غرباء</h1>
+            <p>هل أنت مستعد للتعرف على شخص جديد؟ Randly يتيح لك الشات الكتابي أو الفيديو بكل سهولة وسرعة!</p>
+
+            <div class="interests-box">
+                <label>عن ماذا تريد أن تتحدث؟ (اختياري)</label>
+                <input type="text" id="interestsInput" placeholder="أدخل اهتماماتك (مثال: ألعاب، موسيقى)...">
+            </div>
+
+            <div class="mode-buttons">
+                <button class="btn btn-mode-text" onclick="startSession('text')">Text (شات كتابي)</button>
+                <span class="or-text">أو</span>
+                <button class="btn btn-mode-video" onclick="startSession('video')">Video (فيديو)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Layout (صفحة التطبيق الرئيسية) -->
     <header>
         <div class="logo">Randly</div>
         <div id="status">جاري الاتصال بالسيرفر...</div>
+        <div class="header-actions">
+            <span class="online-badge header-online"><span class="dot"></span> <span id="headerOnlineCount">1</span> أونلاين</span>
+            <button class="theme-toggle" onclick="toggleTheme()" title="تغيير المظهر">🌙</button>
+            <button class="btn btn-leave" onclick="leaveSession()">خروج 🚪</button>
+        </div>
     </header>
 
     <div class="main-container">
-        <div class="video-section">
+        <div class="video-section" id="videoSection">
             <div class="videos">
                 <div class="video-box">
                     <video id="remoteVideo" autoplay playsinline></video>
@@ -33,7 +66,7 @@
             </div>
         </div>
 
-        <div class="chat-section">
+        <div class="chat-section" id="chatSection">
             <div id="chatBox">
                 <div class="msg msg-sys">مرحباً بك! انقر على "التالي" لبدء الشات.</div>
             </div>
@@ -41,10 +74,13 @@
                 <input type="text" id="msgInput" placeholder="اكتب رسالة..." onkeydown="if(event.key==='Enter') sendMsg()">
                 <button class="btn btn-send" onclick="sendMsg()">إرسال</button>
             </div>
+            <div class="text-only-controls" id="textOnlyControls" style="display: none; padding: 10px;">
+                <button class="btn btn-next" style="width: 100%;" onclick="nextUser()">التالي (Next) ⏭️</button>
+            </div>
         </div>
     </div>
 
-    <!-- قسم الإعلانات المصممة لتتناسب مع الموبايل والكمبيوتر -->
+    <!-- قسم الإعلانات -->
     <div class="ad-container">
         <script async="async" data-cfasync="false" src="https://pl30790391.effectivecpmnetwork.com/f66aa4bb4789b5ab486c7c42e435623d/invoke.js"></script>
         <div id="container-f66aa4bb4789b5ab486c7c42e435623d"></div>

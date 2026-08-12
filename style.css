@@ -1,38 +1,229 @@
+:root {
+    --bg-color: #121212;
+    --card-bg: #1f1f1f;
+    --section-bg: #181818;
+    --text-color: #ffffff;
+    --subtext-color: #aaaaaa;
+    --border-color: #333333;
+    --input-bg: #2a2a2a;
+    --primary-color: #7c4dff;
+    --msg-me-bg: #7c4dff;
+    --msg-me-text: #ffffff;
+    --msg-peer-bg: #29b6f6;
+    --msg-peer-text: #000000;
+}
+
+[data-theme="light"] {
+    --bg-color: #f4f6f8;
+    --card-bg: #ffffff;
+    --section-bg: #ffffff;
+    --text-color: #1a1a1a;
+    --subtext-color: #666666;
+    --border-color: #e0e0e0;
+    --input-bg: #f0f2f5;
+    --primary-color: #6200ee;
+    --msg-me-bg: #6200ee;
+    --msg-me-text: #ffffff;
+    --msg-peer-bg: #e0e0e0;
+    --msg-peer-text: #000000;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
     font-family: Arial, Helvetica, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 body {
-    background-color: #121212;
-    color: #ffffff;
+    background-color: var(--bg-color);
+    color: var(--text-color);
     display: flex;
     flex-direction: column;
     height: 100vh;
     overflow-x: hidden;
 }
 
+/* ==========================================
+   Landing Page (صفحة البداية)
+========================================== */
+.landing-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-color);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.landing-card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.landing-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header-right-landing {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.online-badge {
+    background: var(--input-bg);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #00e676;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    background-color: #00e676;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.theme-toggle {
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 6px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.landing-card h1 {
+    font-size: 26px;
+    margin-bottom: 12px;
+}
+
+.landing-card p {
+    color: var(--subtext-color);
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+.interests-box {
+    text-align: right;
+    margin-bottom: 25px;
+}
+
+.interests-box label {
+    font-size: 13px;
+    color: var(--subtext-color);
+    display: block;
+    margin-bottom: 8px;
+}
+
+.interests-box input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    color: var(--text-color);
+    outline: none;
+}
+
+.mode-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.btn-mode-text {
+    flex: 1;
+    background-color: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 14px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-mode-video {
+    flex: 1;
+    background-color: var(--primary-color);
+    border: none;
+    color: white;
+    padding: 14px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.or-text {
+    color: var(--subtext-color);
+    font-size: 14px;
+}
+
+/* ==========================================
+   Header & Main Application
+========================================== */
 header {
-    background-color: #1f1f1f;
+    background-color: var(--card-bg);
     padding: 12px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--border-color);
     flex-shrink: 0;
 }
 
 .logo {
     font-size: 22px;
     font-weight: bold;
-    color: #00e676;
+    color: var(--primary-color);
 }
 
 #status {
     color: #ffca28;
     font-size: 14px;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-leave {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 6px;
+    cursor: pointer;
 }
 
 .main-container {
@@ -47,7 +238,7 @@ header {
     flex-direction: column;
     padding: 15px;
     gap: 15px;
-    background-color: #181818;
+    background-color: var(--section-bg);
 }
 
 .videos {
@@ -65,7 +256,7 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #333;
+    border: 1px solid var(--border-color);
 }
 
 video {
@@ -79,6 +270,7 @@ video {
     bottom: 10px;
     right: 10px;
     background: rgba(0, 0, 0, 0.7);
+    color: #ffffff;
     padding: 4px 10px;
     border-radius: 4px;
     font-size: 12px;
@@ -105,14 +297,15 @@ video {
 }
 
 .btn-control {
-    background-color: #333;
-    color: white;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
 }
 
 .chat-section {
     width: 320px;
-    background-color: #1f1f1f;
-    border-right: 1px solid #333;
+    background-color: var(--card-bg);
+    border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
 }
@@ -134,19 +327,19 @@ video {
 }
 
 .msg-me {
-    background-color: #00e676;
-    color: #000;
+    background-color: var(--msg-me-bg);
+    color: var(--msg-me-text);
     align-self: flex-start;
 }
 
 .msg-peer {
-    background-color: #29b6f6;
-    color: #000;
+    background-color: var(--msg-peer-bg);
+    color: var(--msg-peer-text);
     align-self: flex-end;
 }
 
 .msg-sys {
-    color: #888;
+    color: var(--subtext-color);
     font-size: 12px;
     text-align: center;
     align-self: center;
@@ -156,22 +349,22 @@ video {
     padding: 15px;
     display: flex;
     gap: 8px;
-    border-top: 1px solid #333;
+    border-top: 1px solid var(--border-color);
 }
 
 input {
     flex: 1;
     padding: 10px;
     border-radius: 4px;
-    border: 1px solid #444;
-    background: #2a2a2a;
-    color: white;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    color: var(--text-color);
     outline: none;
 }
 
 .btn-send {
-    background-color: #00e676;
-    color: black;
+    background-color: var(--primary-color);
+    color: white;
     font-weight: bold;
 }
 
@@ -185,7 +378,7 @@ input {
 }
 
 /* ==========================================
-   إعدادات التجاوب الشاملة للهواتف والموبايل
+   Responsive (الموبايل)
 ========================================== */
 @media (max-width: 768px) {
     body {
@@ -223,11 +416,15 @@ input {
     .chat-section {
         width: 100%;
         border-right: none;
-        border-top: 1px solid #333;
+        border-top: 1px solid var(--border-color);
         height: 300px;
     }
 
     #chatBox {
         height: 220px;
+    }
+
+    .header-online {
+        display: none;
     }
 }
