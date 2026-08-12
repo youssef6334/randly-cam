@@ -1,8 +1,7 @@
-Const express = require('express');
+const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
 const { Server } = require('socket.io');
-
 // إعداد Socket.io مع السماح بالاتصال من أي مصدر
 const io = new Server(http, {
     cors: {
