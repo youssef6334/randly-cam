@@ -3,6 +3,7 @@ const app = express();
 const http = require('http').createServer(app);
 const { Server } = require('socket.io');
 
+// إعداد Socket.io مع السماح بالاتصال من أي مصدر
 const io = new Server(http, {
     cors: {
         origin: "*",
@@ -16,11 +17,11 @@ let activeUsers = new Map();
 let waitingQueue = [];
 
 io.on('connection', (socket) => {
-    // تسجيل جديد وتحديث العداد فوراً
+    // تسجيل المستخدم الجديد
     activeUsers.set(socket.id, { room: null, peer: null });
     io.emit('online-count', activeUsers.size);
 
-    // طلب مطابقة
+    // المطابقة
     socket.on('find-match', (data) => {
         waitingQueue = waitingQueue.filter(id => id !== socket.id);
 
@@ -33,7 +34,6 @@ io.on('connection', (socket) => {
 
             if (peerSocket) {
                 peerSocket.join(roomId);
-
                 activeUsers.set(socket.id, { room: roomId, peer: peerId });
                 activeUsers.set(peerId, { room: roomId, peer: socket.id });
 
@@ -47,7 +47,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // WebRTC Signals
+    // WebRTC & Chat
     socket.on('signal', (data) => {
         const user = activeUsers.get(socket.id);
         if (user && user.peer) {
@@ -55,7 +55,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    // Chat
     socket.on('send-message', (data) => {
         const user = activeUsers.get(socket.id);
         if (user && user.peer) {
@@ -63,23 +62,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // XO Game
-    socket.on('game-request', () => {
-        const user = activeUsers.get(socket.id);
-        if (user && user.peer) {
-            socket.emit('game-start', { symbol: 'X', isMyTurn: true });
-            io.to(user.peer).emit('game-start', { symbol: 'O', isMyTurn: false });
-        }
-    });
-
-    socket.on('game-move', (data) => {
-        const user = activeUsers.get(socket.id);
-        if (user && user.peer) {
-            io.to(user.peer).emit('game-move', data);
-        }
-    });
-
-    // Disconnection handlers
+    // Disconnect
     socket.on('leave-room', () => {
         handleUserDisconnect(socket);
     });
@@ -94,7 +77,6 @@ io.on('connection', (socket) => {
 function handleUserDisconnect(socket) {
     waitingQueue = waitingQueue.filter(id => id !== socket.id);
     const user = activeUsers.get(socket.id);
-
     if (user && user.peer) {
         io.to(user.peer).emit('peer-disconnected');
         const peerUser = activeUsers.get(user.peer);
@@ -103,7 +85,7 @@ function handleUserDisconnect(socket) {
     }
 }
 
-// التوافق مع Railway و Render (0.0.0.0 binding)
+// استخدام المنفذ المخصص من Railway أو 3000 كبديل
 const PORT = process.env.PORT || 3000;
 http.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
