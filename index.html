@@ -35,7 +35,7 @@
         </div>
     </div>
 
-    <!-- Main App Layout (صفحة التطبيق الرئيسية) -->
+    <!-- Application Header -->
     <header>
         <div class="logo">Randly</div>
         <div id="status">جاري الاتصال بالسيرفر...</div>
@@ -63,10 +63,35 @@
                 <button class="btn btn-next" onclick="nextUser()">التالي (Next) ⏭️</button>
                 <button class="btn btn-control" id="camBtn" onclick="toggleCam()">📹 الكاميرا</button>
                 <button class="btn btn-control" id="micBtn" onclick="toggleMic()">🎤 المايك</button>
+                <button class="btn btn-control" id="screenBtn" onclick="toggleScreenShare()">🖥️ الشاشة</button>
             </div>
         </div>
 
         <div class="chat-section" id="chatSection">
+            <div class="chat-header-tools">
+                <button class="btn-tool btn-game" onclick="requestGame()">🎮 لعب XO</button>
+                <button class="btn-tool btn-report" onclick="reportUser()">🚩 إبلاغ وحظر</button>
+            </div>
+
+            <!-- لوحة لعبة XO -->
+            <div id="gameBoardOverlay" class="game-overlay" style="display: none;">
+                <div class="game-header">
+                    <span id="gameStatusText">لعبة XO</span>
+                    <button class="close-game-btn" onclick="closeGame()">✕</button>
+                </div>
+                <div class="game-grid">
+                    <button class="xo-cell" onclick="makeMove(0)"></button>
+                    <button class="xo-cell" onclick="makeMove(1)"></button>
+                    <button class="xo-cell" onclick="makeMove(2)"></button>
+                    <button class="xo-cell" onclick="makeMove(3)"></button>
+                    <button class="xo-cell" onclick="makeMove(4)"></button>
+                    <button class="xo-cell" onclick="makeMove(5)"></button>
+                    <button class="xo-cell" onclick="makeMove(6)"></button>
+                    <button class="xo-cell" onclick="makeMove(7)"></button>
+                    <button class="xo-cell" onclick="makeMove(8)"></button>
+                </div>
+            </div>
+
             <div id="chatBox">
                 <div class="msg msg-sys">مرحباً بك! انقر على "التالي" لبدء الشات.</div>
             </div>
@@ -80,7 +105,7 @@
         </div>
     </div>
 
-    <!-- قسم الإعلانات -->
+    <!-- Ad Section -->
     <div class="ad-container">
         <script async="async" data-cfasync="false" src="https://pl30790391.effectivecpmnetwork.com/f66aa4bb4789b5ab486c7c42e435623d/invoke.js"></script>
         <div id="container-f66aa4bb4789b5ab486c7c42e435623d"></div>

@@ -45,9 +45,7 @@ body {
     overflow-x: hidden;
 }
 
-/* ==========================================
-   Landing Page (صفحة البداية)
-========================================== */
+/* Landing Page */
 .landing-overlay {
     position: fixed;
     top: 0;
@@ -186,9 +184,7 @@ body {
     font-size: 14px;
 }
 
-/* ==========================================
-   Header & Main Application
-========================================== */
+/* Main Layout */
 header {
     background-color: var(--card-bg);
     padding: 12px 20px;
@@ -302,12 +298,90 @@ video {
     border: 1px solid var(--border-color);
 }
 
+/* Chat & Tools */
 .chat-section {
     width: 320px;
     background-color: var(--card-bg);
     border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
+    position: relative;
+}
+
+.chat-header-tools {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background-color: var(--input-bg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.btn-tool {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.btn-report:hover {
+    background-color: #ff5252;
+    color: white;
+}
+
+.btn-game:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* XO Game Overlay */
+.game-overlay {
+    position: absolute;
+    top: 45px;
+    left: 10px;
+    right: 10px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--primary-color);
+    border-radius: 8px;
+    padding: 10px;
+    z-index: 100;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.close-game-btn {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+}
+
+.xo-cell {
+    height: 50px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-color);
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 #chatBox {
@@ -377,9 +451,7 @@ input {
     border-radius: 8px;
 }
 
-/* ==========================================
-   Responsive (الموبايل)
-========================================== */
+/* Responsive Mobile */
 @media (max-width: 768px) {
     body {
         height: auto;
@@ -408,8 +480,8 @@ input {
     }
 
     .btn {
-        padding: 10px 6px;
-        font-size: 13px;
+        padding: 10px 4px;
+        font-size: 12px;
         flex: 1;
     }
 
@@ -417,11 +489,11 @@ input {
         width: 100%;
         border-right: none;
         border-top: 1px solid var(--border-color);
-        height: 300px;
+        height: 320px;
     }
 
     #chatBox {
-        height: 220px;
+        height: 200px;
     }
 
     .header-online {
