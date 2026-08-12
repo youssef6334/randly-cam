@@ -2,8 +2,8 @@ const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
 const { Server } = require('socket.io');
+const axios = require('axios'); // تأكد من تثبيته أو استخدم fetch المدمج في نود الحديثة
 
-// إعداد Socket.io مع السماح بالاتصال من أي مصدر
 const io = new Server(http, {
     cors: {
         origin: "*",
@@ -16,12 +16,30 @@ app.use(express.static(__dirname));
 let activeUsers = new Map();
 let waitingQueue = [];
 
-io.on('connection', (socket) => {
-    // تسجيل المستخدم الجديد
-    activeUsers.set(socket.id, { room: null, peer: null });
+async function getCountryFromIP(req) {
+    try {
+        let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        if (ip && ip.includes(',')) ip = ip.split(',')[0].trim();
+        if (ip === '::1' || ip === '127.0.0.1') return { country: 'Egypt', code: 'eg' }; // افتراضي محلياً
+        
+        const response = await axios.get(`http://ip-api.com/json/${ip}`);
+        if (response.data && response.data.status === 'success') {
+            return {
+                country: response.data.country || 'Unknown',
+                code: (response.data.countryCode || 'us').toLowerCase()
+            };
+        }
+    } catch (e) {
+        console.error('Geo IP error:', e.message);
+    }
+    return { country: 'Unknown', code: 'us' };
+}
+
+io.on('connection', async (socket) => {
+    const geo = await getCountryFromIP(socket.request);
+    activeUsers.set(socket.id, { room: null, peer: null, country: geo.country, code: geo.code });
     io.emit('online-count', activeUsers.size);
 
-    // المطابقة
     socket.on('find-match', (data) => {
         waitingQueue = waitingQueue.filter(id => id !== socket.id);
 
@@ -34,11 +52,14 @@ io.on('connection', (socket) => {
 
             if (peerSocket) {
                 peerSocket.join(roomId);
-                activeUsers.set(socket.id, { room: roomId, peer: peerId });
-                activeUsers.set(peerId, { room: roomId, peer: socket.id });
+                const userA = activeUsers.get(socket.id);
+                const userB = activeUsers.get(peerId);
 
-                socket.emit('matched', { isInitiator: true });
-                peerSocket.emit('matched', { isInitiator: false });
+                userA.room = roomId; userA.peer = peerId;
+                userB.room = roomId; userB.peer = socket.id;
+
+                socket.emit('matched', { isInitiator: true, peerCountry: userB.country, peerCode: userB.code });
+                peerSocket.emit('matched', { isInitiator: false, peerCountry: userA.country, peerCode: userA.code });
             } else {
                 waitingQueue.push(socket.id);
             }
@@ -47,7 +68,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    // WebRTC & Chat
     socket.on('signal', (data) => {
         const user = activeUsers.get(socket.id);
         if (user && user.peer) {
@@ -62,7 +82,14 @@ io.on('connection', (socket) => {
         }
     });
 
-    // Disconnect
+    // أحداث ألعاب X/O والدارك مود تفاعلية
+    socket.on('game-move', (data) => {
+        const user = activeUsers.get(socket.id);
+        if (user && user.peer) {
+            io.to(user.peer).emit('game-move', data);
+        }
+    });
+
     socket.on('leave-room', () => {
         handleUserDisconnect(socket);
     });
@@ -85,7 +112,6 @@ function handleUserDisconnect(socket) {
     }
 }
 
-// استخدام المنفذ المخصص من Railway أو 3000 كبديل
 const PORT = process.env.PORT || 3000;
 http.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
