@@ -1,113 +1,83 @@
-const socket = io(window.location.origin, {
-    transports: ["websocket"],
-    secure: true
-});
+const socket = io(window.location.origin, { transports: ["websocket"], secure: true });
+let matchState = 'start';
+let myGameSymbol = null;
+let isMyTurn = false;
 
-let currentMode = 'text';
-let matchState = 'start'; // 'start' | 'skip' | 'really'
-let peerConnection = null;
-let localStream = null;
-
-const actionBtn = document.getElementById('actionBtn');
-const stopBtn = document.getElementById('stopBtn');
-const msgInput = document.getElementById('msgInput');
-const sendBtn = document.getElementById('sendBtn');
+const nextBtn = document.getElementById('nextBtn');
 const chatBox = document.getElementById('chatBox');
-const darkModeToggle = document.getElementById('darkModeToggle');
+const countrySelect = document.getElementById('countrySelect');
 
-// Dark Mode Toggle
-darkModeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-    document.body.classList.toggle('light-mode');
-    darkModeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
-});
-
-// زر التحكم الموحد (Start / Skip / Really)
-actionBtn.addEventListener('click', () => {
-    if (matchState === 'start') {
-        startSearching();
-    } else if (matchState === 'skip') {
-        // التحويل لوضع Really للتأكيد عند الضغط الأول
-        matchState = 'really';
-        actionBtn.textContent = 'Really?';
-        actionBtn.style.backgroundColor = '#f39c12';
-    } else if (matchState === 'really') {
-        // تنفيذ التخطي الفعلي والبحث عن شخص جديد
-        executeSkip();
-    }
-});
-
-stopBtn.addEventListener('click', () => {
-    resetToStartState();
-    socket.emit('leave-room');
-});
-
-function startSearching() {
-    matchState = 'skip';
-    actionBtn.textContent = 'Skip';
-    actionBtn.style.backgroundColor = '#e74c3c';
-    chatBox.innerHTML = '';
-    appendSystemMessage('جاري البحث عن شخص جديد...');
-    socket.emit('find-match', { mode: currentMode });
+// منطق زر Start / Skip / Really
+if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+        if (matchState === 'start') {
+            matchState = 'skip';
+            nextBtn.textContent = 'Skip';
+            nextBtn.className = 'btn-start-main btn-skip';
+            startMatching();
+        } else if (matchState === 'skip') {
+            matchState = 'really';
+            nextBtn.textContent = 'Really?';
+            nextBtn.className = 'btn-start-main btn-really';
+        } else if (matchState === 'really') {
+            socket.emit('leave-room');
+            matchState = 'skip';
+            nextBtn.textContent = 'Skip';
+            nextBtn.className = 'btn-start-main btn-skip';
+            startMatching();
+        }
+    });
 }
 
-function executeSkip() {
-    socket.emit('leave-room');
-    startSearching();
+function startMatching() {
+    if (chatBox) chatBox.innerHTML = '';
+    const selectedCountry = countrySelect ? countrySelect.value : '';
+    socket.emit('find-match', { country: selectedCountry });
 }
-
-function resetToStartState() {
-    matchState = 'start';
-    actionBtn.textContent = 'Start';
-    actionBtn.style.backgroundColor = '#6c5ce7';
-}
-
-// Socket Events & Geo IP Display
-socket.on('online-count', (count) => {
-    document.getElementById('headerOnlineCount').textContent = count;
-});
 
 socket.on('matched', (data) => {
-    matchState = 'skip';
-    actionBtn.textContent = 'Skip';
-    actionBtn.style.backgroundColor = '#e74c3c';
-    
-    // إظهار الدولة الحقيقية للطرف الآخر الجانبية بناءً على الـ IP
-    appendSystemMessage(`✨ You're now chatting with someone new\n 🌍 ${data.peerCountry} (${data.peerCode.toUpperCase()})`);
+    if (chatBox && data.peerCountry) {
+        chatBox.innerHTML += `<div class="msg msg-sys">تم الاتصال بشخص من: 🌍 ${data.peerCountry}</div>`;
+    }
+    myGameSymbol = data.isInitiator ? 'X' : 'O';
+    isMyTurn = data.isInitiator;
 });
 
-socket.on('peer-disconnected', () => {
-    appendSystemMessage('الطرف الآخر غادر المحادثة.');
-    matchState = 'skip';
-    actionBtn.textContent = 'Skip';
+function makeMove(index) {
+    if (!isMyTurn) return;
+    const cells = document.querySelectorAll('.xo-cell');
+    if (cells[index].textContent !== '') return;
+    cells[index].textContent = myGameSymbol;
+    isMyTurn = false;
+    socket.emit('game-move', { index, symbol: myGameSymbol });
+}
+
+socket.on('game-move', (data) => {
+    const cells = document.querySelectorAll('.xo-cell');
+    if (cells[data.index]) {
+        cells[data.index].textContent = (data.symbol === 'X' ? 'O' : 'X');
+    }
+    isMyTurn = true;
 });
 
-// Chat Messaging
-sendBtn.addEventListener('click', sendMsg);
-msgInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') sendMsg();
-});
+function closeGame() {
+    const overlay = document.getElementById('gameBoardOverlay');
+    if (overlay) overlay.style.display = 'none';
+}
 
 function sendMsg() {
-    const text = msgInput.value.trim();
-    if (!text) return;
-    appendMessage(text, 'me');
-    socket.emit('send-message', { text });
+    const msgInput = document.getElementById('msgInput');
+    if (!msgInput || !msgInput.value.trim()) return;
+    const text = msgInput.value;
+    socket.emit('send-message', text);
+    if (chatBox) {
+        chatBox.innerHTML += `<div class="msg my-msg">${text}</div>`;
+    }
     msgInput.value = '';
 }
 
-function appendMessage(text, type) {
-    const div = document.createElement('div');
-    div.classList.add('msg', type === 'me' ? 'msg-me' : 'msg-other');
-    div.textContent = text;
-    chatBox.appendChild(div);
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-function appendSystemMessage(text) {
-    const div = document.createElement('div');
-    div.classList.add('msg', 'msg-sys');
-    div.innerText = text;
-    chatBox.appendChild(div);
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
+socket.on('receive-message', (text) => {
+    if (chatBox) {
+        chatBox.innerHTML += `<div class="msg peer-msg">${text}</div>`;
+    }
+});

@@ -2,66 +2,93 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Randly - Chat</title>
+    <title>Umingle</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="light-mode">
-    <div class="app-container">
-        <!-- الهيدر -->
-        <header class="app-header">
-            <div class="logo-area">
-                <h2>umingle</h2>
-            </div>
-            <div class="header-controls">
-                <span id="headerOnlineCount">0</span> online
-                <button id="darkModeToggle">🌙</button>
-            </div>
-        </header>
+<body>
 
-        <!-- نافذة المحادثة / الفيديو -->
-        <div id="videoSection" class="video-section" style="display:none;">
-            <video id="remoteVideo" autoplay playsinline></video>
-            <video id="localVideo" autoplay playsinline muted></video>
+    <!-- مثال لقائمة اختيار الدول وعناصر التحكم كما أرسلتها -->
+    <div class="filter-container">
+        <select id="countrySelect" class="country-selector">
+            <option value="DZ">🇩🇿 Algeria</option>
+            <option value="AR">🇦🇷 Argentina</option>
+            <option value="BR">🇧🇷 Brazil</option>
+            <option value="EG" selected>🇪🇬 Egypt</option>
+            <option value="FR">🇫🇷 France</option>
+            <option value="DE">🇩🇪 Germany</option>
+            <option value="IN">🇮🇳 India</option>
+            <option value="ID">🇮🇩 Indonesia</option>
+            <option value="IE">🇮🇪 Ireland</option>
+            <option value="IL">🇮🇱 Israel</option>
+            <option value="IT">🇮🇹 Italy</option>
+            <option value="MY">🇲🇾 Malaysia</option>
+            <option value="MX">🇲🇽 Mexico</option>
+            <option value="MA">🇲🇦 Morocco</option>
+            <option value="NL">🇳🇱 Netherlands</option>
+            <option value="NZ">🇳🇿 New Zealand</option>
+            <option value="NO">🇳🇴 Norway</option>
+            <option value="PK">🇵🇰 Pakistan</option>
+            <option value="PS">🇵🇸 Palestine</option>
+            <option value="PH">🇵🇭 Philippines</option>
+            <option value="PL">🇵🇱 Poland</option>
+            <option value="SA">🇸🇦 Saudi Arabia</option>
+            <option value="SG">🇸🇬 Singapore</option>
+            <option value="ZA">🇿🇦 South Africa</option>
+            <option value="ES">🇪🇸 Spain</option>
+            <option value="SE">🇸🇪 Sweden</option>
+            <option value="CH">🇨🇭 Switzerland</option>
+            <option value="TN">🇹🇳 Tunisia</option>
+            <option value="TR">🇹🇷 Turkey</option>
+            <option value="AE">🇦🇪 UAE</option>
+        </select>
+    </div>
+
+    <!-- صندوق الشات والأزرار السريعة -->
+    <div id="chatBox" style="height: 300px; overflow-y: auto; border: 1px solid #ccc; margin: 10px;"></div>
+
+    <div class="quick-actions">
+        <button class="btn-action-icon" id="micBtn" onclick="toggleMic()" title="المايك">🎤</button>
+        <button class="btn-action-icon" id="camBtn" onclick="toggleCam()" title="الكاميرا">📹</button>
+        <button class="btn-action-icon" onclick="reportUser()" title="إبلاغ">⚠️</button>
+        <button class="btn-action-icon btn-close-chat" onclick="leaveSession()" title="خروج">❌</button>
+    </div>
+
+    <!-- Bottom Input & Big Start Button Row -->
+    <div class="bottom-action-bar">
+        <button class="btn-start-main" id="nextBtn">Start</button>
+        
+        <div class="input-container">
+            <input type="text" id="msgInput" placeholder="اكتب رسالتك هنا..." onkeydown="if(event.key === 'Enter') sendMsg()">
+            <button class="btn-send-inside" onclick="sendMsg()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
         </div>
+    </div>
 
-        <div class="chat-container">
-            <div id="chatBox" class="chat-box"></div>
-        </div>
-
-        <!-- منطقة الألعاب المصغرة X/O -->
-        <div id="gameArea" class="game-area" style="display:none;">
-            <h3>لعبة X/O</h3>
-            <div class="board">
-                <div class="cell" data-index="0"></div>
-                <div class="cell" data-index="1"></div>
-                <div class="cell" data-index="2"></div>
-                <div class="cell" data-index="3"></div>
-                <div class="cell" data-index="4"></div>
-                <div class="cell" data-index="5"></div>
-                <div class="cell" data-index="6"></div>
-                <div class="cell" data-index="7"></div>
-                <div class="cell" data-index="8"></div>
+    <!-- XO Mini-Game Overlay -->
+    <div id="gameBoardOverlay" class="game-overlay" style="display: none;">
+        <div class="game-card">
+            <div class="game-header">
+                <h3>لعبة XO 🎮</h3>
+                <button class="close-game" onclick="closeGame()">✕</button>
             </div>
-        </div>
-
-        <!-- شريط التحكم السفلي: الأزرار يمين/يسار معكوسة حسب الطلب -->
-        <div class="bottom-control-bar">
-            <!-- أزرار التحكم (Start / Skip / Really) في اليسار -->
-            <div class="left-controls">
-                <button id="actionBtn" class="control-btn start-state">Start</button>
-                <button id="stopBtn" class="stop-btn">■</button>
-            </div>
-
-            <!-- زر وعندوق الإرسال في اليمين -->
-            <div class="right-controls">
-                <input type="text" id="msgInput" placeholder="اكتب رسالة...">
-                <button id="sendBtn" class="send-btn">➔</button>
+            <p id="gameStatusText">جاري الانتظار...</p>
+            <div class="xo-grid">
+                <div class="xo-cell" onclick="makeMove(0)"></div>
+                <div class="xo-cell" onclick="makeMove(1)"></div>
+                <div class="xo-cell" onclick="makeMove(2)"></div>
+                <div class="xo-cell" onclick="makeMove(3)"></div>
+                <div class="xo-cell" onclick="makeMove(4)"></div>
+                <div class="xo-cell" onclick="makeMove(5)"></div>
+                <div class="xo-cell" onclick="makeMove(6)"></div>
+                <div class="xo-cell" onclick="makeMove(7)"></div>
+                <div class="xo-cell" onclick="makeMove(8)"></div>
             </div>
         </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="script.js"></script>
+    <script type="text/javascript" src="https://pl30790288.effectivecpmnetwork.com/af/01/4f/af014f7d78a0555fd804897f8175cc44.js"></script>
 </body>
 </html>
