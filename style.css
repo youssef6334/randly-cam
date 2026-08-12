@@ -5,8 +5,8 @@
     --bg-card: #282830;
     --text-main: #ffffff;
     --text-muted: #a0a0ab;
-    --accent-purple: #6c5ce7;
-    --accent-purple-hover: #5b4bc4;
+    --accent-purple: #00b894; /* تم التعديل للأخضر */
+    --accent-purple-hover: #00a181; /* درجة أخضر داكنة عند التحويم */
     --accent-green: #00b894;
     --accent-red: #ff7675;
     --border-color: #2d2d38;
@@ -19,8 +19,8 @@
     --bg-card: #f0f2f5;
     --text-main: #2d3436;
     --text-muted: #636e72;
-    --accent-purple: #6c5ce7;
-    --accent-purple-hover: #5b4bc4;
+    --accent-purple: #00b894;
+    --accent-purple-hover: #00a181;
     --accent-green: #00b894;
     --accent-red: #d63031;
     --border-color: #e1e8ef;
@@ -473,7 +473,6 @@ html, body {
         flex-shrink: 0;
     }
 
-    /* ملء المساحة السوداء بالكامل في وضع الشات الكتابي */
     .video-section:empty,
     .video-section[style*="display: none"] {
         display: none !important;
