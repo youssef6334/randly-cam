@@ -34,8 +34,8 @@
 }
 
 html, body {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background-color: var(--bg-color);
     color: var(--text-color);
     overflow: hidden;
@@ -91,7 +91,7 @@ html, body {
     gap: 10px;
 }
 
-/* Full Screen Main Container */
+/* Main Container Full Height */
 .main-container {
     width: 100vw;
     height: 100vh;
@@ -99,8 +99,9 @@ html, body {
     flex-direction: column;
 }
 
+/* Header Fix */
 .app-header {
-    height: 50px;
+    height: 48px;
     background-color: var(--header-bg);
     display: flex;
     justify-content: space-between;
@@ -111,7 +112,7 @@ html, body {
 }
 
 .logo {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     font-weight: bold;
     color: var(--primary-color);
 }
@@ -119,27 +120,40 @@ html, body {
 .header-right {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
+/* Adsterra Native Banner Strict Small Resizing */
 .top-ad-bar {
     width: 100%;
-    text-align: center;
+    max-height: 80px;
     background-color: var(--card-bg);
     overflow: hidden;
     flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
 }
 
-/* Full Width & Height Wrapper */
+.top-ad-bar div, 
+.top-ad-bar iframe, 
+.top-ad-bar img,
+.top-ad-bar a {
+    max-height: 80px !important;
+    object-fit: contain !important;
+}
+
+/* Content Wrapper */
 .content-wrapper {
     flex: 1;
     display: flex;
     width: 100%;
-    height: calc(100vh - 50px);
+    height: calc(100vh - 128px);
     overflow: hidden;
 }
 
-/* Video Section (Full Fill) */
+/* Video Section */
 .video-section {
     width: 50%;
     height: 100%;
@@ -168,11 +182,11 @@ html, body {
 
 .local-box {
     position: absolute;
-    bottom: 20px;
-    right: 20px;
-    width: 160px;
-    height: 110px;
-    border-radius: 10px;
+    bottom: 15px;
+    right: 15px;
+    width: 140px;
+    height: 95px;
+    border-radius: 8px;
     border: 2px solid var(--primary-color);
     box-shadow: 0 4px 15px rgba(0,0,0,0.6);
     z-index: 10;
@@ -181,15 +195,15 @@ html, body {
 
 .video-label {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: 6px;
+    right: 6px;
     background: rgba(0,0,0,0.6);
-    padding: 3px 8px;
+    padding: 2px 6px;
     border-radius: 4px;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
 }
 
-/* Chat Section (Full Fill) */
+/* Chat Section */
 .chat-section {
     width: 50%;
     height: 100%;
@@ -200,10 +214,10 @@ html, body {
 }
 
 .status-bar {
-    padding: 10px;
+    padding: 8px;
     text-align: center;
     font-weight: bold;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-muted);
     border-bottom: 1px solid var(--border-color);
     background: var(--header-bg);
@@ -212,18 +226,18 @@ html, body {
 
 .chat-box {
     flex: 1;
-    padding: 15px;
+    padding: 12px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
 }
 
 .msg {
-    max-width: 80%;
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-size: 0.95rem;
+    max-width: 85%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
     line-height: 1.4;
     word-break: break-word;
 }
@@ -244,14 +258,14 @@ html, body {
     align-self: center;
     background: transparent;
     color: var(--text-muted);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
 }
 
 /* Input Bar */
 .input-bar {
     display: flex;
-    padding: 10px;
-    gap: 8px;
+    padding: 8px;
+    gap: 6px;
     border-top: 1px solid var(--border-color);
     background-color: var(--card-bg);
     flex-shrink: 0;
@@ -259,31 +273,31 @@ html, body {
 
 .input-bar input {
     flex: 1;
-    padding: 12px;
-    border-radius: 8px;
+    padding: 10px;
+    border-radius: 6px;
     border: 1px solid var(--border-color);
     background: var(--bg-color);
     color: var(--text-color);
     outline: none;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 
-/* Controls Bar */
+/* Controls Bar Fix */
 .controls-bar {
     display: flex;
-    gap: 8px;
-    padding: 10px;
+    gap: 6px;
+    padding: 8px;
     background-color: var(--header-bg);
     border-top: 1px solid var(--border-color);
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     flex-shrink: 0;
 }
 
 .btn {
-    padding: 10px 14px;
+    padding: 8px 12px;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
     font-size: 0.85rem;
@@ -295,14 +309,14 @@ html, body {
 
 .btn-primary { background: var(--primary-color); color: white; width: 100%; }
 .btn-secondary { background: var(--accent-color); color: white; width: 100%; }
-.btn-send { background: var(--accent-color); color: white; padding: 10px 18px; }
+.btn-send { background: var(--accent-color); color: white; padding: 10px 16px; }
 .btn-next { background: var(--primary-color); color: white; flex: 1; }
 .btn-report { background: #eccc68; color: black; }
 .btn-leave { background: #ff4757; color: white; }
 .btn-media { background: var(--bg-color); color: var(--text-color); border: 1px solid var(--border-color); }
 .btn-icon { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--text-color); }
 
-/* XO Mini-Game Overlay */
+/* Mini-Game Overlay */
 .game-overlay {
     position: fixed;
     top: 0; left: 0;
@@ -319,7 +333,7 @@ html, body {
     padding: 20px;
     border-radius: 12px;
     text-align: center;
-    width: 310px;
+    width: 300px;
 }
 
 .game-header {
@@ -340,16 +354,16 @@ html, body {
 .xo-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    gap: 6px;
     margin-top: 10px;
 }
 
 .xo-cell {
-    width: 80px;
-    height: 80px;
+    width: 75px;
+    height: 75px;
     background: var(--bg-color);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 6px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -358,42 +372,48 @@ html, body {
     cursor: pointer;
 }
 
-/* Responsive Mobile Full Screen Optimization */
+/* Mobile Specific Optimizations */
 @media (max-width: 768px) {
+    .top-ad-bar {
+        max-height: 60px;
+    }
+    .top-ad-bar div, 
+    .top-ad-bar iframe, 
+    .top-ad-bar img,
+    .top-ad-bar a {
+        max-height: 60px !important;
+    }
+
     .content-wrapper {
         flex-direction: column;
-        height: calc(100vh - 50px);
+        height: calc(100vh - 108px);
     }
     
     .video-section {
         width: 100%;
-        height: 40%;
+        height: 38%;
     }
 
     .chat-section {
         width: 100%;
-        height: 60%;
+        height: 62%;
         border-right: none;
     }
 
     .local-box {
-        width: 100px;
-        height: 70px;
-        bottom: 10px;
-        right: 10px;
+        width: 90px;
+        height: 60px;
+        bottom: 8px;
+        right: 8px;
     }
 
     .controls-bar {
-        padding: 6px;
-        gap: 5px;
+        padding: 5px;
+        gap: 4px;
     }
 
     .btn {
-        padding: 8px 10px;
-        font-size: 0.8rem;
-    }
-
-    .btn-send {
-        padding: 10px 14px;
+        padding: 6px 8px;
+        font-size: 0.75rem;
     }
 }
