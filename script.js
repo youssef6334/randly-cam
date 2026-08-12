@@ -30,11 +30,12 @@ const configuration = {
     ]
 };
 
-// Load AI Model for NSFW Detection
+// Load AI Model for NSFW Detection (باستخدام رابط موديل مباشر ومستقر)
 async function loadAIModel() {
     try {
         console.log('جاري تحميل نموذج الذكاء الاصطناعي لفحص المحتوى...');
-        nsfwModel = await nsfwjs.load();
+        const modelUrl = 'https://unpkg.com/nsfwjs@2.4.1/models/quantized/';
+        nsfwModel = await nsfwjs.load(modelUrl);
         console.log('تم تحميل نموذج الذكاء الاصطناعي بنجاح!');
     } catch (err) {
         console.error('خطأ في تحميل نموذج الذكاء الاصطناعي:', err);
@@ -137,7 +138,7 @@ function startAICameraScan() {
             try {
                 const predictions = await nsfwModel.classify(localVideo);
                 
-                // تعديل نسبة الثقة إلى 0.90 (90%) لتجنب الحظر الخاطئ
+                // نسبة الثقة محددة بـ 0.90 (90%)
                 const unsafe = predictions.find(p => 
                     (p.className === 'Porn' || p.className === 'Hentai' || p.className === 'Sexy') && p.probability > 0.90
                 );
