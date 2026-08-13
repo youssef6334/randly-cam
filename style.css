@@ -127,60 +127,78 @@ html, body {
     flex: 1;
     overflow: hidden;
     position: relative;
-}
-
-/* Video Section */
-.video-section {
-    flex: 1;
-    background-color: #000;
-    display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding: 8px;
-    position: relative;
 }
 
-.video-box {
-    flex: 1;
+/* Video Section Container (Umingle Style Layout) */
+.video-section {
+    width: 100%;
+    height: 40vh;
+    background-color: #000;
     position: relative;
-    background-color: #111;
-    border-radius: 12px;
-    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.video-box.remote-box {
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    position: absolute;
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.video-box video {
+.video-box.remote-box video {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.video-label {
+.video-box.local-box {
     position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background: rgba(0, 0, 0, 0.6);
-    color: #fff;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    backdrop-filter: blur(4px);
+    top: 12px;
+    right: 12px;
+    width: 95px;
+    height: 130px;
+    background-color: #111;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-box.local-box video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+}
+
+.video-label {
+    display: none;
 }
 
 /* Chat Section */
 .chat-section {
-    width: 380px;
+    flex: 1;
     background-color: var(--bg-secondary);
-    border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     height: 100%;
+    overflow: hidden;
 }
 
 .status-bar {
-    padding: 8px 12px;
+    padding: 6px 12px;
     font-size: 0.8rem;
     color: var(--text-muted);
     border-bottom: 1px solid var(--border-color);
@@ -272,7 +290,7 @@ html, body {
     border-color: var(--accent-red);
 }
 
-/* Bottom Action Bar (Normal direction: Button on Right, Input on Left) */
+/* Bottom Action Bar */
 .bottom-action-bar {
     padding: 10px 12px;
     display: flex;
@@ -443,7 +461,7 @@ html, body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 6px;
-    margin-top: 12px;
+    marginTop: 12px;
 }
 
 .xo-cell {
@@ -459,7 +477,7 @@ html, body {
     cursor: pointer;
 }
 
-/* MOBILE RESPONSIVE & FULL HEIGHT FIX */
+/* MOBILE RESPONSIVE FIXES */
 @media (max-width: 768px) {
     .content-wrapper {
         flex-direction: column;
@@ -470,7 +488,7 @@ html, body {
 
     .video-section {
         width: 100%;
-        height: 35%;
+        height: 38vh;
         flex-shrink: 0;
     }
 
@@ -483,30 +501,12 @@ html, body {
         width: 100%;
         flex: 1;
         height: auto;
-        border-right: none;
     }
 
-    .chat-box {
-        flex: 1;
-    }
-
-    .top-ad-bar {
-        max-height: 50px;
-    }
-    
-    .top-ad-bar div, 
-    .top-ad-bar iframe, 
-    .top-ad-bar img {
-        max-height: 50px !important;
-    }
-
-    .btn-start-main {
-        width: 90px;
-        height: 44px;
-        font-size: 1rem;
-    }
-
-    .input-container {
-        height: 44px;
+    .video-box.local-box {
+        width: 80px;
+        height: 110px;
+        top: 8px;
+        right: 8px;
     }
 }
