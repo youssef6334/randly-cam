@@ -31,17 +31,30 @@ const statusDiv = document.getElementById('status');
 const countrySelect = document.getElementById('countrySelect');
 const videoSection = document.getElementById('videoSection');
 
-// --- 0. Adsterra Toggle Function ---
+// --- 0. Adsterra Toggle & Theme Functions ---
+let isAdCollapsed = false;
 function toggleAd() {
     var adContent = document.getElementById("adContent");
+    var adContainer = document.getElementById("adContainer");
     var arrow = document.getElementById("arrowIcon");
     
-    if (adContent.style.display === "none") {
-        adContent.style.display = "flex";
-        arrow.innerHTML = "▲";
-    } else {
+    isAdCollapsed = !isAdCollapsed;
+    if (isAdCollapsed) {
         adContent.style.display = "none";
+        if (adContainer) adContainer.style.height = "24px";
         arrow.innerHTML = "▼";
+    } else {
+        adContent.style.display = "flex";
+        if (adContainer) adContainer.style.height = "auto";
+        arrow.innerHTML = "▲";
+    }
+}
+
+function toggleTheme() {
+    document.body.classList.toggle('light-theme');
+    const themeBtn = document.querySelector('.theme-toggle');
+    if (themeBtn) {
+        themeBtn.textContent = document.body.classList.contains('light-theme') ? '☀️' : '🌙';
     }
 }
 
@@ -108,7 +121,6 @@ function nextUser() {
     clearRemoteVideo();
     chatBox.innerHTML = '';
     
-    // محاكاة جلب الدولة للطرف الآخر
     const countries = [
         { name: 'Egypt', code: 'EG', flag: '🇪🇬' },
         { name: 'United States', code: 'US', flag: '🇺🇸' },
@@ -142,6 +154,49 @@ function leaveSession() {
     const btn = document.getElementById('nextBtn');
     if (btn) btn.textContent = 'Start';
     socket.emit('leave-room');
+}
+
+// --- Media Controls (Mic & Camera Toggles) ---
+
+function toggleMic() {
+    if (!localStream) return;
+    const audioTrack = localStream.getAudioTracks()[0];
+    if (audioTrack) {
+        isMicMuted = !isMicMuted;
+        audioTrack.enabled = !isMicMuted;
+        const micBtn = document.getElementById('micBtn');
+        if (micBtn) {
+            micBtn.style.opacity = isMicMuted ? '0.5' : '1';
+            micBtn.style.borderColor = isMicMuted ? '#ff4d4d' : 'transparent';
+        }
+    }
+}
+
+function toggleCam() {
+    if (!localStream) return;
+    const videoTrack = localStream.getVideoTracks()[0];
+    if (videoTrack) {
+        isCamOff = !isCamOff;
+        videoTrack.enabled = !isCamOff;
+        const camBtn = document.getElementById('camBtn');
+        if (camBtn) {
+            camBtn.style.opacity = isCamOff ? '0.5' : '1';
+            camBtn.style.borderColor = isCamOff ? '#ff4d4d' : 'transparent';
+        }
+    }
+}
+
+function reportUser() {
+    alert('تم إرسال بلاغ عن المستخدم.');
+}
+
+function requestGame() {
+    alert('خاصية الألعاب قيد التفعيل قريباً!');
+}
+
+function closeGame() {
+    const overlay = document.getElementById('gameBoardOverlay');
+    if (overlay) overlay.style.display = 'none';
 }
 
 // --- 3. WebRTC Setup ---
@@ -218,7 +273,7 @@ socket.on('receive-message', (data) => {
     appendMessage(data.text, 'other');
 });
 
-// --- 5. Chat & Game Logic ---
+// --- 5. Chat Logic ---
 
 function sendMsg() {
     const text = msgInput.value.trim();
