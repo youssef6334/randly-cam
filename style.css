@@ -108,9 +108,44 @@ html, body {
     background-color: var(--bg-card);
 }
 
-/* Top Adsterra Area - تم إخفاؤه تماماً بناءً على طلبك */
+/* Top Adsterra Area with Collapse Feature */
 .top-ad-bar {
-    display: none !important;
+    position: relative;
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#adContent {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.toggle-ad-btn {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    color: white;
+    padding: 1px 12px;
+    border-radius: 10px 10px 0 0;
+    cursor: pointer;
+    font-size: 10px;
+    z-index: 20;
+}
+
+.toggle-ad-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
 }
 
 /* Content Wrapper */
@@ -125,7 +160,7 @@ html, body {
 /* Video Section Container (Umingle Style Layout) */
 .video-section {
     width: 100%;
-    height: 35vh; /* تم تصغيره لتوسيع مساحة الشات تحته */
+    height: 35vh;
     background-color: #000;
     position: relative;
     display: flex;
@@ -478,13 +513,9 @@ html, body {
         overflow: hidden;
     }
 
-    .top-ad-bar {
-        display: none !important;
-    }
-
     .video-section {
         width: 100%;
-        height: 55vh; /* تم تعديل الارتفاع هنا فقط ليصل إلى المكان المطلوب */
+        height: 55vh;
         flex-shrink: 0;
     }
 
