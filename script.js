@@ -50,11 +50,18 @@ function toggleAd() {
     }
 }
 
+// دالة الوضع الليلي والنهاري المتوافقة تماماً مع الـ CSS الخاص بك
 function toggleTheme() {
-    document.body.classList.toggle('light-theme');
+    const htmlElement = document.documentElement;
+    const currentTheme = htmlElement.getAttribute('data-theme');
     const themeBtn = document.querySelector('.theme-toggle');
-    if (themeBtn) {
-        themeBtn.textContent = document.body.classList.contains('light-theme') ? '☀️' : '🌙';
+
+    if (currentTheme === 'light') {
+        htmlElement.removeAttribute('data-theme');
+        if (themeBtn) themeBtn.textContent = '🌙';
+    } else {
+        htmlElement.setAttribute('data-theme', 'light');
+        if (themeBtn) themeBtn.textContent = '☀️';
     }
 }
 
@@ -190,13 +197,30 @@ function reportUser() {
     alert('تم إرسال بلاغ عن المستخدم.');
 }
 
+// تفعيل فتح لوحة الـ XO بالشكل الصحيح
 function requestGame() {
-    alert('خاصية الألعاب قيد التفعيل قريباً!');
+    const overlay = document.getElementById('gameBoardOverlay');
+    if (overlay) {
+        overlay.style.display = 'flex';
+    } else {
+        // لو العنصر مش موجود كـ ID ممكن ننشئه أو نظهره حسب الـ Class لو موجود
+        const overlayClass = document.querySelector('.game-overlay');
+        if (overlayClass) overlayClass.style.display = 'flex';
+    }
 }
 
 function closeGame() {
     const overlay = document.getElementById('gameBoardOverlay');
     if (overlay) overlay.style.display = 'none';
+    const overlayClass = document.querySelector('.game-overlay');
+    if (overlayClass) overlayClass.style.display = 'none';
+}
+
+function makeMove(cellIndex) {
+    const cells = document.querySelectorAll('.xo-cell');
+    if (cells[cellIndex] && !cells[cellIndex].textContent) {
+        cells[cellIndex].textContent = 'X';
+    }
 }
 
 // --- 3. WebRTC Setup ---
