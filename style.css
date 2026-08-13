@@ -504,6 +504,24 @@ html, body {
     cursor: pointer;
 }
 
+/* DESKTOP SIDE-BY-SIDE LAYOUT (Umingle Style) */
+@media (min-width: 769px) {
+    .content-wrapper {
+        flex-direction: row !important;
+    }
+    
+    .video-section {
+        width: 45% !important;
+        height: 100% !important;
+        flex-shrink: 0;
+    }
+
+    .chat-section {
+        flex: 1 !important;
+        height: 100% !important;
+    }
+}
+
 /* MOBILE RESPONSIVE FIXES */
 @media (max-width: 768px) {
     .content-wrapper {
