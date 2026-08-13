@@ -108,7 +108,7 @@ html, body {
     background-color: var(--bg-card);
 }
 
-/* Top Adsterra Area - تم إخفاؤه تماماً بناءً على طلبك */
+/* Top Adsterra Area - إخفاء كامل */
 .top-ad-bar {
     display: none !important;
 }
@@ -122,10 +122,10 @@ html, body {
     flex-direction: column;
 }
 
-/* Video Section Container (Umingle Style Layout) */
+/* Video Section Container */
 .video-section {
     width: 100%;
-    height: 35vh; /* تم تصغيره لتوسيع مساحة الشات تحته */
+    height: 35vh;
     background-color: #000;
     position: relative;
     display: flex;
@@ -175,10 +175,6 @@ html, body {
     transform: scaleX(-1);
 }
 
-.video-label {
-    display: none;
-}
-
 /* Chat Section */
 .chat-section {
     flex: 1;
@@ -215,14 +211,6 @@ html, body {
     word-break: break-word;
 }
 
-.msg-sys {
-    align-self: center;
-    background-color: var(--bg-card);
-    color: var(--text-muted);
-    font-size: 0.8rem;
-    text-align: center;
-}
-
 .msg-me {
     align-self: flex-end;
     background-color: var(--accent-purple);
@@ -237,52 +225,7 @@ html, body {
     border-bottom-right-radius: 2px;
 }
 
-/* Filter Row */
-.filter-controls-row {
-    padding: 8px 12px;
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    border-top: 1px solid var(--border-color);
-    background-color: var(--bg-secondary);
-}
-
-.select-wrapper {
-    flex: 1;
-}
-
-.filter-select {
-    width: 100%;
-    padding: 8px 10px;
-    background-color: var(--input-bg);
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 0.85rem;
-    outline: none;
-}
-
-.quick-actions {
-    display: flex;
-    gap: 4px;
-}
-
-.btn-action-icon {
-    background: var(--input-bg);
-    border: 1px solid var(--border-color);
-    color: var(--text-main);
-    padding: 6px 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-
-.btn-close-chat {
-    background: rgba(255, 118, 117, 0.15);
-    border-color: var(--accent-red);
-}
-
-/* Bottom Action Bar */
+/* Action Bars */
 .bottom-action-bar {
     padding: 10px 12px;
     display: flex;
@@ -303,12 +246,7 @@ html, body {
     font-weight: 700;
     font-size: 1rem;
     cursor: pointer;
-    transition: background 0.2s;
     flex-shrink: 0;
-}
-
-.btn-start-main:hover {
-    background-color: var(--accent-purple-hover);
 }
 
 .input-container {
@@ -332,143 +270,6 @@ html, body {
     font-size: 0.9rem;
 }
 
-.btn-send-inside {
-    background: transparent;
-    border: none;
-    color: var(--accent-purple);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px;
-}
-
-/* Landing Page Overlay */
-.landing-container {
-    position: fixed;
-    inset: 0;
-    background-color: var(--bg-primary);
-    z-index: 999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-
-.landing-card {
-    background-color: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    padding: 30px;
-    border-radius: 16px;
-    width: 100%;
-    max-width: 420px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.landing-card h1 {
-    font-size: 2rem;
-    color: var(--accent-purple);
-}
-
-.landing-card p {
-    color: var(--text-muted);
-    font-size: 0.95rem;
-}
-
-.interests-box input {
-    width: 100%;
-    padding: 10px 14px;
-    background: var(--input-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    color: var(--text-main);
-    outline: none;
-}
-
-.start-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.btn-primary-lg, .btn-secondary-lg {
-    padding: 12px;
-    border-radius: 10px;
-    border: none;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 1rem;
-}
-
-.btn-primary-lg {
-    background-color: var(--accent-purple);
-    color: #fff;
-}
-
-.btn-secondary-lg {
-    background-color: var(--bg-card);
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-}
-
-/* XO Overlay */
-.game-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.game-card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    padding: 20px;
-    border-radius: 12px;
-    width: 280px;
-    text-align: center;
-}
-
-.game-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.close-game {
-    background: transparent;
-    border: none;
-    color: var(--text-main);
-    cursor: pointer;
-    font-size: 1.1rem;
-}
-
-.xo-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-    margin-top: 12px;
-}
-
-.xo-cell {
-    aspect-ratio: 1;
-    background: var(--input-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: bold;
-    cursor: pointer;
-}
-
 /* MOBILE RESPONSIVE FIXES */
 @media (max-width: 768px) {
     .content-wrapper {
@@ -478,18 +279,14 @@ html, body {
         overflow: hidden;
     }
 
-    .top-ad-bar {
-        display: none !important;
-    }
-
+    /* الارتفاع الجديد للفيديو في الموبايل */
     .video-section {
         width: 100%;
-        height: 30vh; /* فيديو أصغر للموبايل، وتوسيع مساحة الشات تحته */
+        height: 55vh; 
         flex-shrink: 0;
     }
 
-    .video-section:empty,
-    .video-section[style*="display: none"] {
+    .top-ad-bar {
         display: none !important;
     }
 
@@ -497,12 +294,5 @@ html, body {
         width: 100%;
         flex: 1;
         height: auto;
-    }
-
-    .video-box.local-box {
-        width: 80px;
-        height: 110px;
-        top: 8px;
-        right: 8px;
     }
 }
