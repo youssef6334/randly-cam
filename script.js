@@ -31,6 +31,20 @@ const statusDiv = document.getElementById('status');
 const countrySelect = document.getElementById('countrySelect');
 const videoSection = document.getElementById('videoSection');
 
+// --- 0. Adsterra Toggle Function ---
+function toggleAd() {
+    var adContent = document.getElementById("adContent");
+    var arrow = document.getElementById("arrowIcon");
+    
+    if (adContent.style.display === "none") {
+        adContent.style.display = "flex";
+        arrow.innerHTML = "▲";
+    } else {
+        adContent.style.display = "none";
+        arrow.innerHTML = "▼";
+    }
+}
+
 // --- 1. Cleanup & Reset Functions ---
 
 function clearRemoteVideo() {

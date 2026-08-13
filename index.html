@@ -50,10 +50,15 @@
             </div>
         </header>
 
-        <!-- Top Adsterra Area (Native Banner) -->
-        <div class="top-ad-bar">
-            <script async="async" data-cfasync="false" src="https://pl30790391.effectivecpmnetwork.com/f66aa4bb4789b5ab486c7c42e435623d/invoke.js"></script>
-            <div id="container-f66aa4bb4789b5ab486c7c42e435623d"></div>
+        <!-- Top Adsterra Area (Native Banner with Collapse Toggle Button) -->
+        <div class="top-ad-bar" id="adContainer">
+            <div id="adContent">
+                <script async="async" data-cfasync="false" src="https://pl30790391.effectivecpmnetwork.com/f66aa4bb4789b5ab486c7c42e435623d/invoke.js"></script>
+                <div id="container-f66aa4bb4789b5ab486c7c42e435623d"></div>
+            </div>
+            <button class="toggle-ad-btn" onclick="toggleAd()">
+                <span id="arrowIcon">▲</span>
+            </button>
         </div>
 
         <!-- Main Viewport Content -->
@@ -85,14 +90,10 @@
                     <div class="select-wrapper">
                         <select id="countrySelect" class="filter-select">
                             <option value="global">🌐 Smart Match (عالمي)</option>
-
-                            <!-- Top / Popular Countries -->
                             <option value="US">🇺🇸 United States</option>
                             <option value="GB">🇬🇧 United Kingdom</option>
                             <option value="CA">🇨🇦 Canada</option>
                             <option value="AU">🇦🇺 Australia</option>
-
-                            <!-- ALL COUNTRIES (A-Z) -->
                             <option value="DZ">🇩🇿 Algeria</option>
                             <option value="AR">🇦🇷 Argentina</option>
                             <option value="BR">🇧🇷 Brazil</option>
@@ -100,7 +101,7 @@
                             <option value="FR">🇫🇷 France</option>
                             <option value="DE">🇩🇪 Germany</option>
                             <option value="IN">🇮🇳 India</option>
-                            <option value="ID">🇮🇩 Indonesia</option>
+                            <option value="ID">🇮🇳 Indonesia</option>
                             <option value="IE">🇮🇪 Ireland</option>
                             <option value="IL">🇮🇱 Israel</option>
                             <option value="IT">🇮🇹 Italy</option>
@@ -134,7 +135,7 @@
                     </div>
                 </div>
 
-                <!-- Bottom Action Bar: Start/Skip على اليمين، وخانة الكتابة والإرسال على اليسار -->
+                <!-- Bottom Action Bar -->
                 <div class="bottom-action-bar">
                     <button class="btn-start-main" id="nextBtn" onclick="handleMainButton()">Start</button>
                     
