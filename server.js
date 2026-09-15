@@ -37,8 +37,9 @@ io.on('connection', (socket) => {
                 activeUsers.set(socket.id, { room: roomId, peer: peerId });
                 activeUsers.set(peerId, { room: roomId, peer: socket.id });
 
-                socket.emit('matched', { isInitiator: true });
-                peerSocket.emit('matched', { isInitiator: false });
+                // توزيع أدوار الـ XO أثناء المطابقة (X و O)
+                socket.emit('matched', { isInitiator: true, xoRole: 'X' });
+                peerSocket.emit('matched', { isInitiator: false, xoRole: 'O' });
             } else {
                 waitingQueue.push(socket.id);
             }
@@ -60,6 +61,29 @@ io.on('connection', (socket) => {
         if (user && user.peer) {
             io.to(user.peer).emit('receive-message', data);
         }
+    });
+
+    // مؤشر الكتابة (Typing Indicator)
+    socket.on('typing', () => {
+        const user = activeUsers.get(socket.id);
+        if (user && user.peer) io.to(user.peer).emit('display-typing');
+    });
+
+    socket.on('stop-typing', () => {
+        const user = activeUsers.get(socket.id);
+        if (user && user.peer) io.to(user.peer).emit('hide-typing');
+    });
+
+    // لعبة XO
+    socket.on('xo-move', (data) => {
+        const user = activeUsers.get(socket.id);
+        if (user && user.peer) io.to(user.peer).emit('xo-receive-move', data);
+    });
+
+    // نظام الإبلاغ
+    socket.on('submit-report', (data) => {
+        // سيتم تسجيل البلاغ هنا في السيرفر بدل إزعاج المستخدم بـ alert
+        console.log(`[REPORT] User ${socket.id} reported their peer. Reason: ${data.reason}`);
     });
 
     // Disconnect
@@ -85,7 +109,6 @@ function handleUserDisconnect(socket) {
     }
 }
 
-// استخدام المنفذ المخصص من Railway أو 3000 كبديل
 const PORT = process.env.PORT || 3000;
 http.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
