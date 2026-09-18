@@ -108,7 +108,7 @@ html, body {
     background-color: var(--bg-card);
 }
 
-/* Top Adsterra Area with Collapse Feature */
+/* Top Adsterra Area */
 .top-ad-bar {
     position: relative;
     background-color: var(--bg-secondary);
@@ -157,7 +157,7 @@ html, body {
     flex-direction: column;
 }
 
-/* Video Section Container (Umingle Style Layout) */
+/* Video Section Container */
 .video-section {
     width: 100%;
     height: 35vh;
@@ -272,18 +272,21 @@ html, body {
     border-bottom-right-radius: 2px;
 }
 
-/* Filter Row */
+/* Filter Row (Responsive) */
 .filter-controls-row {
-    padding: 8px 12px;
+    padding: 10px 12px;
     display: flex;
-    gap: 8px;
+    flex-wrap: wrap;
+    gap: 10px;
     align-items: center;
+    justify-content: space-between;
     border-top: 1px solid var(--border-color);
     background-color: var(--bg-secondary);
 }
 
 .select-wrapper {
     flex: 1;
+    min-width: 120px;
 }
 
 .filter-select {
@@ -297,24 +300,52 @@ html, body {
     outline: none;
 }
 
+/* --- تصميم زراير التحكم الحديثة (ماسنجر/إنستجرام ستايل) --- */
 .quick-actions {
     display: flex;
-    gap: 4px;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
-.btn-action-icon {
-    background: var(--input-bg);
+.modern-btn {
+    background-color: var(--bg-card);
     border: 1px solid var(--border-color);
-    color: var(--text-main);
-    padding: 6px 10px;
-    border-radius: 8px;
+    border-radius: 50%; /* شكل دائري بالظبط */
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    color: var(--text-main);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.btn-close-chat {
-    background: rgba(255, 118, 117, 0.15);
-    border-color: var(--accent-red);
+.modern-btn i {
+    font-size: 1.1rem;
+}
+
+.modern-btn:hover {
+    background-color: var(--accent-purple);
+    color: white;
+    border-color: var(--accent-purple);
+    transform: scale(1.1); /* بيكبر سنة بسيطة لما تقف عليه */
+}
+
+/* زرار الإغلاق بخلفية حمراء */
+.btn-close-chat.modern-btn {
+    background-color: rgba(255, 118, 117, 0.15);
+    color: var(--accent-red);
+    border-color: transparent;
+}
+
+.btn-close-chat.modern-btn:hover {
+    background-color: var(--accent-red);
+    color: #fff;
 }
 
 /* Bottom Action Bar */
@@ -322,28 +353,34 @@ html, body {
     padding: 10px 12px;
     display: flex;
     flex-direction: row;
-    gap: 8px;
+    gap: 10px;
     align-items: center;
     border-top: 1px solid var(--border-color);
     background-color: var(--bg-secondary);
 }
 
+/* زرار التخطي والبدء (Pill Shape) */
 .btn-start-main {
     background-color: var(--accent-purple);
     color: #fff;
     border: none;
-    padding: 0 18px;
-    height: 42px;
-    border-radius: 10px;
+    padding: 0 24px;
+    height: 45px;
+    border-radius: 25px; /* شكل بيضاوي احترافي */
     font-weight: 700;
     font-size: 1rem;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.3s ease;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 10px rgba(0, 184, 148, 0.3);
 }
 
 .btn-start-main:hover {
     background-color: var(--accent-purple-hover);
+    transform: translateY(-2px);
 }
 
 .input-container {
@@ -352,9 +389,9 @@ html, body {
     align-items: center;
     background-color: var(--input-bg);
     border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 0 8px;
-    height: 42px;
+    border-radius: 20px;
+    padding: 0 12px;
+    height: 45px;
 }
 
 .input-container input {
@@ -364,7 +401,7 @@ html, body {
     color: var(--text-main);
     outline: none;
     padding: 0 6px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
 }
 
 .btn-send-inside {
@@ -376,6 +413,12 @@ html, body {
     align-items: center;
     justify-content: center;
     padding: 4px;
+    font-size: 1.2rem;
+    transition: transform 0.2s;
+}
+
+.btn-send-inside:hover {
+    transform: scale(1.1);
 }
 
 /* Landing Page Overlay */
@@ -401,6 +444,7 @@ html, body {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
 }
 
 .landing-card h1 {
@@ -415,12 +459,13 @@ html, body {
 
 .interests-box input {
     width: 100%;
-    padding: 10px 14px;
+    padding: 12px 14px;
     background: var(--input-bg);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     color: var(--text-main);
     outline: none;
+    font-size: 1rem;
 }
 
 .start-buttons {
@@ -430,12 +475,17 @@ html, body {
 }
 
 .btn-primary-lg, .btn-secondary-lg {
-    padding: 12px;
+    padding: 14px;
     border-radius: 10px;
     border: none;
     font-weight: 600;
     cursor: pointer;
     font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
 }
 
 .btn-primary-lg {
@@ -443,10 +493,18 @@ html, body {
     color: #fff;
 }
 
+.btn-primary-lg:hover {
+    background-color: var(--accent-purple-hover);
+}
+
 .btn-secondary-lg {
     background-color: var(--bg-card);
     color: var(--text-main);
     border: 1px solid var(--border-color);
+}
+
+.btn-secondary-lg:hover {
+    background-color: var(--border-color);
 }
 
 /* XO Overlay */
@@ -502,9 +560,14 @@ html, body {
     font-size: 1.5rem;
     font-weight: bold;
     cursor: pointer;
+    transition: background 0.2s;
 }
 
-/* DESKTOP SIDE-BY-SIDE LAYOUT (Umingle Style) */
+.xo-cell:hover {
+    background: var(--bg-card);
+}
+
+/* DESKTOP SIDE-BY-SIDE LAYOUT */
 @media (min-width: 769px) {
     .content-wrapper {
         flex-direction: row !important;

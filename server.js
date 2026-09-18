@@ -14,20 +14,67 @@ const io = new Server(http, {
 app.use(express.static(__dirname));
 
 let activeUsers = new Map();
+
+// طابور الانتظار يخزن كائنات تحتوي على (id, interests, mode, country)
 let waitingQueue = [];
+
+// نظام حفظ الغرف لمدة 72 ساعة
+let savedRooms = new Map();
+const ROOM_EXPIRY = 72 * 60 * 60 * 1000; // 72 ساعة بالمللي ثانية
+
+// دالة تنظيف تلقائية تشتغل كل ساعة تمسح الغرف المنتهية للحفاظ على أداء السيرفر
+setInterval(() => {
+    const now = Date.now();
+    for (let [roomId, roomData] of savedRooms.entries()) {
+        if (now - roomData.createdAt > ROOM_EXPIRY) {
+            savedRooms.delete(roomId);
+        }
+    }
+}, 60 * 60 * 1000); 
 
 io.on('connection', (socket) => {
     // تسجيل المستخدم الجديد
     activeUsers.set(socket.id, { room: null, peer: null });
     io.emit('online-count', activeUsers.size);
 
-    // المطابقة
+    // المطابقة المبنية على الاهتمامات والدولة
     socket.on('find-match', (data) => {
-        waitingQueue = waitingQueue.filter(id => id !== socket.id);
+        // إزالة المستخدم من الطابور لو كان موجود بالفعل
+        waitingQueue = waitingQueue.filter(u => u.id !== socket.id);
 
-        if (waitingQueue.length > 0) {
-            const peerId = waitingQueue.shift();
-            const roomId = `room_${socket.id}_${peerId}`;
+        let matchIndex = -1;
+        const myInterests = data.interests || [];
+        const myCountry = data.country || 'global'; // الدولة المختارة أو عالمي كافتراضي
+
+        // دالة مساعدة لفحص تطابق الدول (لو حد فيهم اختار عالمي، يطابق أي حد عشان مفيش حد ينتظر كتير)
+        const isCountryMatch = (c1, c2) => {
+            return c1 === 'global' || c2 === 'global' || c1 === c2;
+        };
+
+        // 1. البحث عن تطابق في الاهتمامات، الدولة، ونوع الشات (فيديو/نص)
+        if (myInterests.length > 0) {
+            matchIndex = waitingQueue.findIndex(u => 
+                u.mode === data.mode && 
+                isCountryMatch(myCountry, u.country) &&
+                u.interests && u.interests.some(interest => myInterests.includes(interest))
+            );
+        }
+
+        // 2. إذا لم نجد تطابق في الاهتمامات، نبحث عن تطابق في الدولة ونوع الشات فقط
+        if (matchIndex === -1) {
+            matchIndex = waitingQueue.findIndex(u => 
+                u.mode === data.mode &&
+                isCountryMatch(myCountry, u.country)
+            );
+        }
+
+        if (matchIndex !== -1) {
+            // سحب المستخدم المتطابق من الطابور
+            const peerData = waitingQueue.splice(matchIndex, 1)[0];
+            const peerId = peerData.id;
+
+            // إنشاء ID مميز للغرفة لدعم ميزة الحفظ
+            const roomId = `room_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
             socket.join(roomId);
             const peerSocket = io.sockets.sockets.get(peerId);
@@ -37,14 +84,53 @@ io.on('connection', (socket) => {
                 activeUsers.set(socket.id, { room: roomId, peer: peerId });
                 activeUsers.set(peerId, { room: roomId, peer: socket.id });
 
-                // توزيع أدوار الـ XO أثناء المطابقة (X و O)
-                socket.emit('matched', { isInitiator: true, xoRole: 'X' });
-                peerSocket.emit('matched', { isInitiator: false, xoRole: 'O' });
+                // حفظ بيانات الغرفة 
+                savedRooms.set(roomId, {
+                    createdAt: Date.now(),
+                    mode: data.mode
+                });
+
+                // إرسال الـ roomId للعميل عشان يقدر ينسخه
+                socket.emit('matched', { isInitiator: true, xoRole: 'X', roomId: roomId });
+                peerSocket.emit('matched', { isInitiator: false, xoRole: 'O', roomId: roomId });
             } else {
-                waitingQueue.push(socket.id);
+                // لو الطرف التاني فصل فجأة، نرجع المستخدم الحالي للطابور
+                waitingQueue.push({ id: socket.id, interests: myInterests, mode: data.mode, country: myCountry });
             }
         } else {
-            waitingQueue.push(socket.id);
+            // لا يوجد أحد، نضع المستخدم في الطابور
+            waitingQueue.push({ id: socket.id, interests: myInterests, mode: data.mode, country: myCountry });
+        }
+    });
+
+    // الانضمام لغرفة محفوظة (72 ساعة)
+    socket.on('join-saved-room', (data) => {
+        const { roomId, mode } = data;
+        
+        if (savedRooms.has(roomId)) {
+            socket.join(roomId);
+            
+            const userInfo = activeUsers.get(socket.id);
+            if (userInfo) userInfo.room = roomId;
+
+            const clientsInRoom = io.sockets.adapter.rooms.get(roomId);
+            
+            // لو الغرفة بقى فيها 2، نربطهم ببعض
+            if (clientsInRoom && clientsInRoom.size === 2) {
+                const clientsArr = Array.from(clientsInRoom);
+                const peerId = clientsArr.find(id => id !== socket.id);
+                
+                if (peerId) {
+                    activeUsers.set(socket.id, { room: roomId, peer: peerId });
+                    activeUsers.get(peerId).peer = socket.id;
+
+                    socket.emit('matched', { isInitiator: true, xoRole: 'X', roomId: roomId });
+                    io.to(peerId).emit('matched', { isInitiator: false, xoRole: 'O', roomId: roomId });
+                }
+            }
+            // لو المستخدم الأول بس هو اللي دخل، هيفضل منتظر لحد ما التاني يفتح الرابط
+        } else {
+            socket.emit('room-not-found');
         }
     });
 
@@ -82,11 +168,10 @@ io.on('connection', (socket) => {
 
     // نظام الإبلاغ
     socket.on('submit-report', (data) => {
-        // سيتم تسجيل البلاغ هنا في السيرفر بدل إزعاج المستخدم بـ alert
         console.log(`[REPORT] User ${socket.id} reported their peer. Reason: ${data.reason}`);
     });
 
-    // Disconnect
+    // Disconnect & Leave
     socket.on('leave-room', () => {
         handleUserDisconnect(socket);
     });
@@ -99,13 +184,21 @@ io.on('connection', (socket) => {
 });
 
 function handleUserDisconnect(socket) {
-    waitingQueue = waitingQueue.filter(id => id !== socket.id);
+    // مسح المستخدم من طابور الانتظار 
+    waitingQueue = waitingQueue.filter(u => u.id !== socket.id);
+    
     const user = activeUsers.get(socket.id);
-    if (user && user.peer) {
-        io.to(user.peer).emit('peer-disconnected');
-        const peerUser = activeUsers.get(user.peer);
-        if (peerUser) peerUser.peer = null;
-        user.peer = null;
+    if (user) {
+        if (user.peer) {
+            io.to(user.peer).emit('peer-disconnected');
+            const peerUser = activeUsers.get(user.peer);
+            if (peerUser) peerUser.peer = null;
+            user.peer = null;
+        }
+        if (user.room) {
+            socket.leave(user.room);
+            user.room = null;
+        }
     }
 }
 

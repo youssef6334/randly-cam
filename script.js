@@ -16,6 +16,7 @@ let currentMode = 'text';
 let isMicMuted = false;
 let isCamOff = false;
 let buttonState = 'start'; // 'start', 'skip', 'really'
+let currentRoomId = null; // لتخزين ID الغرفة الحالية
 
 // Elements
 const landingPage = document.getElementById('landingPage');
@@ -34,7 +35,7 @@ const matchSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2
 const msgSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
 let isSoundMuted = localStorage.getItem('randly_sound_muted') === 'true';
 
-// تهيئة الثيم عند تحميل الصفحة (LocalStorage)
+// تهيئة الثيم والأصوات عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('randly_theme');
     if (savedTheme === 'light') {
@@ -43,17 +44,32 @@ document.addEventListener('DOMContentLoaded', () => {
         if (themeBtn) themeBtn.textContent = '☀️';
     }
     
-    // ضبط أيقونة الصوت
+    // تحديث أيقونة الصوت
     const muteBtn = document.getElementById('muteBtn');
-    if (muteBtn) muteBtn.textContent = isSoundMuted ? '🔇' : '🔊';
+    if (muteBtn) {
+        muteBtn.innerHTML = isSoundMuted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
+    }
 });
 
-// دالة كتم الصوت
+// --- التأكد من اكتمال اتصال السوكيت قبل محاولة دخول الغرفة المحفوظة ---
+socket.on('connect', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const savedRoom = urlParams.get('room');
+    if (savedRoom) {
+        currentMode = urlParams.get('mode') || 'text';
+        window.history.pushState({}, document.title, window.location.pathname);
+        startSession(currentMode, savedRoom); 
+    }
+});
+
+// --- دوال التحكم في الواجهة (Mute, Theme, Ad) ---
 function toggleSoundMute() {
     isSoundMuted = !isSoundMuted;
     localStorage.setItem('randly_sound_muted', isSoundMuted);
     const muteBtn = document.getElementById('muteBtn');
-    if (muteBtn) muteBtn.textContent = isSoundMuted ? '🔇' : '🔊';
+    if (muteBtn) {
+        muteBtn.innerHTML = isSoundMuted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
+    }
 }
 
 function toggleTheme() {
@@ -71,26 +87,6 @@ function toggleTheme() {
         localStorage.setItem('randly_theme', 'light');
     }
 }
-
-// مؤشر الكتابة (Typing Indicator)
-let typingTimer;
-if (msgInput) {
-    msgInput.addEventListener('input', () => {
-        socket.emit('typing');
-        clearTimeout(typingTimer);
-        typingTimer = setTimeout(() => socket.emit('stop-typing'), 1000);
-    });
-}
-socket.on('display-typing', () => typingIndicator.style.display = 'block');
-socket.on('hide-typing', () => typingIndicator.style.display = 'none');
-
-// نسخ الرابط
-function copyRoomLink() {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-        // يتم النسخ في صمت دون التأثير على الواجهة
-    });
-}
-
 
 let isAdCollapsed = false;
 function toggleAd() {
@@ -110,6 +106,34 @@ function toggleAd() {
     }
 }
 
+// --- ميزة حفظ ونسخ رابط الغرفة ---
+function saveRoomLink() {
+    if (!currentRoomId) {
+        alert('يجب أن تكون متصلاً بشخص أولاً لتتمكن من نسخ رابط الغرفة!');
+        return;
+    }
+    const url = `${window.location.origin}${window.location.pathname}?room=${currentRoomId}&mode=${currentMode}`;
+    navigator.clipboard.writeText(url).then(() => {
+        alert('✅ تم نسخ رابط الغرفة بنجاح!\nصلاحية الغرفة 72 ساعة، شارك الرابط مع صديقك للدخول.');
+    }).catch(err => {
+        console.error('فشل في نسخ الرابط', err);
+        alert('عذراً، حدث خطأ أثناء نسخ الرابط.');
+    });
+}
+
+// --- مؤشر الكتابة ---
+let typingTimer;
+if (msgInput) {
+    msgInput.addEventListener('input', () => {
+        socket.emit('typing');
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(() => socket.emit('stop-typing'), 1000);
+    });
+}
+socket.on('display-typing', () => typingIndicator.style.display = 'block');
+socket.on('hide-typing', () => typingIndicator.style.display = 'none');
+
+// --- إدارة الفيديو والمايك ---
 function clearRemoteVideo() {
     if (remoteVideo) {
         if (remoteVideo.srcObject) {
@@ -127,73 +151,6 @@ function clearRemoteVideo() {
     }
 }
 
-async function startSession(mode) {
-    currentMode = mode;
-    landingPage.style.display = 'none';
-
-    if (mode === 'video') {
-        videoSection.style.display = 'flex';
-        try {
-            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            if (localVideo) localVideo.srcObject = localStream;
-        } catch (err) {
-            appendSystemMessage('تعذر الوصول للكاميرا.');
-        }
-    } else {
-        videoSection.style.display = 'none';
-    }
-    nextUser();
-}
-
-function handleMainButton() {
-    const btn = document.getElementById('nextBtn');
-    if (buttonState === 'start') {
-        startSession(currentMode);
-        buttonState = 'skip';
-        btn.textContent = 'Skip';
-    } else if (buttonState === 'skip') {
-        buttonState = 'really';
-        btn.textContent = 'Really?';
-    } else if (buttonState === 'really') {
-        nextUser();
-        buttonState = 'skip';
-        btn.textContent = 'Skip';
-    }
-}
-
-function nextUser() {
-    clearRemoteVideo();
-    chatBox.innerHTML = '';
-    
-    // إظهار شاشة التحميل (Skeleton)
-    chatBox.style.display = 'none';
-    skeletonLoader.style.display = 'block';
-    
-    statusDiv.textContent = 'جاري البحث...';
-
-    const interests = document.getElementById('interestsInput').value;
-    const selectedCountry = countrySelect.value;
-
-    socket.emit('find-match', {
-        mode: currentMode,
-        interests: interests,
-        country: selectedCountry
-    });
-}
-
-function leaveSession() {
-    clearRemoteVideo();
-    if (localStream) {
-        localStream.getTracks().forEach(track => track.stop());
-        localStream = null;
-    }
-    landingPage.style.display = 'flex';
-    buttonState = 'start';
-    const btn = document.getElementById('nextBtn');
-    if (btn) btn.textContent = 'Start';
-    socket.emit('leave-room');
-}
-
 function toggleMic() {
     if (!localStream) return;
     const audioTrack = localStream.getAudioTracks()[0];
@@ -203,7 +160,8 @@ function toggleMic() {
         const micBtn = document.getElementById('micBtn');
         if (micBtn) {
             micBtn.style.opacity = isMicMuted ? '0.5' : '1';
-            micBtn.style.borderColor = isMicMuted ? '#ff4d4d' : 'transparent';
+            micBtn.style.color = isMicMuted ? 'var(--accent-red)' : 'var(--text-main)';
+            micBtn.innerHTML = isMicMuted ? '<i class="fas fa-microphone-slash"></i>' : '<i class="fas fa-microphone"></i>';
         }
     }
 }
@@ -217,18 +175,160 @@ function toggleCam() {
         const camBtn = document.getElementById('camBtn');
         if (camBtn) {
             camBtn.style.opacity = isCamOff ? '0.5' : '1';
-            camBtn.style.borderColor = isCamOff ? '#ff4d4d' : 'transparent';
+            camBtn.style.color = isCamOff ? 'var(--accent-red)' : 'var(--text-main)';
+            camBtn.innerHTML = isCamOff ? '<i class="fas fa-video-slash"></i>' : '<i class="fas fa-video"></i>';
         }
     }
 }
 
-// نظام الإبلاغ المطور
-function reportUser() {
-    socket.emit('submit-report', { reason: 'Inappropriate behavior' });
-    console.log("تم تسجيل الإبلاغ على السيرفر.");
+// --- بدء وإدارة الجلسات ---
+async function startSession(mode, specificRoomId = null) {
+    currentMode = mode;
+    landingPage.style.display = 'none';
+
+    if (mode === 'video') {
+        videoSection.style.display = 'flex';
+        try {
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            if (localVideo) localVideo.srcObject = localStream;
+        } catch (err) {
+            appendSystemMessage('تعذر الوصول للكاميرا والمايكروفون.');
+        }
+    } else {
+        videoSection.style.display = 'none';
+    }
+
+    if (specificRoomId) {
+        joinSpecificRoom(specificRoomId);
+    } else {
+        nextUser();
+    }
 }
 
-// --- لعبة XO أونلاين عبر Socket.io ---
+function handleMainButton() {
+    const btn = document.getElementById('nextBtn');
+    if (buttonState === 'start') {
+        startSession(currentMode);
+        buttonState = 'skip';
+        btn.innerHTML = '<i class="fas fa-forward"></i> Skip';
+    } else if (buttonState === 'skip') {
+        buttonState = 'really';
+        btn.innerHTML = '<i class="fas fa-question-circle"></i> Really?';
+    } else if (buttonState === 'really') {
+        nextUser();
+        buttonState = 'skip';
+        btn.innerHTML = '<i class="fas fa-forward"></i> Skip';
+    }
+}
+
+function nextUser() {
+    clearRemoteVideo();
+    chatBox.innerHTML = '';
+    currentRoomId = null;
+    
+    chatBox.style.display = 'none';
+    skeletonLoader.style.display = 'block';
+    statusDiv.textContent = 'جاري البحث...';
+
+    const interestsVal = document.getElementById('interestsInput').value;
+    const interestsArray = interestsVal.split(',').map(i => i.trim()).filter(i => i !== '');
+    const selectedCountry = countrySelect.value;
+
+    socket.emit('find-match', {
+        mode: currentMode,
+        interests: interestsArray, 
+        country: selectedCountry
+    });
+}
+
+function joinSpecificRoom(roomId) {
+    clearRemoteVideo();
+    chatBox.innerHTML = '';
+    chatBox.style.display = 'none';
+    skeletonLoader.style.display = 'block';
+    statusDiv.textContent = 'جاري الانضمام للغرفة المحفوظة...';
+    
+    socket.emit('join-saved-room', { roomId: roomId, mode: currentMode });
+}
+
+function leaveSession() {
+    clearRemoteVideo();
+    if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+        localStream = null;
+    }
+    landingPage.style.display = 'flex';
+    buttonState = 'start';
+    currentRoomId = null;
+    const btn = document.getElementById('nextBtn');
+    if (btn) btn.innerHTML = '<i class="fas fa-play"></i> Start';
+    
+    window.history.pushState({}, document.title, window.location.pathname);
+    socket.emit('leave-room');
+}
+
+// --- تأثيرات وماسكات الوجه ---
+let isMaskOn = false;
+let maskAnimationId;
+
+function toggleMask() {
+    if (!localStream) return;
+    isMaskOn = !isMaskOn;
+    
+    const maskBtn = document.getElementById('maskBtn');
+    const maskCanvas = document.getElementById('maskCanvas');
+    const ctx = maskCanvas.getContext('2d');
+    
+    if (maskBtn) {
+        maskBtn.style.opacity = isMaskOn ? '1' : '0.5';
+        maskBtn.style.color = isMaskOn ? 'var(--accent-purple)' : 'var(--text-main)';
+    }
+
+    if (isMaskOn) {
+        maskCanvas.style.display = 'block';
+        maskCanvas.width = localVideo.videoWidth || 640;
+        maskCanvas.height = localVideo.videoHeight || 480;
+        
+        function drawEffect() {
+            if (!isMaskOn) return;
+            ctx.drawImage(localVideo, 0, 0, maskCanvas.width, maskCanvas.height);
+            ctx.fillStyle = "rgba(138, 43, 226, 0.2)";
+            ctx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+            
+            ctx.font = "bold 24px Arial";
+            ctx.fillStyle = "#fff";
+            ctx.shadowColor = "rgba(0,0,0,0.5)";
+            ctx.shadowBlur = 4;
+            ctx.fillText("✨ Randly Filter", 20, 40);
+
+            maskAnimationId = requestAnimationFrame(drawEffect);
+        }
+        drawEffect();
+        
+        if (peerConnection) {
+            const canvasStream = maskCanvas.captureStream(30);
+            const canvasTrack = canvasStream.getVideoTracks()[0];
+            const sender = peerConnection.getSenders().find(s => s.track.kind === 'video');
+            if (sender) sender.replaceTrack(canvasTrack);
+        }
+    } else {
+        maskCanvas.style.display = 'none';
+        cancelAnimationFrame(maskAnimationId);
+        
+        if (peerConnection && localStream) {
+            const videoTrack = localStream.getVideoTracks()[0];
+            const sender = peerConnection.getSenders().find(s => s.track.kind === 'video');
+            if (sender) sender.replaceTrack(videoTrack);
+        }
+    }
+}
+
+function reportUser() {
+    socket.emit('submit-report', { reason: 'Inappropriate behavior' });
+    alert("تم تسجيل الإبلاغ عن هذا المستخدم.");
+}
+
+// --- لعبة XO أونلاين ---
 let myGameSymbol = null;
 let isMyTurn = false;
 let xoBoard = ['', '', '', '', '', '', '', '', ''];
@@ -270,11 +370,22 @@ socket.on('xo-receive-move', (data) => {
 // --- WebRTC Setup ---
 function createPeerConnection() {
     peerConnection = new RTCPeerConnection(rtcConfig);
-    if (localStream && currentMode === 'video') {
-        localStream.getTracks().forEach(track => {
-            peerConnection.addTrack(track, localStream);
+    
+    let streamToSend = localStream;
+    if (isMaskOn) {
+        const maskCanvas = document.getElementById('maskCanvas');
+        streamToSend = maskCanvas.captureStream(30);
+        if (localStream.getAudioTracks().length > 0) {
+            streamToSend.addTrack(localStream.getAudioTracks()[0]);
+        }
+    }
+
+    if (streamToSend && currentMode === 'video') {
+        streamToSend.getTracks().forEach(track => {
+            peerConnection.addTrack(track, streamToSend);
         });
     }
+
     peerConnection.ontrack = (event) => {
         if (remoteVideo && event.streams[0]) {
             remoteVideo.srcObject = event.streams[0];
@@ -297,17 +408,15 @@ socket.on('online-count', (count) => {
 
 socket.on('matched', async (data) => {
     statusDiv.textContent = 'متصل الآن!';
+    currentRoomId = data.roomId; // حفظ الـ ID من السيرفر
     
-    // إخفاء شاشة التحميل وإظهار الشات
     skeletonLoader.style.display = 'none';
-    chatBox.style.display = 'flex'; // تأكد إن هذا هو الـ display الافتراضي للـ CSS بتاعك
+    chatBox.style.display = 'flex'; 
     
-    // تشغيل صوت المطابقة
     if (!isSoundMuted) matchSound.play().catch(()=>{});
 
-    // إعداد أدوار الـ XO
     myGameSymbol = data.xoRole;
-    isMyTurn = (myGameSymbol === 'X'); // X يبدأ دائمًا
+    isMyTurn = (myGameSymbol === 'X'); 
     resetXOBoard();
 
     if (currentMode === 'video') {
@@ -318,6 +427,11 @@ socket.on('matched', async (data) => {
             socket.emit('signal', { offer: offer });
         }
     }
+});
+
+socket.on('room-not-found', () => {
+    alert("هذه الغرفة انتهت صلاحيتها أو غير موجودة.");
+    leaveSession();
 });
 
 socket.on('signal', async (data) => {
@@ -341,14 +455,33 @@ socket.on('signal', async (data) => {
 socket.on('peer-disconnected', () => {
     clearRemoteVideo();
     statusDiv.textContent = 'انقطع الاتصال';
-    appendSystemMessage('الطرف الآخر غادر.');
+    appendSystemMessage('الطرف الآخر غادر المحادثة.');
 });
 
-socket.on('receive-message', (data) => {
-    // تشغيل صوت الرسالة
+// --- ترجمة الرسائل الواردة ---
+socket.on('receive-message', async (data) => {
     if (!isSoundMuted) msgSound.play().catch(()=>{});
-    appendMessage(data.text, 'other');
-    // إخفاء مؤشر الكتابة بمجرد استلام الرسالة
+    
+    const targetLang = document.getElementById('translationLang').value;
+    let translatedText = null;
+
+    // استخدام Google Translate API (المجاني) لتجنب الليمت
+    if (targetLang !== 'none' && data.text) {
+        try {
+            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(data.text)}`;
+            const response = await fetch(url);
+            const result = await response.json();
+            
+            if (result && result[0] && result[0][0]) {
+                translatedText = result[0].map(item => item[0]).join(''); // تجميع النص لو كان طويل
+            }
+        } catch (error) {
+            console.error("خطأ في الترجمة الفورية:", error);
+            translatedText = "(فشل في الترجمة)";
+        }
+    }
+
+    appendMessage(data.text, 'other', translatedText);
     typingIndicator.style.display = 'none';
 });
 
@@ -356,16 +489,26 @@ socket.on('receive-message', (data) => {
 function sendMsg() {
     const text = msgInput.value.trim();
     if (!text) return;
+    
     appendMessage(text, 'me');
     socket.emit('send-message', { text: text });
     socket.emit('stop-typing');
     msgInput.value = '';
 }
 
-function appendMessage(text, type) {
+function appendMessage(text, type, translatedText = null) {
     const msgDiv = document.createElement('div');
     msgDiv.classList.add('msg', type === 'me' ? 'msg-me' : 'msg-other');
-    msgDiv.textContent = text;
+    
+    const safeText = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    
+    if (translatedText) {
+        const safeTrans = translatedText.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        msgDiv.innerHTML = `${safeText} <br><small style="color:var(--accent-purple); display:block; margin-top:5px; font-size:11px; font-weight:bold;">ترجمة: ${safeTrans}</small>`;
+    } else {
+        msgDiv.textContent = text;
+    }
+    
     chatBox.appendChild(msgDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
 }

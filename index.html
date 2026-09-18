@@ -6,9 +6,16 @@
     <title>Randly - شات فيديو ورسائل عشوائي</title>
     <link rel="stylesheet" href="style.css">
     
+    <!-- مكتبة الأيقونات الحديثة (FontAwesome) للزراير -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/nsfwjs@2.4.1/dist/nsfwjs.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+
+    <!-- مكتبات تأثيرات الوجه (MediaPipe) -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -23,12 +30,13 @@
             </div>
 
             <div class="interests-box">
+                <!-- حقل الاهتمامات -->
                 <input type="text" id="interestsInput" placeholder="أدخل اهتماماتك (مثال: كرة قدم، برمجة)...">
             </div>
 
             <div class="start-buttons">
-                <button class="btn btn-primary-lg" onclick="startSession('video')">📹 شات فيديو</button>
-                <button class="btn btn-secondary-lg" onclick="startSession('text')">💬 شات كتابي</button>
+                <button class="btn btn-primary-lg" onclick="startSession('video')"><i class="fas fa-video"></i> شات فيديو</button>
+                <button class="btn btn-secondary-lg" onclick="startSession('text')"><i class="fas fa-comment-dots"></i> شات كتابي</button>
             </div>
         </div>
     </div>
@@ -40,7 +48,7 @@
         <header class="app-header">
             <div class="header-left">
                 <div class="logo">Randly</div>
-                <span class="user-display-name" id="userDisplayName">👤 زائر</span>
+                <span class="user-display-name" id="userDisplayName"><i class="fas fa-user"></i> زائر</span>
             </div>
             
             <div class="header-right">
@@ -70,9 +78,11 @@
                     <video id="remoteVideo" autoplay playsinline></video>
                     <span class="video-label">الطرف الآخر</span>
                 </div>
-                <div class="video-box local-box">
+                <div class="video-box local-box" style="position: relative;">
                     <video id="localVideo" autoplay playsinline muted></video>
-                    <span class="video-label">أنت</span>
+                    <!-- Canvas مخفي لرسم تأثيرات الوجه قبل الإرسال -->
+                    <canvas id="maskCanvas" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; z-index: 2; pointer-events: none;"></canvas>
+                    <span class="video-label" style="z-index: 3;">أنت</span>
                 </div>
             </div>
 
@@ -98,33 +108,72 @@
                 <!-- Filters & Controls Bar -->
                 <div class="filter-controls-row">
                     <div class="select-wrapper">
+                        <!-- قائمة الأعلام (تم إضافة فلسطين وإزالة أي أعلام غير مرغوب فيها) -->
                         <select id="countrySelect" class="filter-select">
-                            <option value="global">🌐 Smart Match (عالمي)</option>
-                            <!-- اختصرت الدول هنا للحفاظ على مساحة الكود، يمكنك إعادتها بالكامل -->
-                            <option value="EG">🇪🇬 Egypt</option>
-                            <option value="US">🇺🇸 United States</option>
+                            <option value="global">🌐 عالمي (Smart Match)</option>
+                            <option value="PS">🇵🇸 فلسطين</option>
+                            <option value="EG">🇪🇬 مصر</option>
+                            <option value="SA">🇸🇦 السعودية</option>
+                            <option value="AE">🇦🇪 الإمارات</option>
+                            <option value="MA">🇲🇦 المغرب</option>
+                            <option value="DZ">🇩🇿 الجزائر</option>
+                            <option value="KW">🇰🇼 الكويت</option>
+                            <option value="US">🇺🇸 الولايات المتحدة</option>
+                            <option value="GB">🇬🇧 بريطانيا</option>
+                            <option value="FR">🇫🇷 فرنسا</option>
+                            <option value="DE">🇩🇪 ألمانيا</option>
+                            <option value="TR">🇹🇷 تركيا</option>
+                            <option value="IN">🇮🇳 الهند</option>
                         </select>
                     </div>
 
+                    <!-- قائمة لغة الترجمة الفورية الجديدة -->
+                    <div class="select-wrapper">
+                        <select id="translationLang" class="filter-select" title="لغة الترجمة في الشات">
+                            <option value="none">بدون ترجمة</option>
+                            <option value="ar">ترجمة لـ: العربية</option>
+                            <option value="en">ترجمة لـ: الإنجليزية</option>
+                            <option value="fr">ترجمة لـ: الفرنسية</option>
+                            <option value="es">ترجمة لـ: الإسبانية</option>
+                        </select>
+                    </div>
+
+                    <!-- زراير التحكم الحديثة -->
                     <div class="quick-actions">
-                        <button class="btn-action-icon" id="micBtn" onclick="toggleMic()" title="المايك">🎤</button>
-                        <button class="btn-action-icon" id="camBtn" onclick="toggleCam()" title="الكاميرا">📹</button>
-                        <!-- أزرار الصوت والنسخ الجديدة -->
-                        <button class="btn-action-icon" id="muteBtn" onclick="toggleSoundMute()" title="الصوت">🔊</button>
-                        <button class="btn-action-icon" onclick="copyRoomLink()" title="نسخ الرابط">🔗</button>
-                        <button class="btn-action-icon" onclick="reportUser()" title="إبلاغ">⚠️</button>
-                        <button class="btn-action-icon btn-close-chat" onclick="leaveSession()" title="خروج">❌</button>
+                        <button class="btn-action-icon modern-btn" id="micBtn" onclick="toggleMic()" title="المايك">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <button class="btn-action-icon modern-btn" id="camBtn" onclick="toggleCam()" title="الكاميرا">
+                            <i class="fas fa-video"></i>
+                        </button>
+                        <button class="btn-action-icon modern-btn" id="maskBtn" onclick="toggleMask()" title="تأثيرات الوجه">
+                            <i class="fas fa-masks-theater"></i>
+                        </button>
+                        <button class="btn-action-icon modern-btn" id="muteBtn" onclick="toggleSoundMute()" title="الصوت">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        <button class="btn-action-icon modern-btn" id="copyLinkBtn" onclick="saveRoomLink()" title="نسخ رابط الغرفة">
+                            <i class="fas fa-link"></i>
+                        </button>
+                        <button class="btn-action-icon modern-btn" onclick="reportUser()" title="إبلاغ">
+                            <i class="fas fa-flag"></i>
+                        </button>
+                        <button class="btn-action-icon modern-btn btn-close-chat" onclick="leaveSession()" title="خروج">
+                            <i class="fas fa-phone-slash"></i>
+                        </button>
                     </div>
                 </div>
 
                 <!-- Bottom Action Bar -->
                 <div class="bottom-action-bar">
-                    <button class="btn-start-main" id="nextBtn" onclick="handleMainButton()">Start</button>
+                    <button class="btn-start-main" id="nextBtn" onclick="handleMainButton()">
+                        <i class="fas fa-forward"></i> تخطي / Start
+                    </button>
                     
                     <div class="input-container">
                         <input type="text" id="msgInput" placeholder="اكتب رسالتك هنا..." onkeydown="if(event.key === 'Enter') sendMsg()">
                         <button class="btn-send-inside" onclick="sendMsg()">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                            <i class="fas fa-paper-plane"></i>
                         </button>
                     </div>
                 </div>
