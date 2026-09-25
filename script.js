@@ -15,9 +15,9 @@ let peerConnection = null;
 let currentMode = 'text'; 
 let isMicMuted = false;
 let isCamOff = false;
-let buttonState = 'start'; // 'start', 'skip', 'really'
+let buttonState = 'start'; 
 let currentRoomId = null; 
-let currentPartnerCountry = null; // تخزين دولة الطرف الآخر لترجمتها تلقائياً
+let currentPartnerCountry = null; 
 
 // العناصر الأساسية
 const landingPage = document.getElementById('landingPage');
@@ -31,10 +31,8 @@ const videoSection = document.getElementById('videoSection');
 const skeletonLoader = document.getElementById('skeletonLoader');
 const typingIndicator = document.getElementById('typingIndicator');
 
-// --- إعدادات الأصوات ---
-const matchSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-const msgSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
-let isSoundMuted = localStorage.getItem('randly_sound_muted') === 'true';
+// --- نظام اهتمامات الـ Tags (مثل Omegle) ---
+let interestsArray = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('randly_theme');
@@ -52,9 +50,53 @@ document.addEventListener('DOMContentLoaded', () => {
     if (videoSection) videoSection.style.setProperty('display', 'none', 'important');
     const localBox = document.querySelector('.video-box.local-box');
     if (localBox) localBox.style.setProperty('display', 'none', 'important');
+
+    // تفاعل حقل الـ Tags
+    const interestTagInput = document.getElementById('interestTagInput');
+    if (interestTagInput) {
+        interestTagInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault();
+                const val = interestTagInput.value.trim().replace(/,/g, '');
+                if (val && !interestsArray.includes(val)) {
+                    interestsArray.push(val);
+                    renderInterestTags();
+                }
+                interestTagInput.value = '';
+            } else if (e.key === 'Backspace' && interestTagInput.value === '' && interestsArray.length > 0) {
+                interestsArray.pop();
+                renderInterestTags();
+            }
+        });
+    }
 });
 
-// --- استقبال عدد المتصلين وتحديثه في الواجهة والهيدر فوراً ---
+function renderInterestTags() {
+    const container = document.getElementById('interestsTagsContainer');
+    const interestTagInput = document.getElementById('interestTagInput');
+    if (!container || !interestTagInput) return;
+    
+    container.querySelectorAll('.interest-tag').forEach(tag => tag.remove());
+    
+    interestsArray.forEach((interest, index) => {
+        const tagEl = document.createElement('div');
+        tagEl.className = 'interest-tag';
+        tagEl.style.cssText = 'background: var(--accent-purple, #8a2be2); color: #fff; padding: 4px 10px; border-radius: 15px; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; margin: 2px;';
+        tagEl.innerHTML = `<span>${interest} ✕</span>`;
+        tagEl.onclick = (e) => {
+            e.stopPropagation();
+            interestsArray.splice(index, 1);
+            renderInterestTags();
+        };
+        container.insertBefore(tagEl, interestTagInput);
+    });
+}
+
+// --- إعدادات الأصوات ---
+const matchSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+const msgSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
+let isSoundMuted = localStorage.getItem('randly_sound_muted') === 'true';
+
 socket.on('online-count', (count) => {
     const landingCount = document.getElementById('landingOnlineCount');
     const headerCount = document.getElementById('headerOnlineCount');
@@ -62,7 +104,6 @@ socket.on('online-count', (count) => {
     if (headerCount) headerCount.textContent = count;
 });
 
-// --- فحص الـ URL للتحقق من وجود غرفة محفوظة ---
 socket.on('connect', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const savedRoom = urlParams.get('room');
@@ -157,7 +198,6 @@ function clearRemoteVideo() {
         peerConnection = null;
     }
     
-    // مسح اسم وعلم الدولة عند قطع الاتصال
     const flagElement = document.getElementById('remoteUserFlag');
     if (flagElement) flagElement.textContent = '';
     const nameElement = document.getElementById('remoteUserCountryName');
@@ -264,11 +304,9 @@ function nextUser() {
     const currentLang = document.documentElement.lang || 'ar';
     if(statusDiv) statusDiv.textContent = translations[currentLang]?.searchingText || 'Searching...';
 
-    const interestsInputEl = document.getElementById('interestsInput');
-    const interestsVal = interestsInputEl ? interestsInputEl.value : '';
-    const interestsArray = interestsVal.split(',').map(i => i.trim()).filter(i => i !== '');
     const selectedCountry = countrySelect ? countrySelect.value : 'global';
 
+    // إرسال مصفوفة اهتمامات الـ Tags للسيرفر
     socket.emit('find-match', {
         mode: currentMode,
         interests: interestsArray, 
@@ -309,7 +347,6 @@ function leaveSession() {
     socket.emit('leave-room');
 }
 
-// --- تأثيرات وماسكات الوجه ---
 let isMaskOn = false;
 let maskAnimationId;
 
@@ -371,7 +408,6 @@ function reportUser() {
     alert("تم تسجيل الإبلاغ عن هذا المستخدم.");
 }
 
-// --- لعبة XO أونلاين ---
 let myGameSymbol = null;
 let isMyTurn = false;
 let xoBoard = ['', '', '', '', '', '', '', '', ''];
@@ -417,7 +453,6 @@ socket.on('xo-receive-move', (data) => {
     if(gameStatus) gameStatus.textContent = `${t.turnText} ( ${myGameSymbol} )`;
 });
 
-// --- WebRTC Setup ---
 function createPeerConnection() {
     peerConnection = new RTCPeerConnection(rtcConfig);
     
@@ -455,7 +490,6 @@ function getFlagEmoji(countryCode) {
     return countryCode.toUpperCase().replace(/./g, char => String.fromCodePoint(char.charCodeAt(0) + 127397));
 }
 
-// --- أحداث السوكيت ---
 socket.on('matched', async (data) => {
     const currentLang = document.documentElement.lang || 'ar';
     if(statusDiv) statusDiv.textContent = translations[currentLang]?.connectedStatus || 'Connected!';
@@ -466,7 +500,6 @@ socket.on('matched', async (data) => {
     
     if (!isSoundMuted) matchSound.play().catch(()=>{});
 
-    // سحب وعرض علم ودولة الطرف الآخر تلقائياً عبر الـ IP
     currentPartnerCountry = data.partnerCountry || 'global';
     const flagElement = document.getElementById('remoteUserFlag');
     const nameElement = document.getElementById('remoteUserCountryName');
@@ -595,7 +628,7 @@ function appendSystemMessage(text) {
     chatBox.appendChild(msgDiv);
 }
 
-// --- نظام الترجمة المحدث ---
+// --- نظام الترجمة ---
 const translations = {
     ar: {
         siteTitle: "Randly - شات فيديو ورسائل عشوائي مع الغرباء",
@@ -826,7 +859,7 @@ const translations = {
         turnText: "Tuo turno"
     },
     pt: {
-        siteTitle: "Randly - Chat de vídeo e texto aleatório",
+        siteTitle: "Randly - Chat de vídeo e texto aléatoire",
         logoTitle: "Randly 🎲",
         landingSub: "Fale com estranhos em todo o mundo com segurança!",
         onlineNow: "Online",
@@ -891,7 +924,6 @@ function changeGlobalLanguage(lang) {
         }
     });
 
-    // ترجمة اسم الدولة الحالية في الشات (إن وجدت) ليتوافق مع اللغة المختارة
     if (currentPartnerCountry) {
         const nameElement = document.getElementById('remoteUserCountryName');
         if (nameElement) {

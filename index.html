@@ -44,8 +44,11 @@
                 🔴 <span data-i18n="onlineNow">المتصلون الآن</span>: <span id="landingOnlineCount">0</span>
             </div>
 
+            <!-- صندوق الاهتمامات بنظام الـ Tags (مثل Omegle) -->
             <div class="interests-box">
-                <input type="text" id="interestsInput" data-i18n-placeholder="interestsPlaceholder" placeholder="أدخل اهتماماتك (مثال: كرة قدم، برمجة)...">
+                <div id="interestsTagsContainer" class="interests-tags-container" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: var(--bg-card, #222); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); min-height: 48px; cursor: text;" onclick="document.getElementById('interestTagInput').focus()">
+                    <input type="text" id="interestTagInput" data-i18n-placeholder="interestsPlaceholder" placeholder="أدخل اهتماماتك (اكتب واضغط Enter)..." style="border: none; background: transparent; color: var(--text-main, #fff); outline: none; flex: 1; min-width: 140px; padding: 4px;">
+                </div>
             </div>
 
             <div class="start-buttons">
@@ -156,7 +159,7 @@
             <div id="videoSection" class="video-section">
                 <div class="video-box remote-box">
                     <video id="remoteVideo" autoplay playsinline></video>
-                    <!-- تعديل هنا لعرض اسم وعلم دولة الطرف الآخر -->
+                    <!-- عرض اسم وعلم دولة الطرف الآخر -->
                     <span class="video-label" style="display: flex; align-items: center; gap: 8px;">
                         <span data-i18n="remoteUser">الطرف الآخر</span> 
                         <span id="remoteUserFlag" class="country-flag-icon"></span>
@@ -261,18 +264,18 @@
                     </div>
                 </div>
 
-                <!-- Bottom Action Bar (ثابت بخصائص LTR لضمان عدم تبديل أماكن الأزرار) -->
-                <div class="bottom-action-bar" style="display: flex; flex-direction: row; direction: ltr !important; align-items: center; justify-content: space-between; gap: 15px; width: 100%;">
+                <!-- Bottom Action Bar (ضمان ظهور زر الطيارة يمين على الموبايل واللابتوب) -->
+                <div class="bottom-action-bar" style="display: flex; flex-direction: row; direction: ltr !important; align-items: center; justify-content: space-between; gap: 10px; width: 100%;">
                     
                     <!-- زر التخطي (ثابت على اليسار) -->
-                    <button class="btn-start-main" id="nextBtn" onclick="handleMainButton()" style="direction: ltr !important; white-space: nowrap; flex-shrink: 0;">
+                    <button class="btn-start-main" id="nextBtn" onclick="handleMainButton()" style="direction: ltr !important; white-space: nowrap; flex-shrink: 0; padding: 10px 14px;">
                         <i class="fas fa-forward"></i> <span data-i18n="skipStartBtn">تخطي / Start</span>
                     </button>
 
-                    <!-- حاوية الإدخال وزر الإرسال (زر الإرسال ثابت على اليمين) -->
-                    <div class="input-container chat-input-wrapper" style="display: flex; flex-direction: row; direction: ltr !important; flex: 1; align-items: center; background: var(--bg-card); border-radius: 8px;">
-                        <input type="text" id="msgInput" data-i18n-placeholder="msgPlaceholder" placeholder="اكتب رسالتك هنا..." onkeydown="if(event.key === 'Enter') sendMsg()" style="flex: 1; direction: auto; text-align: start; padding: 12px; border: none; background: transparent; color: var(--text-main); outline: none;">
-                        <button class="btn-send-inside" id="sendBtn" onclick="sendMsg()" style="direction: ltr !important; padding: 10px 15px; border: none; background: transparent; color: var(--accent-purple); cursor: pointer;">
+                    <!-- حاوية الإدخال وزر الإرسال (زر الطيارة ظاهر دائماً يمين وبحجم مناسب) -->
+                    <div class="input-container chat-input-wrapper" style="display: flex; flex-direction: row; direction: ltr !important; flex: 1; align-items: center; background: var(--bg-card); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; min-width: 0;">
+                        <input type="text" id="msgInput" data-i18n-placeholder="msgPlaceholder" placeholder="اكتب رسالتك هنا..." onkeydown="if(event.key === 'Enter') sendMsg()" style="flex: 1; direction: auto; text-align: start; padding: 12px; border: none; background: transparent; color: var(--text-main); outline: none; min-width: 0;">
+                        <button class="btn-send-inside" id="sendBtn" onclick="sendMsg()" style="direction: ltr !important; padding: 10px 14px; border: none; background: transparent; color: var(--accent-purple); cursor: pointer; flex-shrink: 0;">
                             <i class="fas fa-paper-plane" style="font-size: 1.2rem;"></i>
                         </button>
                     </div>
@@ -298,7 +301,7 @@
                 <div class="xo-cell" onclick="makeMove(4)"></div>
                 <div class="xo-cell" onclick="makeMove(5)"></div>
                 <div class="xo-cell" onclick="makeMove(6)"></div>
-                <div class="xo-cell" onclick="makeMove(7)"></div>
+                <div class="xo-cell" onclick="makeMonve(7)"></div>
                 <div class="xo-cell" onclick="makeMove(8)"></div>
             </div>
         </div>
