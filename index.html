@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- تم تعديل الـ Title وتحديث الـ Meta لخدمة الـ SEO -->
     <title>Randly - شات فيديو ورسائل عشوائي مع الغرباء</title>
     <meta name="description" content="تحدث مع أناس عشوائيين حول العالم بكل أمان وسرعة عبر Randly. دردشة فيديو ونصية مجانية بدون تسجيل.">
     <link rel="stylesheet" href="style.css">
@@ -42,7 +41,7 @@
             </div>
         </div>
 
-        <!-- 6. إضافة قسم الـ VIP والـ SEO الجديد -->
+        <!-- قسم الـ VIP والـ SEO الجديد -->
         <main class="vip-seo-section" id="seoSection">
             <div class="features-grid">
                 <article class="feature-card">
@@ -86,9 +85,9 @@
             <footer class="app-footer">
                 <p>&copy; 2026 Randly.live - جميع الحقوق محفوظة.</p>
                 <div class="footer-links">
-                    <a href="#">القواعد (Rules)</a>
-                    <a href="#">سياسة الخصوصية</a>
-                    <a href="#">تواصل معنا</a>
+                    <a href="rules.html">القواعد (Rules)</a>[cite: 15]
+                    <a href="privacy.html">سياسة الخصوصية</a>[cite: 14]
+                    <a href="mailto:support@randly.live">تواصل معنا</a>[cite: 13, 14, 15]
                 </div>
             </footer>
         </main>
@@ -105,7 +104,7 @@
             </div>
             
             <div class="header-right">
-                <!-- 4. إضافة نظام تغيير لغة واجهة الموقع (i18n) -->
+                <!-- نظام تغيير لغة واجهة الموقع (i18n) -->
                 <select id="siteLang" class="site-lang-select" onchange="changeSiteLanguage(this.value)">
                     <option value="ar">العربية</option>
                     <option value="en">English</option>
@@ -140,7 +139,6 @@
             <div id="videoSection" class="video-section">
                 <div class="video-box remote-box">
                     <video id="remoteVideo" autoplay playsinline></video>
-                    <!-- 2. إضافة مكان لعرض علم الدولة للطرف الآخر -->
                     <span class="video-label">الطرف الآخر <span id="remoteUserFlag" class="country-flag-icon"></span></span>
                 </div>
                 <div class="video-box local-box" style="position: relative;">
@@ -205,7 +203,6 @@
 
                     <!-- زراير التحكم الحديثة -->
                     <div class="quick-actions">
-                        <!-- تم إضافة class مميز لأزرار الفيديو عشان نقدر نخفيها في الشات النصي -->
                         <button class="btn-action-icon modern-btn video-only-btn" id="micBtn" onclick="toggleMic()" title="المايك">
                             <i class="fas fa-microphone"></i>
                         </button>
@@ -230,18 +227,15 @@
                     </div>
                 </div>
 
-                <!-- Bottom Action Bar (3. تعديل ترتيب الأزرار) -->
+                <!-- Bottom Action Bar -->
                 <div class="bottom-action-bar">
-                    <!-- حقل الكتابة وزر الإرسال (تم التعديل ليكون زر الإرسال على اليمين) -->
                     <div class="input-container chat-input-wrapper">
-                        <!-- زر الإرسال نقلناه جوه في الأول عشان يظهر على اليمين في لغة الموقع العربية (RTL) -->
                         <button class="btn-send-inside" id="sendBtn" onclick="sendMsg()">
                             <i class="fas fa-paper-plane"></i>
                         </button>
                         <input type="text" id="msgInput" placeholder="اكتب رسالتك هنا..." onkeydown="if(event.key === 'Enter') sendMsg()">
                     </div>
 
-                    <!-- زر التخطي / Start تم نقله ليكون على اليسار (الشمال) -->
                     <button class="btn-start-main" id="nextBtn" onclick="handleMainButton()">
                         تخطي / Start <i class="fas fa-forward"></i>
                     </button>
