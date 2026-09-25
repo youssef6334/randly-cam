@@ -7,7 +7,7 @@
     <meta name="description" content="تحدث مع أناس عشوائيين حول العالم بكل أمان وسرعة عبر Randly. دردشة فيديو ونصية مجانية بدون تسجيل.">
     <link rel="stylesheet" href="style.css">
     
-    <!-- مكتبة الأيقونات الحديثة (FontAwesome) للزراير -->
+    <!-- مكتبة الأيقونات الحديثة (FontAwesome) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
@@ -23,7 +23,7 @@
     <!-- Landing Page -->
     <div id="landingPage" class="landing-container">
         
-        <!-- زر اختيار اللغة الثابت في أعلى الواجهة الرئيسية -->
+        <!-- زر اختيار اللغة الثابت في أعلى الواجهة الرئيسية وفي كل الصفحات -->
         <div style="position: absolute; top: 20px; left: 20px; z-index: 100;">
             <select id="landingLangSelect" class="site-lang-select" onchange="changeGlobalLanguage(this.value)" style="padding: 8px 12px; border-radius: 8px; background: var(--bg-card, #222); color: var(--text-main, #fff); border: 1px solid rgba(255,255,255,0.2);">
                 <option value="ar">العربية</option>
@@ -45,7 +45,6 @@
             </div>
 
             <div class="interests-box">
-                <!-- حقل الاهتمامات -->
                 <input type="text" id="interestsInput" data-i18n-placeholder="interestsPlaceholder" placeholder="أدخل اهتماماتك (مثال: كرة قدم، برمجة)...">
             </div>
 
@@ -168,7 +167,7 @@
                 
                 <div class="status-bar" id="status" data-i18n="connectedStatus">متصل الآن!</div>
 
-                <!-- شاشة التحميل -->
+                <!-- شاشة التحميل (تم إزالة التكرار وترك واحدة سليمة فقط) -->
                 <div id="skeletonLoader" style="display: none; text-align: center; padding: 20px; color: #888; font-weight: bold;">
                     ⏳ <span data-i18n="searchingText">جاري البحث عن شخص عشوائي...</span>
                 </div>
@@ -525,7 +524,7 @@
                 turnText: "Tuo turno"
             },
             pt: {
-                siteTitle: "Randly - Chat de vídeo e texto aleatório",
+                siteTitle: "Randly - Chat de vídeo e texte aléatoire",
                 logoTitle: "Randly 🎲",
                 landingSub: "Fale com estranhos em todo o mundo com segurança!",
                 onlineNow: "Online",
