@@ -217,7 +217,7 @@ html, body {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
     border: 2px solid rgba(255, 255, 255, 0.3);
     z-index: 999 !important; 
-    display: flex;
+    display: none !important; /* التعديل هنا: مخفية افتراضياً لمنع ظهورها على شاشة البداية */
     align-items: center;
     justify-content: center;
 }

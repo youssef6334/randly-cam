@@ -35,7 +35,7 @@ const matchSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2
 const msgSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
 let isSoundMuted = localStorage.getItem('randly_sound_muted') === 'true';
 
-// تهيئة الثيم والأصوات عند تحميل الصفحة
+// تهيئة الشاشة والأصوات والثيم عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('randly_theme');
     if (savedTheme === 'light') {
@@ -49,9 +49,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (muteBtn) {
         muteBtn.innerHTML = isSoundMuted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
     }
+
+    // التأكد من إخفاء قسم الفيديو والكاميرا تماماً عند فتح الموقع لأول مرة
+    if (videoSection) videoSection.style.setProperty('display', 'none', 'important');
+    const localBox = document.querySelector('.video-box.local-box');
+    if (localBox) localBox.style.setProperty('display', 'none', 'important');
 });
 
-// --- 4. نظام ترجمة واجهة الموقع (i18n) ---
+// --- نظام ترجمة واجهة الموقع (i18n) ---
 const siteTranslations = {
     ar: {
         desc: "تحدث مع أناس عشوائيين حول العالم بكل أمان وسرعة!",
@@ -100,11 +105,9 @@ const siteTranslations = {
 function changeSiteLanguage(lang) {
     const t = siteTranslations[lang] || siteTranslations['en'];
     
-    // تغيير اتجاه الموقع حسب اللغة
     document.documentElement.lang = lang;
     document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
 
-    // تحديث النصوص في الواجهة
     const desc = document.querySelector('.landing-card p');
     if(desc) desc.textContent = t.desc;
 
@@ -117,7 +120,6 @@ function changeSiteLanguage(lang) {
     const nextBtn = document.getElementById('nextBtn');
     if(nextBtn && buttonState !== 'really') nextBtn.innerHTML = t.startSkip;
 
-    // تحديث قسم الـ VIP
     const f1T = document.querySelectorAll('.feature-card h3')[0];
     const f1D = document.querySelectorAll('.feature-card p')[0];
     const f2T = document.querySelectorAll('.feature-card h3')[1];
@@ -140,7 +142,6 @@ socket.on('connect', () => {
     }
 });
 
-// --- دوال التحكم في الواجهة (Mute, Theme, Ad) ---
 function toggleSoundMute() {
     isSoundMuted = !isSoundMuted;
     localStorage.setItem('randly_sound_muted', isSoundMuted);
@@ -184,7 +185,6 @@ function toggleAd() {
     }
 }
 
-// --- ميزة حفظ ونسخ رابط الغرفة ---
 function saveRoomLink() {
     if (!currentRoomId) {
         alert('يجب أن تكون متصلاً بشخص أولاً لتتمكن من نسخ رابط الغرفة!');
@@ -199,7 +199,6 @@ function saveRoomLink() {
     });
 }
 
-// --- مؤشر الكتابة ---
 let typingTimer;
 if (msgInput) {
     msgInput.addEventListener('input', () => {
@@ -211,7 +210,6 @@ if (msgInput) {
 socket.on('display-typing', () => typingIndicator.style.display = 'block');
 socket.on('hide-typing', () => typingIndicator.style.display = 'none');
 
-// --- إدارة الفيديو والمايك ---
 function clearRemoteVideo() {
     if (remoteVideo) {
         if (remoteVideo.srcObject) {
@@ -227,7 +225,6 @@ function clearRemoteVideo() {
         peerConnection.close();
         peerConnection = null;
     }
-    // مسح علم الدولة عند انتهاء الجلسة
     const flagElement = document.getElementById('remoteUserFlag');
     if (flagElement) flagElement.textContent = '';
 }
@@ -262,20 +259,19 @@ function toggleCam() {
     }
 }
 
-// --- بدء وإدارة الجلسات ---
+// --- بدء وإدارة الجلسات بدون أي انكماش في الشات الكتابي ---
 async function startSession(mode, specificRoomId = null) {
     currentMode = mode;
     landingPage.style.display = 'none';
 
     const videoOnlyBtns = document.querySelectorAll('.video-only-btn');
-    if (mode === 'text') {
-        videoOnlyBtns.forEach(btn => btn.classList.add('d-none'));
-    } else {
-        videoOnlyBtns.forEach(btn => btn.classList.remove('d-none'));
-    }
+    const localBox = document.querySelector('.video-box.local-box');
 
     if (mode === 'video') {
-        videoSection.style.display = 'flex';
+        if (videoSection) videoSection.style.setProperty('display', 'flex', 'important');
+        if (localBox) localBox.style.setProperty('display', 'flex', 'important');
+        videoOnlyBtns.forEach(btn => btn.classList.remove('d-none'));
+
         try {
             localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             if (localVideo) localVideo.srcObject = localStream;
@@ -283,11 +279,17 @@ async function startSession(mode, specificRoomId = null) {
             appendSystemMessage('تعذر الوصول للكاميرا والمايكروفون.');
         }
     } else {
-        // إخفاء مساحة الفيديو بالكامل وإيقاف الكاميرا في حالة الشات النصي
-        videoSection.style.display = 'none';
+        // الشات الكتابي: إخفاء تام لقسم الفيديو والكاميرا المحلية لتجنب أي انكماش
+        if (videoSection) videoSection.style.setProperty('display', 'none', 'important');
+        if (localBox) localBox.style.setProperty('display', 'none', 'important');
+        videoOnlyBtns.forEach(btn => btn.classList.add('d-none'));
+
         if (localStream) {
             localStream.getTracks().forEach(track => track.stop());
             localStream = null;
+        }
+        if (localVideo) {
+            localVideo.srcObject = null;
         }
     }
 
@@ -356,6 +358,12 @@ function leaveSession() {
         localStream = null;
     }
     landingPage.style.display = 'flex';
+    
+    // إخفاء الفيديو والكاميرا تماماً عند العودة للصفحة الرئيسية
+    if (videoSection) videoSection.style.setProperty('display', 'none', 'important');
+    const localBox = document.querySelector('.video-box.local-box');
+    if (localBox) localBox.style.setProperty('display', 'none', 'important');
+
     buttonState = 'start';
     currentRoomId = null;
     const btn = document.getElementById('nextBtn');
@@ -496,7 +504,6 @@ function createPeerConnection() {
     };
 }
 
-// 2. دالة تحويل كود الدولة إلى إيموجي العلم
 function getFlagEmoji(countryCode) {
     if (!countryCode || countryCode === 'global') return '🌐';
     return countryCode.toUpperCase().replace(/./g, char => String.fromCodePoint(char.charCodeAt(0) + 127397));
@@ -520,7 +527,6 @@ socket.on('matched', async (data) => {
     
     if (!isSoundMuted) matchSound.play().catch(()=>{});
 
-    // 2. إظهار علم الدولة للطرف الآخر
     const flagElement = document.getElementById('remoteUserFlag');
     if (flagElement) {
         const partnerCountry = data.partnerCountry || 'global';
@@ -570,14 +576,12 @@ socket.on('peer-disconnected', () => {
     appendSystemMessage('الطرف الآخر غادر المحادثة.');
 });
 
-// --- ترجمة الرسائل الواردة ---
 socket.on('receive-message', async (data) => {
     if (!isSoundMuted) msgSound.play().catch(()=>{});
     
     const targetLang = document.getElementById('translationLang').value;
     let translatedText = null;
 
-    // استخدام Google Translate API
     if (targetLang !== 'none' && data.text) {
         try {
             const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(data.text)}`;
@@ -597,7 +601,6 @@ socket.on('receive-message', async (data) => {
     typingIndicator.style.display = 'none';
 });
 
-// --- Chat Logic ---
 function sendMsg() {
     const text = msgInput.value.trim();
     if (!text) return;
