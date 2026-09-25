@@ -8,25 +8,34 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        /* حل نهائي لمشكلة السكرول وتمرير الصفحة بحرية */
+        html, body {
+            height: auto !important;
+            overflow: auto !important;
+            background-color: var(--bg-primary, #121212);
+            color: var(--text-main, #ffffff);
+            margin: 0;
+            padding: 0;
+        }
         .legal-page {
             max-width: 800px;
             margin: 0 auto;
             padding: 40px 20px 80px;
             line-height: 1.9;
         }
-        .legal-page h1 { margin-bottom: 8px; color: var(--accent-purple); }
+        .legal-page h1 { margin-bottom: 8px; color: var(--accent-purple, #00f2fe); }
         .legal-page .updated { opacity: 0.6; font-size: 14px; margin-bottom: 32px; }
         .legal-page section { margin-bottom: 28px; }
-        .legal-page h2 { font-size: 20px; margin-bottom: 10px; color: var(--text-main); }
+        .legal-page h2 { font-size: 20px; margin-bottom: 10px; color: var(--text-main, #ffffff); }
         .legal-page ul { padding-right: 20px; margin: 10px 0; }
-        .legal-page li { margin-bottom: 6px; color: var(--text-muted); }
-        .legal-page p { color: var(--text-muted); }
-        .legal-back { display: inline-block; margin-bottom: 24px; color: var(--accent-purple); text-decoration: none; font-weight: bold; }
+        .legal-page li { margin-bottom: 6px; color: var(--text-muted, #b0b0b0); }
+        .legal-page p { color: var(--text-muted, #b0b0b0); }
+        .legal-back { display: inline-block; margin-bottom: 24px; color: var(--accent-purple, #00f2fe); text-decoration: none; font-weight: bold; }
         .legal-back:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
-    <div class="landing-container" style="position: relative; overflow-y: auto;">
+    <div style="position: relative; width: 100%; min-height: 100vh; overflow-y: auto;">
         <main class="vip-seo-section" style="padding-top: 20px;">
             <div class="legal-page">
                 <a href="index.html" class="legal-back"><i class="fas fa-arrow-right"></i> رجوع للرئيسية</a>
@@ -34,22 +43,22 @@
                 <p class="updated">آخر تحديث: 25 سبتمبر 2026</p>
 
                 <section>
-                    <p>مرحبًا بك في Randly. باستخدامك لهذا الموقع، فإنك توافق على الالتزام بالشروط والأحكام التالية بالكامل[cite: 14].</p>
+                    <p>مرحبًا بك في Randly. باستخدامك لهذا الموقع، فإنك توافق على الالتزام بالشروط والأحكام التالية بالكامل.</p>
                 </section>
 
                 <section>
                     <h2>1. طبيعة الخدمة</h2>
-                    <p>Randly منصة تتيح دردشة عشوائية (فيديو ونص) بين مستخدمين غرباء دون الحاجة لإنشاء حساب[cite: 14]. الخدمة مقدمة كما هي (As-Is)[cite: 14].</p>
+                    <p>Randly منصة تتيح دردشة عشوائية (فيديو ونص) بين مستخدمين غرباء دون الحاجة لإنشاء حساب. الخدمة مقدمة كما هي (As-Is).</p>
                 </section>
 
                 <section>
                     <h2>2. الأهلية</h2>
-                    <p>يجب أن يكون عمرك 18 عامًا أو أكثر لاستخدام الخدمة[cite: 14].</p>
+                    <p>يجب أن يكون عمرك 18 عامًا أو أكثر لاستخدام الخدمة.</p>
                 </section>
 
                 <section>
                     <h2>3. تواصل معنا</h2>
-                    <p>لأي استفسار يتعلق بهذه الشروط، راسلنا على البريد الرسمي: <a href="mailto:contact@randly.live" style="color: var(--accent-purple);">contact@randly.live</a>[cite: 13, 14]</p>
+                    <p>لأي استفسار يتعلق بهذه الشروط، راسلنا على البريد الرسمي: <a href="mailto:contact@randly.live" style="color: var(--accent-purple, #00f2fe);">contact@randly.live</a></p>
                 </section>
             </div>
         </main>

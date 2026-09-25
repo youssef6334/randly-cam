@@ -8,25 +8,34 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        /* حل نهائي لمشكلة السكرول وتمرير الصفحة بحرية */
+        html, body {
+            height: auto !important;
+            overflow: auto !important;
+            background-color: var(--bg-primary, #121212);
+            color: var(--text-main, #ffffff);
+            margin: 0;
+            padding: 0;
+        }
         .legal-page {
             max-width: 800px;
             margin: 0 auto;
             padding: 40px 20px 80px;
             line-height: 1.9;
         }
-        .legal-page h1 { margin-bottom: 8px; color: var(--accent-purple); }
+        .legal-page h1 { margin-bottom: 8px; color: var(--accent-purple, #00f2fe); }
         .legal-page .updated { opacity: 0.6; font-size: 14px; margin-bottom: 32px; }
         .legal-page section { margin-bottom: 28px; }
-        .legal-page h2 { font-size: 20px; margin-bottom: 10px; color: var(--text-main); }
+        .legal-page h2 { font-size: 20px; margin-bottom: 10px; color: var(--text-main, #ffffff); }
         .legal-page ul { padding-right: 20px; margin: 10px 0; }
-        .legal-page li { margin-bottom: 6px; color: var(--text-muted); }
-        .legal-page p { color: var(--text-muted); }
-        .legal-back { display: inline-block; margin-bottom: 24px; color: var(--accent-purple); text-decoration: none; font-weight: bold; }
+        .legal-page li { margin-bottom: 6px; color: var(--text-muted, #b0b0b0); }
+        .legal-page p { color: var(--text-muted, #b0b0b0); }
+        .legal-back { display: inline-block; margin-bottom: 24px; color: var(--accent-purple, #00f2fe); text-decoration: none; font-weight: bold; }
         .legal-back:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
-    <div class="landing-container" style="position: relative; overflow-y: auto;">
+    <div style="position: relative; width: 100%; min-height: 100vh; overflow-y: auto;">
         <main class="vip-seo-section" style="padding-top: 20px;">
             <div class="legal-page">
                 <a href="index.html" class="legal-back"><i class="fas fa-arrow-right"></i> رجوع للرئيسية</a>
@@ -35,26 +44,26 @@
 
                 <section>
                     <h2>1. مقدمة</h2>
-                    <p>نحترم خصوصيتك، وتوضح هذه السياسة نوع البيانات التي نجمعها عند استخدامك لموقع Randly، وكيف نستخدمها ونحميها[cite: 15].</p>
+                    <p>نحترم خصوصيتك، وتوضح هذه السياسة نوع البيانات التي نجمعها عند استخدامك لموقع Randly، وكيف نستخدمها ونحميها.</p>
                 </section>
 
                 <section>
                     <h2>2. البيانات التي نجمعها</h2>
                     <ul>
-                        <li>لا يتطلب Randly إنشاء حساب أو تسجيل أي بيانات شخصية لاستخدام الخدمة[cite: 15]</li>
-                        <li>عنوان الـ IP الخاص بك لأغراض أمنية ومنع إساءة الاستخدام[cite: 15]</li>
-                        <li>نوع المتصفح والجهاز المستخدم والدولة التقريبية لتحسين التطابق[cite: 15]</li>
+                        <li>لا يتطلب Randly إنشاء حساب أو تسجيل أي بيانات شخصية لاستخدام الخدمة</li>
+                        <li>عنوان الـ IP الخاص بك لأغراض أمنية ومنع إساءة الاستخدام</li>
+                        <li>نوع المتصفح والجهاز المستخدم والدولة التقريبية لتحسين التطابق</li>
                     </ul>
                 </section>
 
                 <section>
                     <h2>3. الفيديو والمحادثات النصية</h2>
-                    <p>مكالمات الفيديو والدردشة النصية تُستخدم لتسهيل الاتصال فقط، ولا نقوم بتسجيلها أو تخزينها بشكل دائم. في حال تقديم بلاغ، قد يُحتفظ بسجل مؤقت للمحادثة للمراجعة فقط[cite: 15].</p>
+                    <p>مكالمات الفيديو والدردشة النصية تُستخدم لتسهيل الاتصال فقط، ولا نقوم بتسجيلها أو تخزينها بشكل دائم. في حال تقديم بلاغ، قد يُحتفظ بسجل مؤقت للمحادثة للمراجعة فقط.</p>
                 </section>
 
                 <section>
                     <h2>4. تواصل معنا</h2>
-                    <p>لأي استفسار يتعلق بالخصوصية، راسلنا على البريد الرسمي: <a href="mailto:contact@randly.live" style="color: var(--accent-purple);">contact@randly.live</a>[cite: 14, 15]</p>
+                    <p>لأي استفسار يتعلق بالخصوصية، راسلنا على البريد الرسمي: <a href="mailto:contact@randly.live" style="color: var(--accent-purple, #00f2fe);">contact@randly.live</a></p>
                 </section>
             </div>
         </main>
