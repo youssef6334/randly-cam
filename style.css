@@ -200,18 +200,18 @@ html, body {
 
 .video-box.local-box {
     position: absolute !important;
-    top: 12px !important;
-    right: 12px !important;
+    bottom: 20px !important;  /* نزلناها تحت يمين عشان متغطيش الشاشة */
+    right: 20px !important;
     left: auto !important;
-    bottom: auto !important;
-    width: 95px;
-    height: 130px;
+    top: auto !important;
+    width: 100px;
+    height: 140px;
     background-color: #111;
-    border-radius: 10px;
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    z-index: 10;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    z-index: 999 !important; /* ده هيجبرها دايماً تظهر فوق الشاشة التانية */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -758,11 +758,11 @@ html, body {
     }
 
     .video-box.local-box {
-        width: 80px;
-        height: 110px;
-        top: 8px !important;
-        right: 8px !important;
+        width: 85px;
+        height: 115px;
+        bottom: 10px !important;
+        right: 10px !important;
         left: auto !important;
-        bottom: auto !important;
+        top: auto !important;
     }
 }
