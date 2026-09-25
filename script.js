@@ -267,7 +267,6 @@ async function startSession(mode, specificRoomId = null) {
     currentMode = mode;
     landingPage.style.display = 'none';
 
-    // 5. إخفاء أو إظهار أزرار التحكم الديناميكية حسب نوع الشات
     const videoOnlyBtns = document.querySelectorAll('.video-only-btn');
     if (mode === 'text') {
         videoOnlyBtns.forEach(btn => btn.classList.add('d-none'));
@@ -284,9 +283,12 @@ async function startSession(mode, specificRoomId = null) {
             appendSystemMessage('تعذر الوصول للكاميرا والمايكروفون.');
         }
     } else {
-        // الشاشة بتفضل مفرودة في الـ CSS، لكن ممكن نخفي الفيديو سيكشن لو تحب، 
-        // أو نسيبه أسود (يفضل نسيبه معروض عشان الـ UI ميتغيرش).
-        videoSection.style.display = 'flex'; 
+        // إخفاء مساحة الفيديو بالكامل وإيقاف الكاميرا في حالة الشات النصي
+        videoSection.style.display = 'none';
+        if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+            localStream = null;
+        }
     }
 
     if (specificRoomId) {
@@ -521,7 +523,6 @@ socket.on('matched', async (data) => {
     // 2. إظهار علم الدولة للطرف الآخر
     const flagElement = document.getElementById('remoteUserFlag');
     if (flagElement) {
-        // بنفترض إن السيرفر بيبعت كود الدولة زي EG أو US في المتغير partnerCountry
         const partnerCountry = data.partnerCountry || 'global';
         flagElement.textContent = getFlagEmoji(partnerCountry);
     }

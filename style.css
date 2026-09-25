@@ -169,10 +169,10 @@ html, body {
     flex-direction: column;
 }
 
-/* Video Section Container (تعديل فرد الشاشة الدائم) */
+/* Video Section Container */
 .video-section {
     width: 100%;
-    height: 40vh; /* مساحة ثابتة ومفرودة */
+    height: 40vh; 
     background-color: #000;
     position: relative;
     display: flex;
@@ -181,10 +181,15 @@ html, body {
     flex-shrink: 0;
 }
 
+/* إخفاء قسم الفيديو بالكامل في حالة الشات النصي */
+#videoSection[style*="display: none"] {
+    display: none !important;
+}
+
 .video-box.remote-box {
     width: 100%;
     height: 100%;
-    background-color: #0c0c0c; /* لون خلفية حتى لو محدش متصل */
+    background-color: #0c0c0c; 
     position: absolute;
     inset: 0;
     display: flex;
@@ -200,7 +205,7 @@ html, body {
 
 .video-box.local-box {
     position: absolute !important;
-    bottom: 20px !important;  /* نزلناها تحت يمين عشان متغطيش الشاشة */
+    bottom: 20px !important;  
     right: 20px !important;
     left: auto !important;
     top: auto !important;
@@ -211,7 +216,7 @@ html, body {
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
     border: 2px solid rgba(255, 255, 255, 0.3);
-    z-index: 999 !important; /* ده هيجبرها دايماً تظهر فوق الشاشة التانية */
+    z-index: 999 !important; 
     display: flex;
     align-items: center;
     justify-content: center;
@@ -383,7 +388,7 @@ html, body {
     display: none !important;
 }
 
-/* Bottom Action Bar (تعديل أماكن الأزرار) */
+/* Bottom Action Bar */
 .bottom-action-bar {
     padding: 10px 12px;
     display: flex;
@@ -422,7 +427,7 @@ html, body {
     flex: 1;
     display: flex;
     align-items: center;
-    flex-direction: row; /* يضمن زر الإرسال يمين والنص يسار في الـ RTL */
+    flex-direction: row; 
     background-color: var(--input-bg);
     border: 1px solid var(--border-color);
     border-radius: 20px;
@@ -457,7 +462,7 @@ html, body {
     transform: scale(1.1);
 }
 
-/* Landing Page Overlay (تعديل ليدعم قسم الـ VIP الجديد) */
+/* Landing Page Overlay */
 .landing-container {
     position: fixed;
     inset: 0;
@@ -466,9 +471,9 @@ html, body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start; /* تبدأ من الأعلى */
+    justify-content: flex-start;
     padding: 40px 20px;
-    overflow-y: auto; /* السماح بالتمرير (Scroll) */
+    overflow-y: auto; 
 }
 
 .landing-card {
@@ -483,7 +488,7 @@ html, body {
     flex-direction: column;
     gap: 16px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-    margin-bottom: 40px; /* مسافة بين الكارت وقسم المميزات */
+    margin-bottom: 40px; 
     flex-shrink: 0;
 }
 
@@ -547,9 +552,7 @@ html, body {
     background-color: var(--border-color);
 }
 
-/* -------------------------------------
-   VIP & SEO Sections Design 
--------------------------------------- */
+/* VIP & SEO Sections Design */
 .vip-seo-section {
     max-width: 800px;
     width: 100%;
@@ -745,12 +748,10 @@ html, body {
 
     .video-section {
         width: 100%;
-        height: 45vh; /* تعديل مساحة الفيديو على الموبايل لتبقى مفرودة */
+        height: 45vh; 
         flex-shrink: 0;
     }
 
-    /* شيلنا كود إخفاء الشاشة عشان تفضل مفرودة وسوداء لحد ما حد يخش */
-    
     .chat-section {
         width: 100%;
         flex: 1;

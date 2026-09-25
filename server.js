@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
 const { Server } = require('socket.io');
-const geoip = require('geoip-lite'); // التعديل: إضافة مكتبة تحديد الموقع
+const geoip = require('geoip-lite'); 
 
 // إعداد Socket.io مع السماح بالاتصال من أي مصدر
 const io = new Server(http, {
@@ -21,7 +21,7 @@ let waitingQueue = [];
 
 // نظام حفظ الغرف لمدة 72 ساعة
 let savedRooms = new Map();
-const ROOM_EXPIRY = 72 * 60 * 60 * 1000;
+const ROOM_EXPIRY = 72 * 60 * 60 * 1000; 
 
 setInterval(() => {
     const now = Date.now();
@@ -33,13 +33,23 @@ setInterval(() => {
 }, 60 * 60 * 1000); 
 
 io.on('connection', (socket) => {
-    // --- التعديل: قراءة الـ IP وتحديد الدولة الحقيقية ---
-    let clientIp = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address;
-    if (clientIp.includes(',')) {
+    // --- التعديل: قراءة الـ IP الحقيقي وتخطي حماية الاستضافات ---
+    let clientIp = socket.handshake.headers['x-forwarded-for'] || 
+                   socket.handshake.headers['cf-connecting-ip'] || 
+                   socket.handshake.headers['x-real-ip'] || 
+                   socket.handshake.address;
+                   
+    if (clientIp) {
+        // تنظيف الـ IP لو جاي في مصفوفة
         clientIp = clientIp.split(',')[0].trim();
+        // التخلص من صيغة IPv6 لو ظهرت
+        if (clientIp.startsWith('::ffff:')) {
+            clientIp = clientIp.substring(7);
+        }
     }
-    // لو بنعمل تست على نفس الجهاز (Localhost) هنديله IP افتراضي عشان ميجيبش Error
-    if (clientIp.includes('127.0.0.1') || clientIp === '::1') {
+    
+    // لو بنعمل تست على نفس الجهاز (Localhost)
+    if (!clientIp || clientIp === '127.0.0.1' || clientIp === '::1') {
         clientIp = '197.35.0.0'; // IP مصري للتجربة
     }
 
@@ -56,14 +66,13 @@ io.on('connection', (socket) => {
 
         let matchIndex = -1;
         const myInterests = data.interests || [];
-        const searchCountry = data.country || 'global'; // الدولة اللي اليوزر اختار يبحث عنها
-        const myActualCountry = activeUsers.get(socket.id).actualCountry; // دولته الحقيقية
+        const searchCountry = data.country || 'global'; 
+        const myActualCountry = activeUsers.get(socket.id).actualCountry; 
 
         const isCountryMatch = (c1, c2) => {
             return c1 === 'global' || c2 === 'global' || c1 === c2;
         };
 
-        // 1. البحث عن تطابق في الاهتمامات، الدولة، ونوع الشات
         if (myInterests.length > 0) {
             matchIndex = waitingQueue.findIndex(u => 
                 u.mode === data.mode && 
@@ -72,7 +81,6 @@ io.on('connection', (socket) => {
             );
         }
 
-        // 2. إذا لم نجد تطابق في الاهتمامات، نبحث عن تطابق في الدولة ونوع الشات فقط
         if (matchIndex === -1) {
             matchIndex = waitingQueue.findIndex(u => 
                 u.mode === data.mode &&
@@ -100,7 +108,6 @@ io.on('connection', (socket) => {
                     mode: data.mode
                 });
 
-                // --- التعديل: إرسال الدولة الحقيقية للطرف الآخر ---
                 socket.emit('matched', { 
                     isInitiator: true, 
                     xoRole: 'X', 
