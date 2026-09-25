@@ -90,9 +90,20 @@ io.on('connection', (socket) => {
                     mode: data.mode
                 });
 
-                // إرسال الـ roomId للعميل عشان يقدر ينسخه
-                socket.emit('matched', { isInitiator: true, xoRole: 'X', roomId: roomId });
-                peerSocket.emit('matched', { isInitiator: false, xoRole: 'O', roomId: roomId });
+                // --- التعديل هنا: إرسال كود دولة الطرف الآخر لكل مستخدم ---
+                socket.emit('matched', { 
+                    isInitiator: true, 
+                    xoRole: 'X', 
+                    roomId: roomId,
+                    partnerCountry: peerData.country 
+                });
+                
+                peerSocket.emit('matched', { 
+                    isInitiator: false, 
+                    xoRole: 'O', 
+                    roomId: roomId,
+                    partnerCountry: myCountry 
+                });
             } else {
                 // لو الطرف التاني فصل فجأة، نرجع المستخدم الحالي للطابور
                 waitingQueue.push({ id: socket.id, interests: myInterests, mode: data.mode, country: myCountry });
@@ -124,8 +135,9 @@ io.on('connection', (socket) => {
                     activeUsers.set(socket.id, { room: roomId, peer: peerId });
                     activeUsers.get(peerId).peer = socket.id;
 
-                    socket.emit('matched', { isInitiator: true, xoRole: 'X', roomId: roomId });
-                    io.to(peerId).emit('matched', { isInitiator: false, xoRole: 'O', roomId: roomId });
+                    // في الغرف المحفوظة هنبعت global كافتراضي لأننا مش مخزنين الدولة فيها حالياً
+                    socket.emit('matched', { isInitiator: true, xoRole: 'X', roomId: roomId, partnerCountry: 'global' });
+                    io.to(peerId).emit('matched', { isInitiator: false, xoRole: 'O', roomId: roomId, partnerCountry: 'global' });
                 }
             }
             // لو المستخدم الأول بس هو اللي دخل، هيفضل منتظر لحد ما التاني يفتح الرابط

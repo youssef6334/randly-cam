@@ -86,6 +86,17 @@ html, body {
     gap: 10px;
 }
 
+.site-lang-select {
+    background: var(--bg-card);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 4px 8px;
+    border-radius: 6px;
+    outline: none;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
 .online-badge {
     font-size: 0.8rem;
     background: var(--bg-card);
@@ -102,6 +113,7 @@ html, body {
     padding: 6px;
     border-radius: 8px;
     transition: background 0.2s;
+    color: var(--text-main);
 }
 
 .btn-icon:hover {
@@ -157,10 +169,10 @@ html, body {
     flex-direction: column;
 }
 
-/* Video Section Container */
+/* Video Section Container (تعديل فرد الشاشة الدائم) */
 .video-section {
     width: 100%;
-    height: 35vh;
+    height: 40vh; /* مساحة ثابتة ومفرودة */
     background-color: #000;
     position: relative;
     display: flex;
@@ -172,7 +184,7 @@ html, body {
 .video-box.remote-box {
     width: 100%;
     height: 100%;
-    background-color: #000;
+    background-color: #0c0c0c; /* لون خلفية حتى لو محدش متصل */
     position: absolute;
     inset: 0;
     display: flex;
@@ -187,9 +199,11 @@ html, body {
 }
 
 .video-box.local-box {
-    position: absolute;
-    top: 12px;
-    right: 12px;
+    position: absolute !important;
+    top: 12px !important;
+    right: 12px !important;
+    left: auto !important;
+    bottom: auto !important;
     width: 95px;
     height: 130px;
     background-color: #111;
@@ -210,8 +224,25 @@ html, body {
     transform: scaleX(-1);
 }
 
+/* إظهار تسمية الفيديو وعلم الدولة */
 .video-label {
-    display: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    z-index: 5;
+    backdrop-filter: blur(4px);
+}
+
+.country-flag-icon {
+    font-size: 1.2rem;
 }
 
 /* Chat Section */
@@ -300,7 +331,7 @@ html, body {
     outline: none;
 }
 
-/* --- تصميم زراير التحكم الحديثة (ماسنجر/إنستجرام ستايل) --- */
+/* زراير التحكم الحديثة */
 .quick-actions {
     display: flex;
     gap: 8px;
@@ -312,7 +343,7 @@ html, body {
 .modern-btn {
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 50%; /* شكل دائري بالظبط */
+    border-radius: 50%;
     width: 42px;
     height: 42px;
     padding: 0;
@@ -333,10 +364,9 @@ html, body {
     background-color: var(--accent-purple);
     color: white;
     border-color: var(--accent-purple);
-    transform: scale(1.1); /* بيكبر سنة بسيطة لما تقف عليه */
+    transform: scale(1.1);
 }
 
-/* زرار الإغلاق بخلفية حمراء */
 .btn-close-chat.modern-btn {
     background-color: rgba(255, 118, 117, 0.15);
     color: var(--accent-red);
@@ -348,27 +378,32 @@ html, body {
     color: #fff;
 }
 
-/* Bottom Action Bar */
+/* كلاس مساعد لإخفاء الأزرار في الشات النصي */
+.d-none {
+    display: none !important;
+}
+
+/* Bottom Action Bar (تعديل أماكن الأزرار) */
 .bottom-action-bar {
     padding: 10px 12px;
     display: flex;
-    flex-direction: row;
+    flex-direction: row; 
     gap: 10px;
     align-items: center;
+    justify-content: space-between;
     border-top: 1px solid var(--border-color);
     background-color: var(--bg-secondary);
 }
 
-/* زرار التخطي والبدء (Pill Shape) */
 .btn-start-main {
     background-color: var(--accent-purple);
     color: #fff;
     border: none;
-    padding: 0 24px;
+    padding: 0 20px;
     height: 45px;
-    border-radius: 25px; /* شكل بيضاوي احترافي */
+    border-radius: 25px;
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 0.95rem;
     cursor: pointer;
     transition: all 0.3s ease;
     flex-shrink: 0;
@@ -387,6 +422,7 @@ html, body {
     flex: 1;
     display: flex;
     align-items: center;
+    flex-direction: row; /* يضمن زر الإرسال يمين والنص يسار في الـ RTL */
     background-color: var(--input-bg);
     border: 1px solid var(--border-color);
     border-radius: 20px;
@@ -400,7 +436,7 @@ html, body {
     border: none;
     color: var(--text-main);
     outline: none;
-    padding: 0 6px;
+    padding: 0 10px;
     font-size: 0.95rem;
 }
 
@@ -421,16 +457,18 @@ html, body {
     transform: scale(1.1);
 }
 
-/* Landing Page Overlay */
+/* Landing Page Overlay (تعديل ليدعم قسم الـ VIP الجديد) */
 .landing-container {
     position: fixed;
     inset: 0;
     background-color: var(--bg-primary);
     z-index: 999;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 20px;
+    justify-content: flex-start; /* تبدأ من الأعلى */
+    padding: 40px 20px;
+    overflow-y: auto; /* السماح بالتمرير (Scroll) */
 }
 
 .landing-card {
@@ -445,10 +483,12 @@ html, body {
     flex-direction: column;
     gap: 16px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    margin-bottom: 40px; /* مسافة بين الكارت وقسم المميزات */
+    flex-shrink: 0;
 }
 
 .landing-card h1 {
-    font-size: 2rem;
+    font-size: 2.2rem;
     color: var(--accent-purple);
 }
 
@@ -505,6 +545,115 @@ html, body {
 
 .btn-secondary-lg:hover {
     background-color: var(--border-color);
+}
+
+/* -------------------------------------
+   VIP & SEO Sections Design 
+-------------------------------------- */
+.vip-seo-section {
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    color: var(--text-main);
+    flex-shrink: 0;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.feature-card {
+    background: var(--bg-card);
+    padding: 25px 20px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-card i {
+    font-size: 2.5rem;
+    color: var(--accent-purple);
+    margin-bottom: 15px;
+}
+
+.feature-card h3 {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.feature-card p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.faq-section {
+    margin-bottom: 40px;
+}
+
+.faq-section h2 {
+    margin-bottom: 25px;
+    text-align: center;
+    color: var(--accent-purple);
+    font-size: 1.8rem;
+}
+
+.faq-item {
+    background: var(--bg-card);
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.faq-question {
+    padding: 15px 20px;
+    font-size: 1.1rem;
+    margin: 0;
+    background: var(--bg-secondary);
+    color: var(--text-main);
+}
+
+.faq-answer {
+    padding: 15px 20px;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    border-top: 1px solid var(--border-color);
+}
+
+.app-footer {
+    text-align: center;
+    padding: 20px 0;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+.footer-links {
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.footer-links a {
+    color: var(--accent-purple);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer-links a:hover {
+    color: var(--text-main);
 }
 
 /* XO Overlay */
@@ -596,15 +745,12 @@ html, body {
 
     .video-section {
         width: 100%;
-        height: 55vh;
+        height: 45vh; /* تعديل مساحة الفيديو على الموبايل لتبقى مفرودة */
         flex-shrink: 0;
     }
 
-    .video-section:empty,
-    .video-section[style*="display: none"] {
-        display: none !important;
-    }
-
+    /* شيلنا كود إخفاء الشاشة عشان تفضل مفرودة وسوداء لحد ما حد يخش */
+    
     .chat-section {
         width: 100%;
         flex: 1;
@@ -614,7 +760,9 @@ html, body {
     .video-box.local-box {
         width: 80px;
         height: 110px;
-        top: 8px;
-        right: 8px;
+        top: 8px !important;
+        right: 8px !important;
+        left: auto !important;
+        bottom: auto !important;
     }
 }

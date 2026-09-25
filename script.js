@@ -51,6 +51,84 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// --- 4. نظام ترجمة واجهة الموقع (i18n) ---
+const siteTranslations = {
+    ar: {
+        desc: "تحدث مع أناس عشوائيين حول العالم بكل أمان وسرعة!",
+        interestsMsg: "أدخل اهتماماتك (مثال: كرة قدم، برمجة)...",
+        search: "⏳ جاري البحث عن شخص عشوائي...",
+        connected: "متصل الآن!",
+        msgInput: "اكتب رسالتك هنا...",
+        remoteLbl: "الطرف الآخر",
+        localLbl: "أنت",
+        startSkip: "تخطي / Start <i class='fas fa-forward'></i>",
+        f1Title: "بدون تسجيل (Anonymous)",
+        f1Desc: "ابدأ الدردشة فوراً بضغطة زر وبدون الحاجة لإنشاء حساب، خصوصيتك في أمان.",
+        f2Title: "تطابق بالاهتمامات",
+        faqTitle: "الأسئلة الشائعة"
+    },
+    en: {
+        desc: "Chat with random people around the world safely and fast!",
+        interestsMsg: "Enter interests (e.g. sports, coding)...",
+        search: "⏳ Searching for a stranger...",
+        connected: "Connected!",
+        msgInput: "Type your message here...",
+        remoteLbl: "Stranger",
+        localLbl: "You",
+        startSkip: "Skip / Start <i class='fas fa-forward'></i>",
+        f1Title: "No Registration",
+        f1Desc: "Start chatting instantly without an account. Your privacy is safe.",
+        f2Title: "Interest Matching",
+        faqTitle: "Frequently Asked Questions"
+    },
+    es: {
+        desc: "¡Chatea con personas al azar en todo el mundo de forma segura y rápida!",
+        interestsMsg: "Introduce intereses (ej. deportes, programación)...",
+        search: "⏳ Buscando a un extraño...",
+        connected: "¡Conectado!",
+        msgInput: "Escribe tu mensaje aquí...",
+        remoteLbl: "Extraño",
+        localLbl: "Tú",
+        startSkip: "Saltar / Start <i class='fas fa-forward'></i>",
+        f1Title: "Sin Registro",
+        f1Desc: "Comienza a chatear al instante sin cuenta. Tu privacidad está a salvo.",
+        f2Title: "Coincidencia de Intereses",
+        faqTitle: "Preguntas Frecuentes"
+    }
+};
+
+function changeSiteLanguage(lang) {
+    const t = siteTranslations[lang] || siteTranslations['en'];
+    
+    // تغيير اتجاه الموقع حسب اللغة
+    document.documentElement.lang = lang;
+    document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+
+    // تحديث النصوص في الواجهة
+    const desc = document.querySelector('.landing-card p');
+    if(desc) desc.textContent = t.desc;
+
+    const interestsInput = document.getElementById('interestsInput');
+    if(interestsInput) interestsInput.placeholder = t.interestsMsg;
+
+    if(skeletonLoader) skeletonLoader.innerHTML = t.search;
+    if(msgInput) msgInput.placeholder = t.msgInput;
+    
+    const nextBtn = document.getElementById('nextBtn');
+    if(nextBtn && buttonState !== 'really') nextBtn.innerHTML = t.startSkip;
+
+    // تحديث قسم الـ VIP
+    const f1T = document.querySelectorAll('.feature-card h3')[0];
+    const f1D = document.querySelectorAll('.feature-card p')[0];
+    const f2T = document.querySelectorAll('.feature-card h3')[1];
+    const faq = document.querySelector('.faq-section h2');
+    
+    if(f1T) f1T.textContent = t.f1Title;
+    if(f1D) f1D.textContent = t.f1Desc;
+    if(f2T) f2T.textContent = t.f2Title;
+    if(faq) faq.textContent = t.faqTitle;
+}
+
 // --- التأكد من اكتمال اتصال السوكيت قبل محاولة دخول الغرفة المحفوظة ---
 socket.on('connect', () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -149,6 +227,9 @@ function clearRemoteVideo() {
         peerConnection.close();
         peerConnection = null;
     }
+    // مسح علم الدولة عند انتهاء الجلسة
+    const flagElement = document.getElementById('remoteUserFlag');
+    if (flagElement) flagElement.textContent = '';
 }
 
 function toggleMic() {
@@ -186,6 +267,14 @@ async function startSession(mode, specificRoomId = null) {
     currentMode = mode;
     landingPage.style.display = 'none';
 
+    // 5. إخفاء أو إظهار أزرار التحكم الديناميكية حسب نوع الشات
+    const videoOnlyBtns = document.querySelectorAll('.video-only-btn');
+    if (mode === 'text') {
+        videoOnlyBtns.forEach(btn => btn.classList.add('d-none'));
+    } else {
+        videoOnlyBtns.forEach(btn => btn.classList.remove('d-none'));
+    }
+
     if (mode === 'video') {
         videoSection.style.display = 'flex';
         try {
@@ -195,7 +284,9 @@ async function startSession(mode, specificRoomId = null) {
             appendSystemMessage('تعذر الوصول للكاميرا والمايكروفون.');
         }
     } else {
-        videoSection.style.display = 'none';
+        // الشاشة بتفضل مفرودة في الـ CSS، لكن ممكن نخفي الفيديو سيكشن لو تحب، 
+        // أو نسيبه أسود (يفضل نسيبه معروض عشان الـ UI ميتغيرش).
+        videoSection.style.display = 'flex'; 
     }
 
     if (specificRoomId) {
@@ -207,17 +298,20 @@ async function startSession(mode, specificRoomId = null) {
 
 function handleMainButton() {
     const btn = document.getElementById('nextBtn');
+    const currentLang = document.documentElement.lang || 'ar';
+    const t = siteTranslations[currentLang] || siteTranslations['en'];
+
     if (buttonState === 'start') {
         startSession(currentMode);
         buttonState = 'skip';
-        btn.innerHTML = '<i class="fas fa-forward"></i> Skip';
+        btn.innerHTML = t.startSkip;
     } else if (buttonState === 'skip') {
         buttonState = 'really';
         btn.innerHTML = '<i class="fas fa-question-circle"></i> Really?';
     } else if (buttonState === 'really') {
         nextUser();
         buttonState = 'skip';
-        btn.innerHTML = '<i class="fas fa-forward"></i> Skip';
+        btn.innerHTML = t.startSkip;
     }
 }
 
@@ -228,7 +322,9 @@ function nextUser() {
     
     chatBox.style.display = 'none';
     skeletonLoader.style.display = 'block';
-    statusDiv.textContent = 'جاري البحث...';
+    
+    const currentLang = document.documentElement.lang || 'ar';
+    statusDiv.textContent = siteTranslations[currentLang]?.search || 'Searching...';
 
     const interestsVal = document.getElementById('interestsInput').value;
     const interestsArray = interestsVal.split(',').map(i => i.trim()).filter(i => i !== '');
@@ -246,7 +342,7 @@ function joinSpecificRoom(roomId) {
     chatBox.innerHTML = '';
     chatBox.style.display = 'none';
     skeletonLoader.style.display = 'block';
-    statusDiv.textContent = 'جاري الانضمام للغرفة المحفوظة...';
+    statusDiv.textContent = 'جاري الانضمام للغرفة...';
     
     socket.emit('join-saved-room', { roomId: roomId, mode: currentMode });
 }
@@ -261,7 +357,7 @@ function leaveSession() {
     buttonState = 'start';
     currentRoomId = null;
     const btn = document.getElementById('nextBtn');
-    if (btn) btn.innerHTML = '<i class="fas fa-play"></i> Start';
+    if (btn) btn.innerHTML = 'تخطي / Start <i class="fas fa-forward"></i>';
     
     window.history.pushState({}, document.title, window.location.pathname);
     socket.emit('leave-room');
@@ -398,6 +494,12 @@ function createPeerConnection() {
     };
 }
 
+// 2. دالة تحويل كود الدولة إلى إيموجي العلم
+function getFlagEmoji(countryCode) {
+    if (!countryCode || countryCode === 'global') return '🌐';
+    return countryCode.toUpperCase().replace(/./g, char => String.fromCodePoint(char.charCodeAt(0) + 127397));
+}
+
 // --- Socket Events ---
 socket.on('online-count', (count) => {
     const landingCount = document.getElementById('landingOnlineCount');
@@ -407,13 +509,22 @@ socket.on('online-count', (count) => {
 });
 
 socket.on('matched', async (data) => {
-    statusDiv.textContent = 'متصل الآن!';
-    currentRoomId = data.roomId; // حفظ الـ ID من السيرفر
+    const currentLang = document.documentElement.lang || 'ar';
+    statusDiv.textContent = siteTranslations[currentLang]?.connected || 'Connected!';
+    currentRoomId = data.roomId; 
     
     skeletonLoader.style.display = 'none';
     chatBox.style.display = 'flex'; 
     
     if (!isSoundMuted) matchSound.play().catch(()=>{});
+
+    // 2. إظهار علم الدولة للطرف الآخر
+    const flagElement = document.getElementById('remoteUserFlag');
+    if (flagElement) {
+        // بنفترض إن السيرفر بيبعت كود الدولة زي EG أو US في المتغير partnerCountry
+        const partnerCountry = data.partnerCountry || 'global';
+        flagElement.textContent = getFlagEmoji(partnerCountry);
+    }
 
     myGameSymbol = data.xoRole;
     isMyTurn = (myGameSymbol === 'X'); 
@@ -465,7 +576,7 @@ socket.on('receive-message', async (data) => {
     const targetLang = document.getElementById('translationLang').value;
     let translatedText = null;
 
-    // استخدام Google Translate API (المجاني) لتجنب الليمت
+    // استخدام Google Translate API
     if (targetLang !== 'none' && data.text) {
         try {
             const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(data.text)}`;
@@ -473,7 +584,7 @@ socket.on('receive-message', async (data) => {
             const result = await response.json();
             
             if (result && result[0] && result[0][0]) {
-                translatedText = result[0].map(item => item[0]).join(''); // تجميع النص لو كان طويل
+                translatedText = result[0].map(item => item[0]).join(''); 
             }
         } catch (error) {
             console.error("خطأ في الترجمة الفورية:", error);
