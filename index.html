@@ -116,7 +116,7 @@
                 <span class="user-display-name" id="userDisplayName"><i class="fas fa-user"></i> <span data-i18n="visitor">زائر</span></span>
             </div>
             
-            <div class="header-right">
+            <div class="header-right" style="display: flex; align-items: center; gap: 10px;">
                 <!-- قائمة اللغات الثابتة داخل الشات وفي كل صفحات الموقع -->
                 <select id="siteLang" class="site-lang-select" onchange="changeGlobalLanguage(this.value)">
                     <option value="ar">العربية</option>
@@ -128,7 +128,11 @@
                     <option value="pt">Português</option>
                 </select>
 
-                <span class="online-badge">🟢 <span id="headerOnlineCount">0</span> online</span>
+                <!-- عداد المتصلين في الشريط العلوي بتصميم واضح وثابت -->
+                <span class="online-badge" style="display: inline-flex; align-items: center; background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 15px; font-weight: bold; border: 1px solid rgba(255,255,255,0.1);">
+                    🔴 <span data-i18n="onlineNow" style="margin: 0 5px;">المتصلون الآن</span>: <span id="headerOnlineCount" style="margin: 0 5px; color: #fff;">0</span>
+                </span>
+
                 <button class="btn-icon" onclick="requestGame()">🎮</button>
                 <button class="btn-icon theme-toggle" onclick="toggleTheme()">🌙</button>
             </div>
@@ -152,7 +156,12 @@
             <div id="videoSection" class="video-section">
                 <div class="video-box remote-box">
                     <video id="remoteVideo" autoplay playsinline></video>
-                    <span class="video-label"><span data-i18n="remoteUser">الطرف الآخر</span> <span id="remoteUserFlag" class="country-flag-icon"></span></span>
+                    <!-- تعديل هنا لعرض اسم وعلم دولة الطرف الآخر -->
+                    <span class="video-label" style="display: flex; align-items: center; gap: 8px;">
+                        <span data-i18n="remoteUser">الطرف الآخر</span> 
+                        <span id="remoteUserFlag" class="country-flag-icon"></span>
+                        <span id="remoteUserCountryName" style="color: #ffd700; font-weight: bold; font-size: 14px;"></span>
+                    </span>
                 </div>
                 <div class="video-box local-box" style="position: relative;">
                     <video id="localVideo" autoplay playsinline muted></video>
@@ -167,7 +176,7 @@
                 
                 <div class="status-bar" id="status" data-i18n="connectedStatus">متصل الآن!</div>
 
-                <!-- شاشة التحميل (تم إزالة التكرار وترك واحدة سليمة فقط) -->
+                <!-- شاشة التحميل -->
                 <div id="skeletonLoader" style="display: none; text-align: center; padding: 20px; color: #888; font-weight: bold;">
                     ⏳ <span data-i18n="searchingText">جاري البحث عن شخص عشوائي...</span>
                 </div>
@@ -184,7 +193,7 @@
                 <!-- Filters & Controls Bar -->
                 <div class="filter-controls-row">
                     <div class="select-wrapper">
-                        <!-- قائمة الأعلام والدول (بدون علم إسرائيل) -->
+                        <!-- قائمة الأعلام والدول -->
                         <select id="countrySelect" class="filter-select">
                             <option value="global" data-i18n="matchGlobal">🌐 عالمي (Smart Match)</option>
                             <option value="PS">🇵🇸 فلسطين</option>
@@ -252,18 +261,21 @@
                     </div>
                 </div>
 
-                <!-- Bottom Action Bar -->
-                <div class="bottom-action-bar">
-                    <div class="input-container chat-input-wrapper">
-                        <button class="btn-send-inside" id="sendBtn" onclick="sendMsg()">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                        <input type="text" id="msgInput" data-i18n-placeholder="msgPlaceholder" placeholder="اكتب رسالتك هنا..." onkeydown="if(event.key === 'Enter') sendMsg()">
-                    </div>
-
-                    <button class="btn-start-main" id="nextBtn" onclick="handleMainButton()">
-                        <span data-i18n="skipStartBtn">تخطي / Start</span> <i class="fas fa-forward"></i>
+                <!-- Bottom Action Bar (ثابت بخصائص LTR لضمان عدم تبديل أماكن الأزرار) -->
+                <div class="bottom-action-bar" style="display: flex; flex-direction: row; direction: ltr !important; align-items: center; justify-content: space-between; gap: 15px; width: 100%;">
+                    
+                    <!-- زر التخطي (ثابت على اليسار) -->
+                    <button class="btn-start-main" id="nextBtn" onclick="handleMainButton()" style="direction: ltr !important; white-space: nowrap; flex-shrink: 0;">
+                        <i class="fas fa-forward"></i> <span data-i18n="skipStartBtn">تخطي / Start</span>
                     </button>
+
+                    <!-- حاوية الإدخال وزر الإرسال (زر الإرسال ثابت على اليمين) -->
+                    <div class="input-container chat-input-wrapper" style="display: flex; flex-direction: row; direction: ltr !important; flex: 1; align-items: center; background: var(--bg-card); border-radius: 8px;">
+                        <input type="text" id="msgInput" data-i18n-placeholder="msgPlaceholder" placeholder="اكتب رسالتك هنا..." onkeydown="if(event.key === 'Enter') sendMsg()" style="flex: 1; direction: auto; text-align: start; padding: 12px; border: none; background: transparent; color: var(--text-main); outline: none;">
+                        <button class="btn-send-inside" id="sendBtn" onclick="sendMsg()" style="direction: ltr !important; padding: 10px 15px; border: none; background: transparent; color: var(--accent-purple); cursor: pointer;">
+                            <i class="fas fa-paper-plane" style="font-size: 1.2rem;"></i>
+                        </button>
+                    </div>
                 </div>
 
             </div>
@@ -292,7 +304,7 @@
         </div>
     </div> 
     
-    <!-- نظام الترجمة الشامل الموحد والتعرف التلقائي على لغة الجهاز -->
+    <!-- نظام الترجمة وجلب أسماء الدول -->
     <script>
         const translations = {
             ar: {
@@ -403,7 +415,7 @@
                 searchingText: "Buscando persona aleatoria...",
                 welcomeMsg: "¡Bienvenido! Haz clic en Start.",
                 typingText: "Escribiendo...",
-                matchGlobal: "🌐 Global (Smart Match)",
+                matchGlobal: "🌐 Mundial (Smart Match)",
                 noTranslation: "Sin Traducción",
                 msgPlaceholder: "Escribe tu mensaje...",
                 skipStartBtn: "Saltar / Start",
@@ -441,7 +453,7 @@
                 searchingText: "Recherche d'une personne...",
                 welcomeMsg: "Bienvenue ! Cliquez sur Start.",
                 typingText: "Écrit...",
-                matchGlobal: "🌐 Global (Smart Match)",
+                matchGlobal: "🌐 Mondial (Smart Match)",
                 noTranslation: "Sans Traduction",
                 msgPlaceholder: "Écrivez votre message...",
                 skipStartBtn: "Passer / Start",
@@ -479,7 +491,7 @@
                 searchingText: "Suche nach Person...",
                 welcomeMsg: "Willkommen! Start klicken.",
                 typingText: "Schreibt...",
-                matchGlobal: "🌐 Global (Smart Match)",
+                matchGlobal: "🌐 Weltweit (Smart Match)",
                 noTranslation: "Keine Übersetzung",
                 msgPlaceholder: "Nachricht schreiben...",
                 skipStartBtn: "Weiter / Start",
@@ -524,7 +536,7 @@
                 turnText: "Tuo turno"
             },
             pt: {
-                siteTitle: "Randly - Chat de vídeo e texte aléatoire",
+                siteTitle: "Randly - Chat de vídeo e texto aleatório",
                 logoTitle: "Randly 🎲",
                 landingSub: "Fale com estranhos em todo o mundo com segurança!",
                 onlineNow: "Online",
@@ -543,7 +555,7 @@
                 faq1Q: "O Randly é gratuito?",
                 faq1A: "Sim, totalmente gratuito.",
                 faq2Q: "Posso usar no celular?",
-                faq2A: "Com certeza! Funciona perfeitamente em dispositivos móviles.",
+                faq2A: "Com certeza! Funciona perfeitamente em dispositivos móveis.",
                 rights: "Todos os direitos reservados.",
                 rulesLink: "Regras",
                 privacyLink: "Privacidade",
@@ -578,7 +590,11 @@
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[lang][key]) {
-                    el.textContent = translations[lang][key];
+                    if (el.tagName.toLowerCase() === 'option') {
+                        el.textContent = translations[lang][key];
+                    } else {
+                        el.textContent = translations[lang][key];
+                    }
                 }
             });
 
@@ -596,6 +612,24 @@
 
             localStorage.setItem('randly_lang', lang);
         }
+
+        // دالة سحرية لترجمة اسم الدولة تلقائياً بناءً على الـ IP واللغة المحددة
+        window.updateRemoteCountryDisplay = function(countryCode) {
+            const nameEl = document.getElementById('remoteUserCountryName');
+            const currentLang = document.documentElement.lang || 'ar';
+            
+            if (!countryCode || countryCode === 'global') {
+                if (nameEl) nameEl.textContent = translations[currentLang]?.matchGlobal || 'عالمي (Smart Match)';
+                return;
+            }
+            try {
+                // استخدام API المدمج في المتصفحات لترجمة كود الدولة (مثل EG) إلى اسم الدولة باللغة المحددة
+                const regionNames = new Intl.DisplayNames([currentLang], { type: 'region' });
+                if (nameEl) nameEl.textContent = '- ' + regionNames.of(countryCode.toUpperCase());
+            } catch (e) {
+                if (nameEl) nameEl.textContent = '';
+            }
+        };
 
         window.addEventListener('DOMContentLoaded', () => {
             let savedLang = localStorage.getItem('randly_lang');
