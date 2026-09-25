@@ -35,7 +35,7 @@ const matchSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2
 const msgSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
 let isSoundMuted = localStorage.getItem('randly_sound_muted') === 'true';
 
-// تهيئة الشاشة والأصوات والثيم عند تحميل الصفحة
+// تهيئة الشاشة والأصوات والثيم واللغات عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('randly_theme');
     if (savedTheme === 'light') {
@@ -56,80 +56,320 @@ document.addEventListener('DOMContentLoaded', () => {
     if (localBox) localBox.style.setProperty('display', 'none', 'important');
 });
 
-// --- نظام ترجمة واجهة الموقع (i18n) ---
-const siteTranslations = {
+// --- نظام ترجمة واجهة الموقع الشامل الموحد (i18n) ---
+const translations = {
     ar: {
-        desc: "تحدث مع أناس عشوائيين حول العالم بكل أمان وسرعة!",
-        interestsMsg: "أدخل اهتماماتك (مثال: كرة قدم، برمجة)...",
-        search: "⏳ جاري البحث عن شخص عشوائي...",
-        connected: "متصل الآن!",
-        msgInput: "اكتب رسالتك هنا...",
-        remoteLbl: "الطرف الآخر",
-        localLbl: "أنت",
-        startSkip: "تخطي / Start <i class='fas fa-forward'></i>",
-        f1Title: "بدون تسجيل (Anonymous)",
-        f1Desc: "ابدأ الدردشة فوراً بضغطة زر وبدون الحاجة لإنشاء حساب، خصوصيتك في أمان.",
-        f2Title: "تطابق بالاهتمامات",
-        faqTitle: "الأسئلة الشائعة"
+        siteTitle: "Randly - شات فيديو ورسائل عشوائي مع الغرباء",
+        logoTitle: "Randly 🎲",
+        landingSub: "تحدث مع أناس عشوائيين حول العالم بكل أمان وسرعة!",
+        onlineNow: "المتصلون الآن",
+        interestsPlaceholder: "أدخل اهتماماتك (مثال: كرة قدم، برمجة)...",
+        videoChatBtn: "شات فيديو",
+        textChatBtn: "شات كتابي",
+        feat1Title: "بدون تسجيل (Anonymous)",
+        feat1Desc: "ابدأ الدردشة فوراً بضغطة زر وبدون الحاجة لإنشاء حساب، خصوصيتك في أمان.",
+        feat2Title: "تطابق بالاهتمامات",
+        feat2Desc: "أضف المواضيع التي تحبها وسيتم ربطك بأشخاص يشاركونك نفس الشغف.",
+        feat3Title: "مجتمع عالمي",
+        feat3Desc: "آلاف المستخدمين من جميع أنحاء العالم متصلون على مدار الساعة ليلاً ونهاراً.",
+        feat4Title: "بيئة آمنة",
+        feat4Desc: "أنظمة حماية تلقائية وميزات للإبلاغ لضمان بقاء المحادثات نظيفة ومحترمة.",
+        faqTitle: "الأسئلة الشائعة",
+        faq1Q: "هل موقع Randly مجاني؟",
+        faq1A: "نعم، يمكنك الدردشة والتواصل مع الغرباء عبر الفيديو أو النص مجاناً تماماً وبدون أي رسوم خفية.",
+        faq2Q: "هل يمكنني استخدام Randly على الهاتف؟",
+        faq2A: "بالتأكيد! الموقع مصمم ليعمل بسلاسة تامة على جميع أجهزة الموبايل الذكية.",
+        rights: "جميع الحقوق محفوظة.",
+        rulesLink: "القواعد",
+        privacyLink: "سياسة الخصوصية",
+        contactLink: "تواصل معنا",
+        visitor: "زائر",
+        remoteUser: "الطرف الآخر",
+        youUser: "أنت",
+        connectedStatus: "متصل الآن!",
+        searchingText: "جاري البحث عن شخص عشوائي...",
+        welcomeMsg: "مرحباً بك! انقر على Start لبدء الشات.",
+        typingText: "الطرف الآخر يكتب الآن...",
+        matchGlobal: "🌐 عالمي (Smart Match)",
+        noTranslation: "بدون ترجمة",
+        msgPlaceholder: "اكتب رسالتك هنا...",
+        skipStartBtn: "تخطي / Start",
+        turnText: "دورك الآن"
     },
     en: {
-        desc: "Chat with random people around the world safely and fast!",
-        interestsMsg: "Enter interests (e.g. sports, coding)...",
-        search: "⏳ Searching for a stranger...",
-        connected: "Connected!",
-        msgInput: "Type your message here...",
-        remoteLbl: "Stranger",
-        localLbl: "You",
-        startSkip: "Skip / Start <i class='fas fa-forward'></i>",
-        f1Title: "No Registration",
-        f1Desc: "Start chatting instantly without an account. Your privacy is safe.",
-        f2Title: "Interest Matching",
-        faqTitle: "Frequently Asked Questions"
+        siteTitle: "Randly - Random Video & Text Chat with Strangers",
+        logoTitle: "Randly 🎲",
+        landingSub: "Talk to random people around the world safely and fast!",
+        onlineNow: "Online now",
+        interestsPlaceholder: "Enter interests (e.g. football, coding)...",
+        videoChatBtn: "Video Chat",
+        textChatBtn: "Text Chat",
+        feat1Title: "No Registration (Anonymous)",
+        feat1Desc: "Start chatting instantly with one click, no account needed, your privacy is secure.",
+        feat2Title: "Interest Matching",
+        feat2Desc: "Add your favorite topics and get matched with people sharing your passion.",
+        feat3Title: "Global Community",
+        feat3Desc: "Thousands of users worldwide connected around the clock day and night.",
+        feat4Title: "Safe Environment",
+        feat4Desc: "Automatic protection systems and report features to keep chats clean.",
+        faqTitle: "FAQ",
+        faq1Q: "Is Randly free?",
+        faq1A: "Yes, you can chat with strangers via video or text completely free with no hidden fees.",
+        faq2Q: "Can I use Randly on mobile?",
+        faq2A: "Sure! The site is fully responsive and works smoothly on all mobile devices.",
+        rights: "All rights reserved.",
+        rulesLink: "Rules",
+        privacyLink: "Privacy Policy",
+        contactLink: "Contact Us",
+        visitor: "Visitor",
+        remoteUser: "Stranger",
+        youUser: "You",
+        connectedStatus: "Connected!",
+        searchingText: "Searching for a random person...",
+        welcomeMsg: "Welcome! Click Start to begin chatting.",
+        typingText: "Stranger is typing...",
+        matchGlobal: "🌐 Global (Smart Match)",
+        noTranslation: "No Translation",
+        msgPlaceholder: "Type your message here...",
+        skipStartBtn: "Skip / Start",
+        turnText: "Your turn"
     },
     es: {
-        desc: "¡Chatea con personas al azar en todo el mundo de forma segura y rápida!",
-        interestsMsg: "Introduce intereses (ej. deportes, programación)...",
-        search: "⏳ Buscando a un extraño...",
-        connected: "¡Conectado!",
-        msgInput: "Escribe tu mensaje aquí...",
-        remoteLbl: "Extraño",
-        localLbl: "Tú",
-        startSkip: "Saltar / Start <i class='fas fa-forward'></i>",
-        f1Title: "Sin Registro",
-        f1Desc: "Comienza a chatear al instante sin cuenta. Tu privacidad está a salvo.",
-        f2Title: "Coincidencia de Intereses",
-        faqTitle: "Preguntas Frecuentes"
+        siteTitle: "Randly - Chat aleatorio de video y texto",
+        logoTitle: "Randly 🎲",
+        landingSub: "¡Habla con personas aleatorias de todo el mundo de forma segura!",
+        onlineNow: "En línea",
+        interestsPlaceholder: "Ingrese intereses...",
+        videoChatBtn: "Chat de Video",
+        textChatBtn: "Chat de Texto",
+        feat1Title: "Sin Registro (Anónimo)",
+        feat1Desc: "Comienza a chatear al instante sin crear una cuenta.",
+        feat2Title: "Coincidencia por Intereses",
+        feat2Desc: "Conéctate con personas que comparten tu pasión.",
+        feat3Title: "Comunidad Global",
+        feat3Desc: "Miles de usuarios conectados las 24 horas.",
+        feat4Title: "Entorno Seguro",
+        feat4Desc: "Sistemas de protección automática.",
+        faqTitle: "Preguntas Frecuentes",
+        faq1Q: "¿Es Randly gratis?",
+        faq1A: "Sí, puedes chatear completamente gratis.",
+        faq2Q: "¿Puedo usarlo en el móvil?",
+        faq2A: "¡Claro! Funciona perfectamente en dispositivos móviles.",
+        rights: "Todos los derechos reservados.",
+        rulesLink: "Reglas",
+        privacyLink: "Privacidad",
+        contactLink: "Contacto",
+        visitor: "Visitante",
+        remoteUser: "Extraño",
+        youUser: "Tú",
+        connectedStatus: "¡Conectado!",
+        searchingText: "Buscando persona aleatoria...",
+        welcomeMsg: "¡Bienvenido! Haz clic en Start.",
+        typingText: "Escribiendo...",
+        matchGlobal: "🌐 Global (Smart Match)",
+        noTranslation: "Sin Traducción",
+        msgPlaceholder: "Escribe tu mensaje...",
+        skipStartBtn: "Saltar / Start",
+        turnText: "Tu turno"
+    },
+    fr: {
+        siteTitle: "Randly - Chat vidéo et texte aléatoire",
+        logoTitle: "Randly 🎲",
+        landingSub: "Parlez à des inconnus du monde entier en toute sécurité !",
+        onlineNow: "En ligne",
+        interestsPlaceholder: "Entrez vos centres d'intérêt...",
+        videoChatBtn: "Chat Vidéo",
+        textChatBtn: "Chat Texte",
+        feat1Title: "Sans Inscription (Anonyme)",
+        feat1Desc: "Commencez à chatter instantanément sans compte.",
+        feat2Title: "Correspondance par Intérêts",
+        feat2Desc: "Trouvez des personnes partageant vos passions.",
+        feat3Title: "Communauté Mondiale",
+        feat3Desc: "Des milliers d'utilisateurs connectés 24h/24.",
+        feat4Title: "Environnement Sûr",
+        feat4Desc: "Systèmes de protection automatique.",
+        faqTitle: "FAQ",
+        faq1Q: "Randly est-il gratuit ?",
+        faq1A: "Oui, discutez entièrement gratuitement.",
+        faq2Q: "Puis-je l'utiliser sur mobile ?",
+        faq2A: "Bien sûr ! Fonctionne parfaitement sur mobile.",
+        rights: "Tous droits réservés.",
+        rulesLink: "Règles",
+        privacyLink: "Confidentialité",
+        contactLink: "Contact",
+        visitor: "Visiteur",
+        remoteUser: "Inconnu",
+        youUser: "Vous",
+        connectedStatus: "Connecté !",
+        searchingText: "Recherche d'une personne...",
+        welcomeMsg: "Bienvenue ! Cliquez sur Start.",
+        typingText: "Écrit...",
+        matchGlobal: "🌐 Global (Smart Match)",
+        noTranslation: "Sans Traduction",
+        msgPlaceholder: "Écrivez votre message...",
+        skipStartBtn: "Passer / Start",
+        turnText: "À vous"
+    },
+    de: {
+        siteTitle: "Randly - Zufälliger Video- und Text-Chat",
+        logoTitle: "Randly 🎲",
+        landingSub: "Sicher mit Fremden weltweit chatten!",
+        onlineNow: "Online",
+        interestsPlaceholder: "Interessen eingeben...",
+        videoChatBtn: "Video-Chat",
+        textChatBtn: "Text-Chat",
+        feat1Title: "Ohne Registrierung",
+        feat1Desc: "Sofort und anonym chatten.",
+        feat2Title: "Interessen-Matching",
+        feat2Desc: "Finde Gleichgesinnte.",
+        feat3Title: "Globale Community",
+        feat3Desc: "Tausende Nutzer rund um die Uhr.",
+        feat4Title: "Sichere Umgebung",
+        feat4Desc: "Automatisierter Schutz.",
+        faqTitle: "FAQ",
+        faq1Q: "Ist Randly kostenlos?",
+        faq1A: "Ja, völlig kostenlos.",
+        faq2Q: "Auch auf dem Handy?",
+        faq2A: "Ja, läuft reibungslos auf Mobilgeräten.",
+        rights: "Alle Rechte vorbehalten.",
+        rulesLink: "Regeln",
+        privacyLink: "Datenschutz",
+        contactLink: "Kontakt",
+        visitor: "Besucher",
+        remoteUser: "Fremder",
+        youUser: "Du",
+        connectedStatus: "Verbunden!",
+        searchingText: "Suche nach Person...",
+        welcomeMsg: "Willkommen! Start klicken.",
+        typingText: "Schreibt...",
+        matchGlobal: "🌐 Global (Smart Match)",
+        noTranslation: "Keine Übersetzung",
+        msgPlaceholder: "Nachricht schreiben...",
+        skipStartBtn: "Weiter / Start",
+        turnText: "Du bist dran"
+    },
+    it: {
+        siteTitle: "Randly - Chat video e testo casuale",
+        logoTitle: "Randly 🎲",
+        landingSub: "Parla con estranei in tutto il mondo in sicurezza!",
+        onlineNow: "Online",
+        interestsPlaceholder: "Inserisci interessi...",
+        videoChatBtn: "Video Chat",
+        textChatBtn: "Chat Testuale",
+        feat1Title: "Senza Registrazione",
+        feat1Desc: "Inizia subito in modo anonimo.",
+        feat2Title: "Abbinamento per Interessi",
+        feat2Desc: "Trova persone con la tua stessa passione.",
+        feat3Title: "Comunità Globale",
+        feat3Desc: "Migliaia di utenti connessi 24 ore su 24.",
+        feat4Title: "Ambiente Sicuro",
+        feat4Desc: "Sistemi di protezione automatica.",
+        faqTitle: "FAQ",
+        faq1Q: "Randly è gratuito?",
+        faq1A: "Sì, completamente gratuito.",
+        faq2Q: "Posso usarlo da cellulare?",
+        faq2A: "Certo! Funziona perfettamente su dispositivi mobili.",
+        rights: "Tutti i diritti riservati.",
+        rulesLink: "Regole",
+        privacyLink: "Privacy",
+        contactLink: "Contatti",
+        visitor: "Visitatore",
+        remoteUser: "Estraneo",
+        youUser: "Tu",
+        connectedStatus: "Connesso!",
+        searchingText: "Ricerca in corso...",
+        welcomeMsg: "Benvenuto! Clicca Start.",
+        typingText: "Sta scrivendo...",
+        matchGlobal: "🌐 Globale (Smart Match)",
+        noTranslation: "Senza Traduzione",
+        msgPlaceholder: "Scrivi un messaggio...",
+        skipStartBtn: "Salta / Start",
+        turnText: "Tuo turno"
+    },
+    pt: {
+        siteTitle: "Randly - Chat de vídeo e texto aleatório",
+        logoTitle: "Randly 🎲",
+        landingSub: "Fale com estranhos em todo o mundo com segurança!",
+        onlineNow: "Online",
+        interestsPlaceholder: "Digite interesses...",
+        videoChatBtn: "Chat de Vídeo",
+        textChatBtn: "Chat de Texto",
+        feat1Title: "Sem Registro (Anônimo)",
+        feat1Desc: "Comece a conversar instantaneamente.",
+        feat2Title: "Correspondência por Interesses",
+        feat2Desc: "Conecte-se com pessoas que compartilham sua paixão.",
+        feat3Title: "Comunidade Global",
+        feat3Desc: "Milhares de usuários conectados 24 horas por dia.",
+        feat4Title: "Ambiente Seguro",
+        feat4Desc: "Sistemas de proteção automática.",
+        faqTitle: "FAQ",
+        faq1Q: "O Randly é gratuito?",
+        faq1A: "Sim, totalmente gratuito.",
+        faq2Q: "Posso usar no celular?",
+        faq2A: "Com certeza! Funciona perfeitamente em dispositivos móveis.",
+        rights: "Todos os direitos reservados.",
+        rulesLink: "Regras",
+        privacyLink: "Privacidade",
+        contactLink: "Contato",
+        visitor: "Visitante",
+        remoteUser: "Estranho",
+        youUser: "Você",
+        connectedStatus: "Conectado!",
+        searchingText: "Procurando pessoa...",
+        welcomeMsg: "Bem-vindo! Clique em Start.",
+        typingText: "Digitando...",
+        matchGlobal: "🌐 Global (Smart Match)",
+        noTranslation: "Sem Tradução",
+        msgPlaceholder: "Digite sua mensagem...",
+        skipStartBtn: "Pular / Start",
+        turnText: "Sua vez"
     }
 };
 
-function changeSiteLanguage(lang) {
-    const t = siteTranslations[lang] || siteTranslations['en'];
+function changeGlobalLanguage(lang) {
+    if (!translations[lang]) lang = 'ar';
     
-    document.documentElement.lang = lang;
-    document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+    const htmlRoot = document.getElementById('htmlRoot') || document.documentElement;
+    if (lang === 'ar') {
+        htmlRoot.setAttribute('dir', 'rtl');
+        htmlRoot.setAttribute('lang', 'ar');
+    } else {
+        htmlRoot.setAttribute('dir', 'ltr');
+        htmlRoot.setAttribute('lang', lang);
+    }
 
-    const desc = document.querySelector('.landing-card p');
-    if(desc) desc.textContent = t.desc;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+            el.textContent = translations[lang][key];
+        }
+    });
 
-    const interestsInput = document.getElementById('interestsInput');
-    if(interestsInput) interestsInput.placeholder = t.interestsMsg;
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (translations[lang][key]) {
+            el.setAttribute('placeholder', translations[lang][key]);
+        }
+    });
 
-    if(skeletonLoader) skeletonLoader.innerHTML = t.search;
-    if(msgInput) msgInput.placeholder = t.msgInput;
-    
-    const nextBtn = document.getElementById('nextBtn');
-    if(nextBtn && buttonState !== 'really') nextBtn.innerHTML = t.startSkip;
+    const landingSelect = document.getElementById('landingLangSelect');
+    const siteLangSelect = document.getElementById('siteLang');
+    if (landingSelect) landingSelect.value = lang;
+    if (siteLangSelect) siteLangSelect.value = lang;
 
-    const f1T = document.querySelectorAll('.feature-card h3')[0];
-    const f1D = document.querySelectorAll('.feature-card p')[0];
-    const f2T = document.querySelectorAll('.feature-card h3')[1];
-    const faq = document.querySelector('.faq-section h2');
-    
-    if(f1T) f1T.textContent = t.f1Title;
-    if(f1D) f1D.textContent = t.f1Desc;
-    if(f2T) f2T.textContent = t.f2Title;
-    if(faq) faq.textContent = t.faqTitle;
+    localStorage.setItem('randly_lang', lang);
 }
+
+// التعرف التلقائي على لغة الجهاز عند الدخول لأول مرة
+window.addEventListener('DOMContentLoaded', () => {
+    let savedLang = localStorage.getItem('randly_lang');
+    if (!savedLang) {
+        const browserLang = navigator.language || navigator.userLanguage;
+        const shortLang = browserLang ? browserLang.split('-')[0] : 'ar';
+        savedLang = translations[shortLang] ? shortLang : 'en';
+    }
+    changeGlobalLanguage(savedLang);
+});
 
 // --- التأكد من اكتمال اتصال السوكيت قبل محاولة دخول الغرفة المحفوظة ---
 socket.on('connect', () => {
@@ -259,7 +499,7 @@ function toggleCam() {
     }
 }
 
-// --- بدء وإدارة الجلسات بدون أي انكماش في الشات الكتابي ---
+// --- بدء وإدارة الجلسات دون انكماش الشات ---
 async function startSession(mode, specificRoomId = null) {
     currentMode = mode;
     landingPage.style.display = 'none';
@@ -279,7 +519,6 @@ async function startSession(mode, specificRoomId = null) {
             appendSystemMessage('تعذر الوصول للكاميرا والمايكروفون.');
         }
     } else {
-        // الشات الكتابي: إخفاء تام لقسم الفيديو والكاميرا المحلية لتجنب أي انكماش
         if (videoSection) videoSection.style.setProperty('display', 'none', 'important');
         if (localBox) localBox.style.setProperty('display', 'none', 'important');
         videoOnlyBtns.forEach(btn => btn.classList.add('d-none'));
@@ -303,19 +542,19 @@ async function startSession(mode, specificRoomId = null) {
 function handleMainButton() {
     const btn = document.getElementById('nextBtn');
     const currentLang = document.documentElement.lang || 'ar';
-    const t = siteTranslations[currentLang] || siteTranslations['en'];
+    const t = translations[currentLang] || translations['en'];
 
     if (buttonState === 'start') {
         startSession(currentMode);
         buttonState = 'skip';
-        btn.innerHTML = t.startSkip;
+        btn.innerHTML = `${t.skipStartBtn} <i class="fas fa-forward"></i>`;
     } else if (buttonState === 'skip') {
         buttonState = 'really';
         btn.innerHTML = '<i class="fas fa-question-circle"></i> Really?';
     } else if (buttonState === 'really') {
         nextUser();
         buttonState = 'skip';
-        btn.innerHTML = t.startSkip;
+        btn.innerHTML = `${t.skipStartBtn} <i class="fas fa-forward"></i>`;
     }
 }
 
@@ -328,7 +567,7 @@ function nextUser() {
     skeletonLoader.style.display = 'block';
     
     const currentLang = document.documentElement.lang || 'ar';
-    statusDiv.textContent = siteTranslations[currentLang]?.search || 'Searching...';
+    statusDiv.textContent = translations[currentLang]?.searchingText || 'Searching...';
 
     const interestsVal = document.getElementById('interestsInput').value;
     const interestsArray = interestsVal.split(',').map(i => i.trim()).filter(i => i !== '');
@@ -359,7 +598,6 @@ function leaveSession() {
     }
     landingPage.style.display = 'flex';
     
-    // إخفاء الفيديو والكاميرا تماماً عند العودة للصفحة الرئيسية
     if (videoSection) videoSection.style.setProperty('display', 'none', 'important');
     const localBox = document.querySelector('.video-box.local-box');
     if (localBox) localBox.style.setProperty('display', 'none', 'important');
@@ -367,7 +605,9 @@ function leaveSession() {
     buttonState = 'start';
     currentRoomId = null;
     const btn = document.getElementById('nextBtn');
-    if (btn) btn.innerHTML = 'تخطي / Start <i class="fas fa-forward"></i>';
+    const currentLang = document.documentElement.lang || 'ar';
+    const t = translations[currentLang] || translations['en'];
+    if (btn) btn.innerHTML = `${t.skipStartBtn} <i class="fas fa-forward"></i>`;
     
     window.history.pushState({}, document.title, window.location.pathname);
     socket.emit('leave-room');
@@ -452,7 +692,9 @@ function closeGame() {
 function resetXOBoard() {
     xoBoard = ['', '', '', '', '', '', '', '', ''];
     document.querySelectorAll('.xo-cell').forEach(cell => cell.textContent = '');
-    document.getElementById('gameStatusText').textContent = isMyTurn ? 'دورك الآن ( ' + myGameSymbol + ' )' : 'انتظر دورك...';
+    const currentLang = document.documentElement.lang || 'ar';
+    const t = translations[currentLang] || translations['en'];
+    document.getElementById('gameStatusText').textContent = isMyTurn ? `${t.turnText} ( ${myGameSymbol} )` : 'انتظر دورك...';
 }
 
 function makeMove(cellIndex) {
@@ -470,7 +712,9 @@ socket.on('xo-receive-move', (data) => {
     xoBoard[data.index] = data.symbol;
     document.querySelectorAll('.xo-cell')[data.index].textContent = data.symbol;
     isMyTurn = true;
-    document.getElementById('gameStatusText').textContent = 'دورك الآن ( ' + myGameSymbol + ' )';
+    const currentLang = document.documentElement.lang || 'ar';
+    const t = translations[currentLang] || translations['en'];
+    document.getElementById('gameStatusText').textContent = `${t.turnText} ( ${myGameSymbol} )`;
 });
 
 // --- WebRTC Setup ---
@@ -519,7 +763,7 @@ socket.on('online-count', (count) => {
 
 socket.on('matched', async (data) => {
     const currentLang = document.documentElement.lang || 'ar';
-    statusDiv.textContent = siteTranslations[currentLang]?.connected || 'Connected!';
+    statusDiv.textContent = translations[currentLang]?.connectedStatus || 'Connected!';
     currentRoomId = data.roomId; 
     
     skeletonLoader.style.display = 'none';
@@ -527,6 +771,7 @@ socket.on('matched', async (data) => {
     
     if (!isSoundMuted) matchSound.play().catch(()=>{});
 
+    // سحب وعرض علم ودولة الطرف الآخر تلقائياً عبر الـ IP (مثل نظام Umingle)
     const flagElement = document.getElementById('remoteUserFlag');
     if (flagElement) {
         const partnerCountry = data.partnerCountry || 'global';
