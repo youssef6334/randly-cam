@@ -590,11 +590,7 @@
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[lang][key]) {
-                    if (el.tagName.toLowerCase() === 'option') {
-                        el.textContent = translations[lang][key];
-                    } else {
-                        el.textContent = translations[lang][key];
-                    }
+                    el.textContent = translations[lang][key];
                 }
             });
 
@@ -623,7 +619,6 @@
                 return;
             }
             try {
-                // استخدام API المدمج في المتصفحات لترجمة كود الدولة (مثل EG) إلى اسم الدولة باللغة المحددة
                 const regionNames = new Intl.DisplayNames([currentLang], { type: 'region' });
                 if (nameEl) nameEl.textContent = '- ' + regionNames.of(countryCode.toUpperCase());
             } catch (e) {
