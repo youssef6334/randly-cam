@@ -12,6 +12,7 @@ const io = new Server(http, {
     }
 });
 
+// تفعيل قراءة الملفات الثابتة (مثل index.html, rules.html, privacy.html, terms.html وغيرها)
 app.use(express.static(__dirname));
 
 let activeUsers = new Map();
@@ -33,16 +34,14 @@ setInterval(() => {
 }, 60 * 60 * 1000); 
 
 io.on('connection', (socket) => {
-    // --- التعديل: قراءة الـ IP الحقيقي وتخطي حماية الاستضافات ---
+    // --- قراءة الـ IP الحقيقي وتخطي حماية الاستضافات ---
     let clientIp = socket.handshake.headers['x-forwarded-for'] || 
                    socket.handshake.headers['cf-connecting-ip'] || 
                    socket.handshake.headers['x-real-ip'] || 
                    socket.handshake.address;
                    
     if (clientIp) {
-        // تنظيف الـ IP لو جاي في مصفوفة
         clientIp = clientIp.split(',')[0].trim();
-        // التخلص من صيغة IPv6 لو ظهرت
         if (clientIp.startsWith('::ffff:')) {
             clientIp = clientIp.substring(7);
         }
