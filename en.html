@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title id="siteTitle">Randly - Free Random Video Chat with Strangers</title>
+<meta name="description" content="Chat with random strangers around the world safely and quickly on Randly. Free video and text chat, no registration required.">
+
+<!-- Canonical & hreflang -->
+<link rel="canonical" href="https://randly.live/en.html">
+<link rel="alternate" hreflang="ar" href="https://randly.live/">
+<link rel="alternate" hreflang="en" href="https://randly.live/en.html">
+<link rel="alternate" hreflang="x-default" href="https://randly.live/">
+
+<!-- Open Graph -->
+<meta property="og:title" content="Randly - Free Random Video Chat with Strangers">
+<meta property="og:description" content="Chat with random strangers around the world safely and quickly on Randly.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://randly.live/en.html">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="stylesheet" href="style.css">
+<!-- Modern icons library (FontAwesome) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/nsfwjs@2.4.1/dist/nsfwjs.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<!-- Face effects libraries (MediaPipe) -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Randly",
+  "url": "https://randly.live/en.html",
+  "applicationCategory": "SocialNetworkingApplication",
+  "operatingSystem": "Web",
+  "description": "Free random video and text chat with strangers around the world, no registration required.",
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}
+}
+</script>
+</head>
+<body>
+
+<!-- Landing Page -->
+<div id="landingPage" class="landing-container">
+<div style="position: absolute; top: 20px; right: 20px; z-index: 100;">
+<select id="landingLangSelect" class="site-lang-select" onchange="changeGlobalLanguage(this.value)" style="padding: 8px 12px; border-radius: 8px; background: var(--bg-card, #222); color: var(--text-main, #fff); border: 1px solid rgba(255,255,255,0.2);">
+<option value="ar">العربية</option>
+<option value="en" selected>English</option>
+<option value="es">Español</option>
+<option value="fr">Français</option>
+<option value="de">Deutsch</option>
+<option value="it">Italiano</option>
+<option value="pt">Português</option>
+</select>
+</div>
+
+<div class="landing-card">
+<h1 data-i18n="logoTitle">Randly - Free Random Video Chat with Strangers</h1>
+<p data-i18n="landingSub">Chat with random people around the world safely and quickly!</p>
+<div class="online-counter">
+🔴 <span data-i18n="onlineNow">Online Now</span>: <span id="landingOnlineCount">0</span>
+</div>
+
+<div class="interests-box">
+<div id="interestsTagsContainer" class="interests-tags-container" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: var(--bg-card, #222); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); min-height: 48px; cursor: text;" onclick="document.getElementById('interestTagInput').focus()">
+<input type="text" id="interestTagInput" data-i18n-placeholder="interestsPlaceholder" placeholder="Enter your interests (type and press Enter)..." style="border: none; background: transparent; color: var(--text-main, #fff); outline: none; flex: 1; min-width: 140px; padding: 4px;">
+</div>
+</div>
+
+<div class="start-buttons">
+<button class="btn btn-primary-lg" onclick="startSession('video')"><i class="fas fa-video"></i> <span data-i18n="videoChatBtn">Video Chat</span></button>
+<button class="btn btn-secondary-lg" onclick="startSession('text')"><i class="fas fa-comment-dots"></i> <span data-i18n="textChatBtn">Text Chat</span></button>
+</div>
+</div>
+
+<main class="vip-seo-section" id="seoSection">
+<div class="features-grid">
+<article class="feature-card">
+<i class="fas fa-user-secret"></i>
+<h3 data-i18n="feat1Title">Anonymous - No Registration</h3>
+<p data-i18n="feat1Desc">Start chatting instantly with one click, no account needed, your privacy is safe.</p>
+</article>
+<article class="feature-card">
+<i class="fas fa-brain"></i>
+<h3 data-i18n="feat2Title">Interest Matching</h3>
+<p data-i18n="feat2Desc">Add topics you love and get matched with people who share your passion.</p>
+</article>
+<article class="feature-card">
+<i class="fas fa-globe"></i>
+<h3 data-i18n="feat3Title">Global Community</h3>
+<p data-i18n="feat3Desc">Thousands of users from around the world online 24/7.</p>
+</article>
+<article class="feature-card">
+<i class="fas fa-shield-alt"></i>
+<h3 data-i18n="feat4Title">Safe Environment</h3>
+<p data-i18n="feat4Desc">Automatic protection systems and reporting features to keep chats clean and respectful.</p>
+</article>
+</div>
+
+<section class="faq-section" itemscope itemtype="https://schema.org/FAQPage">
+<h2 data-i18n="faqTitle">Frequently Asked Questions</h2>
+<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+<h3 itemprop="name" class="faq-question" data-i18n="faq1Q">Is Randly free?</h3>
+<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
+<p itemprop="text" data-i18n="faq1A">Yes, you can chat and connect with strangers via video or text completely free, with no hidden fees.</p>
+</div>
+</div>
+<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+<h3 itemprop="name" class="faq-question" data-i18n="faq2Q">Can I use Randly on my phone?</h3>
+<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
+<p itemprop="text" data-i18n="faq2A">Absolutely! The site is designed to work smoothly on all mobile devices.</p>
+</div>
+</div>
+</section>
+
+<footer class="app-footer">
+<p>&copy; 2026 Randly.live - <span data-i18n="rights">All rights reserved.</span></p>
+<div class="footer-links">
+<a href="rules.html" data-i18n="rulesLink">Rules</a>
+<a href="privacy.html" data-i18n="privacyLink">Privacy Policy</a>
+<a href="mailto:contact@randly.live" data-i18n="contactLink">Contact Us</a>
+</div>
+</footer>
+</main>
+</div>
+
+<!-- App Container -->
+<div class="main-container">
+<header class="app-header">
+<div class="header-left">
+<div class="logo">Randly</div>
+<span class="user-display-name" id="userDisplayName"><i class="fas fa-user"></i> <span data-i18n="visitor">Guest</span></span>
+</div>
+<div class="header-right" style="display: flex; align-items: center; gap: 10px;">
+<select id="siteLang" class="site-lang-select" onchange="changeGlobalLanguage(this.value)">
+<option value="ar">العربية</option>
+<option value="en" selected>English</option>
+<option value="es">Español</option>
+<option value="fr">Français</option>
+<option value="de">Deutsch</option>
+<option value="it">Italiano</option>
+<option value="pt">Português</option>
+</select>
+<span class="online-badge" style="display: inline-flex; align-items: center; background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 15px; font-weight: bold; border: 1px solid rgba(255,255,255,0.1);">
+🔴 <span data-i18n="onlineNow" style="margin: 0 5px;">Online Now</span>: <span id="headerOnlineCount" style="margin: 0 5px; color: #fff;">0</span>
+</span>
+<button class="btn-icon" onclick="requestGame()">🎮</button>
+<button class="btn-icon theme-toggle" onclick="toggleTheme()">🌙</button>
+</div>
+</header>
+
+<div class="top-ad-bar" id="adContainer">
+<div id="adContent">
+<script async="async" data-cfasync="false" src="https://pl30790391.effectivecpmnetwork.com/f66aa4bb4789b5ab486c7c42e435623d/invoke.js"></script>
+<div id="container-f66aa4bb4789b5ab486c7c42e435623d"></div>
+</div>
+<button class="toggle-ad-btn" onclick="toggleAd()">
+<span id="arrowIcon">▲</span>
+</button>
+</div>
+
+<div class="content-wrapper">
+<div id="videoSection" class="video-section">
+<div class="video-box remote-box">
+<video id="remoteVideo" autoplay playsinline></video>
+<span class="video-label" style="display: flex; align-items: center; gap: 8px;">
+<span data-i18n="remoteUser">Stranger</span>
+<span id="remoteUserFlag" class="country-flag-icon"></span>
+<span id="remoteUserCountryName" style="color: #ffd700; font-weight: bold; font-size: 14px;"></span>
+</span>
+</div>
+<div class="video-box local-box" style="position: relative;">
+<video id="localVideo" autoplay playsinline muted></video>
+<canvas id="maskCanvas" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; z-index: 2; pointer-events: none;"></canvas>
+<span class="video-label" style="z-index: 3;" data-i18n="youUser">You</span>
+</div>
+</div>
+
+<div id="chatSection" class="chat-section">
+<div class="status-bar" id="status" data-i18n="connectedStatus">Connected!</div>
+<div id="skeletonLoader" style="display: none; text-align: center; padding: 20px; color: #888; font-weight: bold;">
+⏳ <span data-i18n="searchingText">Searching for a random person...</span>
+</div>
+<div class="chat-box" id="chatBox">
+<div class="msg msg-sys" data-i18n="welcomeMsg">Welcome! Click Start to begin chatting.</div>
+</div>
+<div id="typingIndicator" style="display: none; font-size: 12px; color: #888; padding: 0 10px 10px 10px;" data-i18n="typingText">
+Stranger is typing...
+</div>
+
+<div class="filter-controls-row">
+<div class="select-wrapper">
+<select id="countrySelect" class="filter-select">
+<option value="global" data-i18n="matchGlobal">🌐 Global (Smart Match)</option>
+<option value="PS">🇵🇸 Palestine</option>
+<option value="EG">🇪🇬 Egypt</option>
+<option value="SA">🇸🇦 Saudi Arabia</option>
+<option value="AE">🇦🇪 UAE</option>
+<option value="MA">🇲🇦 Morocco</option>
+<option value="DZ">🇩🇿 Algeria</option>
+<option value="KW">🇰🇼 Kuwait</option>
+<option value="QA">🇶🇦 Qatar</option>
+<option value="BH">🇧🇭 Bahrain</option>
+<option value="OM">🇴🇲 Oman</option>
+<option value="JO">🇯🇴 Jordan</option>
+<option value="LB">🇱🇧 Lebanon</option>
+<option value="IQ">🇮🇶 Iraq</option>
+<option value="SY">🇸🇾 Syria</option>
+<option value="US">🇺🇸 United States</option>
+<option value="GB">🇬🇧 United Kingdom</option>
+<option value="FR">🇫🇷 France</option>
+<option value="DE">🇩🇪 Germany</option>
+<option value="IT">🇮🇹 Italy</option>
+<option value="ES">🇪🇸 Spain</option>
+<option value="TR">🇹🇷 Turkey</option>
+<option value="IN">🇮🇳 India</option>
+</select>
+</div>
+
+<div class="select-wrapper">
+<select id="translationLang" class="filter-select">
+<option value="none" data-i18n="noTranslation">No translation</option>
+<option value="ar">العربية</option>
+<option value="en">English</option>
+<option value="es">Español</option>
+<option value="fr">Français</option>
+<option value="de">Deutsch</option>
+<option value="it">Italiano</option>
+<option value="pt">Português</option>
+</select>
+</div>
+
+<div class="quick-actions">
+<button class="btn-action-icon modern-btn video-only-btn" id="micBtn" onclick="toggleMic()" title="Mic">
+<i class="fas fa-microphone"></i>
+</button>
+<button class="btn-action-icon modern-btn video-only-btn" id="camBtn" onclick="toggleCam()" title="Camera">
+<i class="fas fa-video"></i>
+</button>
+<button class="btn-action-icon modern-btn video-only-btn" id="maskBtn" onclick="toggleMask()" title="Face effects">
+<i class="fas fa-masks-theater"></i>
+</button>
+<button class="btn-action-icon modern-btn video-only-btn" id="muteBtn" onclick="toggleSoundMute()" title="Sound">
+<i class="fas fa-volume-up"></i>
+</button>
+<button class="btn-action-icon modern-btn" id="copyLinkBtn" onclick="saveRoomLink()" title="Copy room link">
+<i class="fas fa-link"></i>
+</button>
+<button class="btn-action-icon modern-btn" onclick="reportUser()" title="Report">
+<i class="fas fa-flag"></i>
+</button>
+<button class="btn-action-icon modern-btn btn-close-chat" onclick="leaveSession()" title="Leave">
+<i class="fas fa-phone-slash"></i>
+</button>
+</div>
+</div>
+
+<div class="bottom-action-bar" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; width: 100%;">
+<button class="btn-start-main" id="nextBtn" onclick="handleMainButton()" style="white-space: nowrap; flex-shrink: 0; padding: 10px 14px;">
+<i class="fas fa-forward"></i> <span data-i18n="skipStartBtn">Skip / Start</span>
+</button>
+
+<div class="input-container chat-input-wrapper" style="display: flex; flex-direction: row; flex: 1; align-items: center; background: var(--bg-card); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; min-width: 0;">
+<input type="text" id="msgInput" data-i18n-placeholder="msgPlaceholder" placeholder="Type your message here..." onkeydown="if(event.key === 'Enter') sendMsg()" style="flex: 1; direction: auto; text-align: start; padding: 12px; border: none; background: transparent; color: var(--text-main); outline: none; min-width: 0;">
+<button class="btn-send-inside" id="sendBtn" onclick="sendMsg()" style="padding: 10px 14px; border: none; background: transparent; color: var(--accent-purple); cursor: pointer; flex-shrink: 0;">
+<i class="fas fa-paper-plane" style="font-size: 1.2rem;"></i>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- XO Mini-Game Overlay -->
+<div id="gameBoardOverlay" class="game-overlay" style="display: none;">
+<div class="game-card">
+<div class="game-header">
+<h3>XO Game 🎮</h3>
+<button class="close-game" onclick="closeGame()">✕</button>
+</div>
+<p id="gameStatusText" data-i18n="turnText">Your turn</p>
+<div class="xo-grid">
+<div class="xo-cell" onclick="makeMove(0)"></div>
+<div class="xo-cell" onclick="makeMove(1)"></div>
+<div class="xo-cell" onclick="makeMove(2)"></div>
+<div class="xo-cell" onclick="makeMove(3)"></div>
+<div class="xo-cell" onclick="makeMove(4)"></div>
+<div class="xo-cell" onclick="makeMove(5)"></div>
+<div class="xo-cell" onclick="makeMove(6)"></div>
+<div class="xo-cell" onclick="makeMove(7)"></div>
+<div class="xo-cell" onclick="makeMove(8)"></div>
+</div>
+</div>
+</div>
+
+<script src="script.js"></script>
+<script type="text/javascript" src="https://pl30790288.effectivecpmnetwork.com/af/01/4f/af014f7d78a0555fd804897f8175cc44.js"></script>
+</body>
+</html>
