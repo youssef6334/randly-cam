@@ -39,13 +39,16 @@ io.on('connection', (socket) => {
                    socket.handshake.headers['cf-connecting-ip'] || 
                    socket.handshake.headers['x-real-ip'] || 
                    socket.handshake.address;
-                   
-    if (clientIp) {
-        clientIp = clientIp.split(',')[0].trim();
-        if (clientIp.startsWith('::ffff:')) {
-            clientIp = clientIp.substring(7);
-        }
-    }
+         if (clientIp) {
+clientIp = clientIp.split(',')[0].trim();
+if (clientIp.startsWith('::ffff:')) {
+clientIp = clientIp.substring(7);
+}
+// Azure بيحط البورت مع الـ IP (مثال: 41.33.12.5:54321) - لازم نشيله
+if (clientIp.includes(':') && clientIp.split(':').length === 2) {
+clientIp = clientIp.split(':')[0];
+}
+}
     
     // لو بنعمل تست على نفس الجهاز (Localhost)
     if (!clientIp || clientIp === '127.0.0.1' || clientIp === '::1') {

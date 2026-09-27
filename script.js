@@ -520,6 +520,19 @@ socket.on('matched', async (data) => {
             }
         }
     }
+    // عرض الدولة كرسالة نظام في الشات (تظهر في الفيديو والنص مع بعض)
+let partnerCountryMsg = '';
+if (currentPartnerCountry === 'global') {
+partnerCountryMsg = translations[currentLang]?.matchGlobal || '🌐 Global';
+} else {
+try {
+const regionNames = new Intl.DisplayNames([currentLang], { type: 'region' });
+partnerCountryMsg = getFlagEmoji(currentPartnerCountry) + ' ' + regionNames.of(currentPartnerCountry.toUpperCase());
+} catch (e) {
+partnerCountryMsg = getFlagEmoji(currentPartnerCountry);
+}
+}
+appendSystemMessage(`🌍 ${partnerCountryMsg}`);
 
     myGameSymbol = data.xoRole;
     isMyTurn = (myGameSymbol === 'X'); 
