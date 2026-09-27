@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" id="htmlRoot">
+<html lang="hi" dir="ltr" id="htmlRoot">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title id="siteTitle">Randly - Free Random Video Chat with Strangers</title>
-<meta name="description" content="Chat with random strangers around the world safely and quickly on Randly. Free video and text chat, no registration required.">
+<title id="siteTitle">Randly - अजनबियों के साथ मुफ्त रैंडम वीडियो चैट</title>
+<meta name="description" content="Randly पर दुनिया भर के अजनबियों के साथ सुरक्षित और तेज़ी से चैट करें। मुफ्त वीडियो और टेक्स्ट चैट, बिना रजिस्ट्रेशन के।">
 
-<!-- Canonical & hreflang -->
-<link rel="canonical" href="https://randly.live/en.html">
+<link rel="canonical" href="https://randly.live/hi.html">
 <link rel="alternate" hreflang="ar" href="https://randly.live/">
 <link rel="alternate" hreflang="en" href="https://randly.live/en.html">
 <link rel="alternate" hreflang="es" href="https://randly.live/es.html">
@@ -22,22 +21,19 @@
 <link rel="alternate" hreflang="zh" href="https://randly.live/zh.html">
 <link rel="alternate" hreflang="x-default" href="https://randly.live/">
 
-<!-- Open Graph -->
-<meta property="og:title" content="Randly - Free Random Video Chat with Strangers">
-<meta property="og:description" content="Chat with random strangers around the world safely and quickly on Randly.">
+<meta property="og:title" content="Randly - अजनबियों के साथ मुफ्त रैंडम वीडियो चैट">
+<meta property="og:description" content="Randly पर दुनिया भर के अजनबियों के साथ सुरक्षित और तेज़ी से चैट करें।">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://randly.live/en.html">
-<meta property="og:locale" content="en_US">
+<meta property="og:url" content="https://randly.live/hi.html">
+<meta property="og:locale" content="hi_IN">
 <meta property="og:image" content="https://randly.live/og-image.jpg">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="stylesheet" href="style.css">
-<!-- Modern icons library (FontAwesome) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/nsfwjs@2.4.1/dist/nsfwjs.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
-<!-- Face effects libraries (MediaPipe) -->
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
 
@@ -46,46 +42,48 @@
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "Randly",
-  "url": "https://randly.live/en.html",
+  "url": "https://randly.live/hi.html",
   "applicationCategory": "SocialNetworkingApplication",
   "operatingSystem": "Web",
-  "description": "Free random video and text chat with strangers around the world, no registration required.",
+  "description": "दुनिया भर के अजनबियों के साथ मुफ्त रैंडम वीडियो और टेक्स्ट चैट, बिना रजिस्ट्रेशन के।",
   "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}
 }
 </script>
 </head>
 <body>
 
-<!-- Landing Page -->
 <div id="landingPage" class="landing-container">
 <div style="position: absolute; top: 20px; right: 20px; z-index: 100;">
 <select id="landingLangSelect" class="site-lang-select" onchange="changeGlobalLanguage(this.value)" style="padding: 8px 12px; border-radius: 8px; background: var(--bg-card, #222); color: var(--text-main, #fff); border: 1px solid rgba(255,255,255,0.2);">
 <option value="ar">العربية</option>
-<option value="en" selected>English</option>
+<option value="en">English</option>
 <option value="es">Español</option>
 <option value="fr">Français</option>
 <option value="de">Deutsch</option>
 <option value="it">Italiano</option>
 <option value="pt">Português</option>
+<option value="tr">Türkçe</option>
+<option value="ru">Русский</option>
+<option value="hi" selected>हिन्दी</option>
 </select>
 </div>
 
 <div class="landing-card">
-<h1 data-i18n="logoTitle">Randly - Free Random Video Chat with Strangers</h1>
-<p data-i18n="landingSub">Chat with random people around the world safely and quickly!</p>
+<h1 data-i18n="logoTitle">Randly - अजनबियों के साथ मुफ्त रैंडम वीडियो चैट</h1>
+<p data-i18n="landingSub">दुनिया भर के रैंडम लोगों के साथ सुरक्षित और तेज़ी से चैट करें!</p>
 <div class="online-counter">
-🔴 <span data-i18n="onlineNow">Online Now</span>: <span id="landingOnlineCount">0</span>
+🔴 <span data-i18n="onlineNow">अभी ऑनलाइन</span>: <span id="landingOnlineCount">0</span>
 </div>
 
 <div class="interests-box">
 <div id="interestsTagsContainer" class="interests-tags-container" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: var(--bg-card, #222); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); min-height: 48px; cursor: text;" onclick="document.getElementById('interestTagInput').focus()">
-<input type="text" id="interestTagInput" data-i18n-placeholder="interestsPlaceholder" placeholder="Enter your interests (type and press Enter)..." style="border: none; background: transparent; color: var(--text-main, #fff); outline: none; flex: 1; min-width: 140px; padding: 4px;">
+<input type="text" id="interestTagInput" data-i18n-placeholder="interestsPlaceholder" placeholder="अपनी रुचियाँ दर्ज करें (टाइप करें और Enter दबाएं)..." style="border: none; background: transparent; color: var(--text-main, #fff); outline: none; flex: 1; min-width: 140px; padding: 4px;">
 </div>
 </div>
 
 <div class="start-buttons">
-<button class="btn btn-primary-lg" onclick="startSession('video')"><i class="fas fa-video"></i> <span data-i18n="videoChatBtn">Video Chat</span></button>
-<button class="btn btn-secondary-lg" onclick="startSession('text')"><i class="fas fa-comment-dots"></i> <span data-i18n="textChatBtn">Text Chat</span></button>
+<button class="btn btn-primary-lg" onclick="startSession('video')"><i class="fas fa-video"></i> <span data-i18n="videoChatBtn">वीडियो चैट</span></button>
+<button class="btn btn-secondary-lg" onclick="startSession('text')"><i class="fas fa-comment-dots"></i> <span data-i18n="textChatBtn">टेक्स्ट चैट</span></button>
 </div>
 </div>
 
@@ -93,72 +91,74 @@
 <div class="features-grid">
 <article class="feature-card">
 <i class="fas fa-user-secret"></i>
-<h3 data-i18n="feat1Title">Anonymous - No Registration</h3>
-<p data-i18n="feat1Desc">Start chatting instantly with one click, no account needed, your privacy is safe.</p>
+<h3 data-i18n="feat1Title">गुमनाम - बिना रजिस्ट्रेशन</h3>
+<p data-i18n="feat1Desc">एक क्लिक में तुरंत चैट शुरू करें, किसी अकाउंट की जरूरत नहीं, आपकी प्राइवेसी सुरक्षित है।</p>
 </article>
 <article class="feature-card">
 <i class="fas fa-brain"></i>
-<h3 data-i18n="feat2Title">Interest Matching</h3>
-<p data-i18n="feat2Desc">Add topics you love and get matched with people who share your passion.</p>
+<h3 data-i18n="feat2Title">रुचि के अनुसार मिलान</h3>
+<p data-i18n="feat2Desc">अपनी पसंदीदा विषय जोड़ें और उन लोगों से जुड़ें जो आपका जुनून साझा करते हैं।</p>
 </article>
 <article class="feature-card">
 <i class="fas fa-globe"></i>
-<h3 data-i18n="feat3Title">Global Community</h3>
-<p data-i18n="feat3Desc">Thousands of users from around the world online 24/7.</p>
+<h3 data-i18n="feat3Title">वैश्विक समुदाय</h3>
+<p data-i18n="feat3Desc">दुनिया भर के हजारों उपयोगकर्ता 24/7 ऑनलाइन हैं।</p>
 </article>
 <article class="feature-card">
 <i class="fas fa-shield-alt"></i>
-<h3 data-i18n="feat4Title">Safe Environment</h3>
-<p data-i18n="feat4Desc">Automatic protection systems and reporting features to keep chats clean and respectful.</p>
+<h3 data-i18n="feat4Title">सुरक्षित वातावरण</h3>
+<p data-i18n="feat4Desc">साफ-सुथरी और सम्मानजनक चैट के लिए स्वचालित सुरक्षा प्रणालियाँ और रिपोर्टिंग सुविधाएँ।</p>
 </article>
 </div>
 
 <section class="faq-section" itemscope itemtype="https://schema.org/FAQPage">
-<h2 data-i18n="faqTitle">Frequently Asked Questions</h2>
+<h2 data-i18n="faqTitle">अक्सर पूछे जाने वाले सवाल</h2>
 <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq1Q">Is Randly free?</h3>
+<h3 itemprop="name" class="faq-question" data-i18n="faq1Q">क्या Randly मुफ्त है?</h3>
 <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq1A">Yes, you can chat and connect with strangers via video or text completely free, with no hidden fees.</p>
+<p itemprop="text" data-i18n="faq1A">हाँ, आप वीडियो या टेक्स्ट के जरिए अजनबियों से पूरी तरह मुफ्त में बिना किसी छिपे हुए शुल्क के चैट कर सकते हैं।</p>
 </div>
 </div>
 <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq2Q">Can I use Randly on my phone?</h3>
+<h3 itemprop="name" class="faq-question" data-i18n="faq2Q">क्या मैं Randly को अपने फोन पर इस्तेमाल कर सकता हूँ?</h3>
 <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq2A">Absolutely! The site is designed to work smoothly on all mobile devices.</p>
+<p itemprop="text" data-i18n="faq2A">बिल्कुल! यह साइट सभी मोबाइल डिवाइस पर सुचारू रूप से काम करने के लिए डिज़ाइन की गई है।</p>
 </div>
 </div>
 </section>
 
 <footer class="app-footer">
-<p>&copy; 2026 Randly.live - <span data-i18n="rights">All rights reserved.</span></p>
+<p>&copy; 2026 Randly.live - <span data-i18n="rights">सर्वाधिकार सुरक्षित।</span></p>
 <div class="footer-links">
-<a href="rules.html" data-i18n="rulesLink">Rules</a>
-<a href="privacy.html" data-i18n="privacyLink">Privacy Policy</a>
-<a href="mailto:contact@randly.live" data-i18n="contactLink">Contact Us</a>
+<a href="rules.html" data-i18n="rulesLink">नियम</a>
+<a href="privacy.html" data-i18n="privacyLink">गोपनीयता नीति</a>
+<a href="mailto:contact@randly.live" data-i18n="contactLink">हमसे संपर्क करें</a>
 </div>
 </footer>
 </main>
 </div>
 
-<!-- App Container -->
 <div class="main-container">
 <header class="app-header">
 <div class="header-left">
 <div class="logo">Randly</div>
-<span class="user-display-name" id="userDisplayName"><i class="fas fa-user"></i> <span data-i18n="visitor">Guest</span></span>
+<span class="user-display-name" id="userDisplayName"><i class="fas fa-user"></i> <span data-i18n="visitor">अतिथि</span></span>
 </div>
 <div class="header-right" style="display: flex; align-items: center; gap: 10px;">
 <select id="siteLang" class="site-lang-select" onchange="changeGlobalLanguage(this.value)">
 <option value="ar">العربية</option>
-<option value="en" selected>English</option>
+<option value="en">English</option>
 <option value="es">Español</option>
 <option value="fr">Français</option>
 <option value="de">Deutsch</option>
 <option value="it">Italiano</option>
 <option value="pt">Português</option>
+<option value="tr">Türkçe</option>
+<option value="ru">Русский</option>
+<option value="hi" selected>हिन्दी</option>
 </select>
 <span class="online-badge" style="display: inline-flex; align-items: center; background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 15px; font-weight: bold; border: 1px solid rgba(255,255,255,0.1);">
-🔴 <span data-i18n="onlineNow" style="margin: 0 5px;">Online Now</span>: <span id="headerOnlineCount" style="margin: 0 5px; color: #fff;">0</span>
+🔴 <span data-i18n="onlineNow" style="margin: 0 5px;">अभी ऑनलाइन</span>: <span id="headerOnlineCount" style="margin: 0 5px; color: #fff;">0</span>
 </span>
 <button class="btn-icon" onclick="requestGame()">🎮</button>
 <button class="btn-icon theme-toggle" onclick="toggleTheme()">🌙</button>
@@ -180,7 +180,7 @@
 <div class="video-box remote-box">
 <video id="remoteVideo" autoplay playsinline></video>
 <span class="video-label" style="display: flex; align-items: center; gap: 8px;">
-<span data-i18n="remoteUser">Stranger</span>
+<span data-i18n="remoteUser">अजनबी</span>
 <span id="remoteUserFlag" class="country-flag-icon"></span>
 <span id="remoteUserCountryName" style="color: #ffd700; font-weight: bold; font-size: 14px;"></span>
 </span>
@@ -188,40 +188,30 @@
 <div class="video-box local-box" style="position: relative;">
 <video id="localVideo" autoplay playsinline muted></video>
 <canvas id="maskCanvas" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; z-index: 2; pointer-events: none;"></canvas>
-<span class="video-label" style="z-index: 3;" data-i18n="youUser">You</span>
+<span class="video-label" style="z-index: 3;" data-i18n="youUser">आप</span>
 </div>
 </div>
 
 <div id="chatSection" class="chat-section">
-<div class="status-bar" id="status" data-i18n="connectedStatus">Connected!</div>
+<div class="status-bar" id="status" data-i18n="connectedStatus">कनेक्ट हो गया!</div>
 <div id="skeletonLoader" style="display: none; text-align: center; padding: 20px; color: #888; font-weight: bold;">
-⏳ <span data-i18n="searchingText">Searching for a random person...</span>
+⏳ <span data-i18n="searchingText">रैंडम व्यक्ति खोजा जा रहा है...</span>
 </div>
 <div class="chat-box" id="chatBox">
-<div class="msg msg-sys" data-i18n="welcomeMsg">Welcome! Click Start to begin chatting.</div>
+<div class="msg msg-sys" data-i18n="welcomeMsg">स्वागत है! चैट शुरू करने के लिए Start पर क्लिक करें।</div>
 </div>
 <div id="typingIndicator" style="display: none; font-size: 12px; color: #888; padding: 0 10px 10px 10px;" data-i18n="typingText">
-Stranger is typing...
+अजनबी टाइप कर रहा है...
 </div>
 
 <div class="filter-controls-row">
 <div class="select-wrapper">
 <select id="countrySelect" class="filter-select">
-<option value="global" data-i18n="matchGlobal">🌐 Global (Smart Match)</option>
+<option value="global" data-i18n="matchGlobal">🌐 वैश्विक (स्मार्ट मिलान)</option>
 <option value="PS">🇵🇸 Palestine</option>
 <option value="EG">🇪🇬 Egypt</option>
 <option value="SA">🇸🇦 Saudi Arabia</option>
-<option value="AE">🇦🇪 UAE</option>
-<option value="MA">🇲🇦 Morocco</option>
-<option value="DZ">🇩🇿 Algeria</option>
-<option value="KW">🇰🇼 Kuwait</option>
-<option value="QA">🇶🇦 Qatar</option>
-<option value="BH">🇧🇭 Bahrain</option>
-<option value="OM">🇴🇲 Oman</option>
-<option value="JO">🇯🇴 Jordan</option>
-<option value="LB">🇱🇧 Lebanon</option>
-<option value="IQ">🇮🇶 Iraq</option>
-<option value="SY">🇸🇾 Syria</option>
+<option value="IN">🇮🇳 भारत</option>
 <option value="US">🇺🇸 United States</option>
 <option value="GB">🇬🇧 United Kingdom</option>
 <option value="FR">🇫🇷 France</option>
@@ -229,13 +219,13 @@ Stranger is typing...
 <option value="IT">🇮🇹 Italy</option>
 <option value="ES">🇪🇸 Spain</option>
 <option value="TR">🇹🇷 Turkey</option>
-<option value="IN">🇮🇳 India</option>
+<option value="RU">🇷🇺 Russia</option>
 </select>
 </div>
 
 <div class="select-wrapper">
 <select id="translationLang" class="filter-select">
-<option value="none" data-i18n="noTranslation">No translation</option>
+<option value="none" data-i18n="noTranslation">कोई अनुवाद नहीं</option>
 <option value="ar">العربية</option>
 <option value="en">English</option>
 <option value="es">Español</option>
@@ -243,58 +233,42 @@ Stranger is typing...
 <option value="de">Deutsch</option>
 <option value="it">Italiano</option>
 <option value="pt">Português</option>
+<option value="hi">हिन्दी</option>
 </select>
 </div>
 
 <div class="quick-actions">
-<button class="btn-action-icon modern-btn video-only-btn" id="micBtn" onclick="toggleMic()" title="Mic">
-<i class="fas fa-microphone"></i>
-</button>
-<button class="btn-action-icon modern-btn video-only-btn" id="camBtn" onclick="toggleCam()" title="Camera">
-<i class="fas fa-video"></i>
-</button>
-<button class="btn-action-icon modern-btn video-only-btn" id="maskBtn" onclick="toggleMask()" title="Face effects">
-<i class="fas fa-masks-theater"></i>
-</button>
-<button class="btn-action-icon modern-btn video-only-btn" id="muteBtn" onclick="toggleSoundMute()" title="Sound">
-<i class="fas fa-volume-up"></i>
-</button>
-<button class="btn-action-icon modern-btn" id="copyLinkBtn" onclick="saveRoomLink()" title="Copy room link">
-<i class="fas fa-link"></i>
-</button>
-<button class="btn-action-icon modern-btn" onclick="reportUser()" title="Report">
-<i class="fas fa-flag"></i>
-</button>
-<button class="btn-action-icon modern-btn btn-close-chat" onclick="leaveSession()" title="Leave">
-<i class="fas fa-phone-slash"></i>
-</button>
+<button class="btn-action-icon modern-btn video-only-btn" id="micBtn" onclick="toggleMic()" title="माइक्रोफोन"><i class="fas fa-microphone"></i></button>
+<button class="btn-action-icon modern-btn video-only-btn" id="camBtn" onclick="toggleCam()" title="कैमरा"><i class="fas fa-video"></i></button>
+<button class="btn-action-icon modern-btn video-only-btn" id="maskBtn" onclick="toggleMask()" title="चेहरे के प्रभाव"><i class="fas fa-masks-theater"></i></button>
+<button class="btn-action-icon modern-btn video-only-btn" id="muteBtn" onclick="toggleSoundMute()" title="ध्वनि"><i class="fas fa-volume-up"></i></button>
+<button class="btn-action-icon modern-btn" id="copyLinkBtn" onclick="saveRoomLink()" title="रूम लिंक कॉपी करें"><i class="fas fa-link"></i></button>
+<button class="btn-action-icon modern-btn" onclick="reportUser()" title="रिपोर्ट करें"><i class="fas fa-flag"></i></button>
+<button class="btn-action-icon modern-btn btn-close-chat" onclick="leaveSession()" title="छोड़ें"><i class="fas fa-phone-slash"></i></button>
 </div>
 </div>
 
 <div class="bottom-action-bar" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; width: 100%;">
 <button class="btn-start-main" id="nextBtn" onclick="handleMainButton()" style="white-space: nowrap; flex-shrink: 0; padding: 10px 14px;">
-<i class="fas fa-forward"></i> <span data-i18n="skipStartBtn">Skip / Start</span>
+<i class="fas fa-forward"></i> <span data-i18n="skipStartBtn">स्किप / शुरू करें</span>
 </button>
 
 <div class="input-container chat-input-wrapper" style="display: flex; flex-direction: row; flex: 1; align-items: center; background: var(--bg-card); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; min-width: 0;">
-<input type="text" id="msgInput" data-i18n-placeholder="msgPlaceholder" placeholder="Type your message here..." onkeydown="if(event.key === 'Enter') sendMsg()" style="flex: 1; direction: auto; text-align: start; padding: 12px; border: none; background: transparent; color: var(--text-main); outline: none; min-width: 0;">
-<button class="btn-send-inside" id="sendBtn" onclick="sendMsg()" style="padding: 10px 14px; border: none; background: transparent; color: var(--accent-purple); cursor: pointer; flex-shrink: 0;">
-<i class="fas fa-paper-plane" style="font-size: 1.2rem;"></i>
-</button>
+<input type="text" id="msgInput" data-i18n-placeholder="msgPlaceholder" placeholder="अपना मैसेज यहाँ लिखें..." onkeydown="if(event.key === 'Enter') sendMsg()" style="flex: 1; direction: auto; text-align: start; padding: 12px; border: none; background: transparent; color: var(--text-main); outline: none; min-width: 0;">
+<button class="btn-send-inside" id="sendBtn" onclick="sendMsg()" style="padding: 10px 14px; border: none; background: transparent; color: var(--accent-purple); cursor: pointer; flex-shrink: 0;"><i class="fas fa-paper-plane" style="font-size: 1.2rem;"></i></button>
 </div>
 </div>
 </div>
 </div>
 </div>
 
-<!-- XO Mini-Game Overlay -->
 <div id="gameBoardOverlay" class="game-overlay" style="display: none;">
 <div class="game-card">
 <div class="game-header">
-<h3>XO Game 🎮</h3>
+<h3>XO गेम 🎮</h3>
 <button class="close-game" onclick="closeGame()">✕</button>
 </div>
-<p id="gameStatusText" data-i18n="turnText">Your turn</p>
+<p id="gameStatusText" data-i18n="turnText">आपकी बारी</p>
 <div class="xo-grid">
 <div class="xo-cell" onclick="makeMove(0)"></div>
 <div class="xo-cell" onclick="makeMove(1)"></div>

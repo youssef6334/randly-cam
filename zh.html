@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="it" dir="ltr" id="htmlRoot">
+<html lang="zh" dir="ltr" id="htmlRoot">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title id="siteTitle">Randly - Video Chat Casuale Gratuita con Sconosciuti</title>
-<meta name="description" content="Chatta con sconosciuti casuali di tutto il mondo in modo sicuro e veloce su Randly. Chat video e testo gratuita, senza registrazione.">
+<title id="siteTitle">Randly - 与陌生人免费随机视频聊天</title>
+<meta name="description" content="在 Randly 上安全快速地与来自世界各地的陌生人聊天。免费视频和文字聊天，无需注册。">
 
-<!-- Canonical & hreflang -->
-<link rel="canonical" href="https://randly.live/it.html">
+<link rel="canonical" href="https://randly.live/zh.html">
 <link rel="alternate" hreflang="ar" href="https://randly.live/">
 <link rel="alternate" hreflang="en" href="https://randly.live/en.html">
 <link rel="alternate" hreflang="es" href="https://randly.live/es.html">
@@ -22,12 +21,11 @@
 <link rel="alternate" hreflang="zh" href="https://randly.live/zh.html">
 <link rel="alternate" hreflang="x-default" href="https://randly.live/">
 
-<!-- Open Graph -->
-<meta property="og:title" content="Randly - Video Chat Casuale Gratuita con Sconosciuti">
-<meta property="og:description" content="Chatta con sconosciuti casuali di tutto il mondo in modo sicuro e veloce su Randly.">
+<meta property="og:title" content="Randly - 与陌生人免费随机视频聊天">
+<meta property="og:description" content="在 Randly 上安全快速地与来自世界各地的陌生人聊天。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://randly.live/it.html">
-<meta property="og:locale" content="it_IT">
+<meta property="og:url" content="https://randly.live/zh.html">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://randly.live/og-image.jpg">
 <meta name="twitter:card" content="summary_large_image">
 
@@ -44,10 +42,10 @@
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "Randly",
-  "url": "https://randly.live/it.html",
+  "url": "https://randly.live/zh.html",
   "applicationCategory": "SocialNetworkingApplication",
   "operatingSystem": "Web",
-  "description": "Chat video e testo casuale gratuita con sconosciuti di tutto il mondo, senza registrazione.",
+  "description": "与来自世界各地的陌生人免费随机视频和文字聊天，无需注册。",
   "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}
 }
 </script>
@@ -62,27 +60,32 @@
 <option value="es">Español</option>
 <option value="fr">Français</option>
 <option value="de">Deutsch</option>
-<option value="it" selected>Italiano</option>
+<option value="it">Italiano</option>
 <option value="pt">Português</option>
+<option value="tr">Türkçe</option>
+<option value="ru">Русский</option>
+<option value="hi">हिन्दी</option>
+<option value="id">Indonesia</option>
+<option value="zh" selected>中文</option>
 </select>
 </div>
 
 <div class="landing-card">
-<h1 data-i18n="logoTitle">Randly - Video Chat Casuale Gratuita con Sconosciuti</h1>
-<p data-i18n="landingSub">Chatta con persone casuali di tutto il mondo in modo sicuro e veloce!</p>
+<h1 data-i18n="logoTitle">Randly - 与陌生人免费随机视频聊天</h1>
+<p data-i18n="landingSub">安全快速地与来自世界各地的随机用户聊天！</p>
 <div class="online-counter">
-🔴 <span data-i18n="onlineNow">Online ora</span>: <span id="landingOnlineCount">0</span>
+🔴 <span data-i18n="onlineNow">当前在线</span>: <span id="landingOnlineCount">0</span>
 </div>
 
 <div class="interests-box">
 <div id="interestsTagsContainer" class="interests-tags-container" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: var(--bg-card, #222); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); min-height: 48px; cursor: text;" onclick="document.getElementById('interestTagInput').focus()">
-<input type="text" id="interestTagInput" data-i18n-placeholder="interestsPlaceholder" placeholder="Inserisci i tuoi interessi (digita e premi Invio)..." style="border: none; background: transparent; color: var(--text-main, #fff); outline: none; flex: 1; min-width: 140px; padding: 4px;">
+<input type="text" id="interestTagInput" data-i18n-placeholder="interestsPlaceholder" placeholder="输入您的兴趣（输入后按回车）..." style="border: none; background: transparent; color: var(--text-main, #fff); outline: none; flex: 1; min-width: 140px; padding: 4px;">
 </div>
 </div>
 
 <div class="start-buttons">
-<button class="btn btn-primary-lg" onclick="startSession('video')"><i class="fas fa-video"></i> <span data-i18n="videoChatBtn">Video Chat</span></button>
-<button class="btn btn-secondary-lg" onclick="startSession('text')"><i class="fas fa-comment-dots"></i> <span data-i18n="textChatBtn">Chat Testuale</span></button>
+<button class="btn btn-primary-lg" onclick="startSession('video')"><i class="fas fa-video"></i> <span data-i18n="videoChatBtn">视频聊天</span></button>
+<button class="btn btn-secondary-lg" onclick="startSession('text')"><i class="fas fa-comment-dots"></i> <span data-i18n="textChatBtn">文字聊天</span></button>
 </div>
 </div>
 
@@ -90,48 +93,48 @@
 <div class="features-grid">
 <article class="feature-card">
 <i class="fas fa-user-secret"></i>
-<h3 data-i18n="feat1Title">Anonimo - Nessuna Registrazione</h3>
-<p data-i18n="feat1Desc">Inizia a chattare istantaneamente con un clic, nessun account necessario, la tua privacy è protetta.</p>
+<h3 data-i18n="feat1Title">匿名 - 无需注册</h3>
+<p data-i18n="feat1Desc">一键即刻开始聊天，无需账户，您的隐私受到保护。</p>
 </article>
 <article class="feature-card">
 <i class="fas fa-brain"></i>
-<h3 data-i18n="feat2Title">Abbinamento per Interessi</h3>
-<p data-i18n="feat2Desc">Aggiungi gli argomenti che ami e connettiti con persone che condividono la tua passione.</p>
+<h3 data-i18n="feat2Title">兴趣匹配</h3>
+<p data-i18n="feat2Desc">添加您喜欢的话题，与志同道合的人建立联系。</p>
 </article>
 <article class="feature-card">
 <i class="fas fa-globe"></i>
-<h3 data-i18n="feat3Title">Comunità Globale</h3>
-<p data-i18n="feat3Desc">Migliaia di utenti da tutto il mondo online 24 ore su 24.</p>
+<h3 data-i18n="feat3Title">全球社区</h3>
+<p data-i18n="feat3Desc">来自世界各地的数千名用户全天候在线。</p>
 </article>
 <article class="feature-card">
 <i class="fas fa-shield-alt"></i>
-<h3 data-i18n="feat4Title">Ambiente Sicuro</h3>
-<p data-i18n="feat4Desc">Sistemi di protezione automatica e funzioni di segnalazione per chat pulite e rispettose.</p>
+<h3 data-i18n="feat4Title">安全环境</h3>
+<p data-i18n="feat4Desc">自动保护系统和举报功能，确保聊天干净、相互尊重。</p>
 </article>
 </div>
 
 <section class="faq-section" itemscope itemtype="https://schema.org/FAQPage">
-<h2 data-i18n="faqTitle">Domande Frequenti</h2>
+<h2 data-i18n="faqTitle">常见问题</h2>
 <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq1Q">Randly è gratuito?</h3>
+<h3 itemprop="name" class="faq-question" data-i18n="faq1Q">Randly 是免费的吗？</h3>
 <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq1A">Sì, puoi chattare e connetterti con sconosciuti tramite video o testo completamente gratis, senza costi nascosti.</p>
+<p itemprop="text" data-i18n="faq1A">是的，您可以通过视频或文字与陌生人完全免费聊天和联系，没有任何隐藏费用。</p>
 </div>
 </div>
 <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq2Q">Posso usare Randly sul mio telefono?</h3>
+<h3 itemprop="name" class="faq-question" data-i18n="faq2Q">我可以在手机上使用 Randly 吗？</h3>
 <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq2A">Assolutamente! Il sito è progettato per funzionare perfettamente su tutti i dispositivi mobili.</p>
+<p itemprop="text" data-i18n="faq2A">当然可以！该网站设计为在所有移动设备上都能流畅运行。</p>
 </div>
 </div>
 </section>
 
 <footer class="app-footer">
-<p>&copy; 2026 Randly.live - <span data-i18n="rights">Tutti i diritti riservati.</span></p>
+<p>&copy; 2026 Randly.live - <span data-i18n="rights">版权所有。</span></p>
 <div class="footer-links">
-<a href="rules.html" data-i18n="rulesLink">Regole</a>
-<a href="privacy.html" data-i18n="privacyLink">Informativa sulla Privacy</a>
-<a href="mailto:contact@randly.live" data-i18n="contactLink">Contattaci</a>
+<a href="rules.html" data-i18n="rulesLink">规则</a>
+<a href="privacy.html" data-i18n="privacyLink">隐私政策</a>
+<a href="mailto:contact@randly.live" data-i18n="contactLink">联系我们</a>
 </div>
 </footer>
 </main>
@@ -141,7 +144,7 @@
 <header class="app-header">
 <div class="header-left">
 <div class="logo">Randly</div>
-<span class="user-display-name" id="userDisplayName"><i class="fas fa-user"></i> <span data-i18n="visitor">Ospite</span></span>
+<span class="user-display-name" id="userDisplayName"><i class="fas fa-user"></i> <span data-i18n="visitor">访客</span></span>
 </div>
 <div class="header-right" style="display: flex; align-items: center; gap: 10px;">
 <select id="siteLang" class="site-lang-select" onchange="changeGlobalLanguage(this.value)">
@@ -150,11 +153,16 @@
 <option value="es">Español</option>
 <option value="fr">Français</option>
 <option value="de">Deutsch</option>
-<option value="it" selected>Italiano</option>
+<option value="it">Italiano</option>
 <option value="pt">Português</option>
+<option value="tr">Türkçe</option>
+<option value="ru">Русский</option>
+<option value="hi">हिन्दी</option>
+<option value="id">Indonesia</option>
+<option value="zh" selected>中文</option>
 </select>
 <span class="online-badge" style="display: inline-flex; align-items: center; background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 15px; font-weight: bold; border: 1px solid rgba(255,255,255,0.1);">
-🔴 <span data-i18n="onlineNow" style="margin: 0 5px;">Online ora</span>: <span id="headerOnlineCount" style="margin: 0 5px; color: #fff;">0</span>
+🔴 <span data-i18n="onlineNow" style="margin: 0 5px;">当前在线</span>: <span id="headerOnlineCount" style="margin: 0 5px; color: #fff;">0</span>
 </span>
 <button class="btn-icon" onclick="requestGame()">🎮</button>
 <button class="btn-icon theme-toggle" onclick="toggleTheme()">🌙</button>
@@ -176,7 +184,7 @@
 <div class="video-box remote-box">
 <video id="remoteVideo" autoplay playsinline></video>
 <span class="video-label" style="display: flex; align-items: center; gap: 8px;">
-<span data-i18n="remoteUser">Sconosciuto</span>
+<span data-i18n="remoteUser">陌生人</span>
 <span id="remoteUserFlag" class="country-flag-icon"></span>
 <span id="remoteUserCountryName" style="color: #ffd700; font-weight: bold; font-size: 14px;"></span>
 </span>
@@ -184,54 +192,43 @@
 <div class="video-box local-box" style="position: relative;">
 <video id="localVideo" autoplay playsinline muted></video>
 <canvas id="maskCanvas" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; z-index: 2; pointer-events: none;"></canvas>
-<span class="video-label" style="z-index: 3;" data-i18n="youUser">Tu</span>
+<span class="video-label" style="z-index: 3;" data-i18n="youUser">你</span>
 </div>
 </div>
 
 <div id="chatSection" class="chat-section">
-<div class="status-bar" id="status" data-i18n="connectedStatus">Connesso!</div>
+<div class="status-bar" id="status" data-i18n="connectedStatus">已连接！</div>
 <div id="skeletonLoader" style="display: none; text-align: center; padding: 20px; color: #888; font-weight: bold;">
-⏳ <span data-i18n="searchingText">Ricerca di una persona casuale...</span>
+⏳ <span data-i18n="searchingText">正在寻找随机用户...</span>
 </div>
 <div class="chat-box" id="chatBox">
-<div class="msg msg-sys" data-i18n="welcomeMsg">Benvenuto! Clicca su Start per iniziare a chattare.</div>
+<div class="msg msg-sys" data-i18n="welcomeMsg">欢迎！点击 Start 开始聊天。</div>
 </div>
 <div id="typingIndicator" style="display: none; font-size: 12px; color: #888; padding: 0 10px 10px 10px;" data-i18n="typingText">
-Lo sconosciuto sta scrivendo...
+陌生人正在输入...
 </div>
 
 <div class="filter-controls-row">
 <div class="select-wrapper">
 <select id="countrySelect" class="filter-select">
-<option value="global" data-i18n="matchGlobal">🌐 Globale (Abbinamento Intelligente)</option>
-<option value="PS">🇵🇸 Palestina</option>
-<option value="EG">🇪🇬 Egitto</option>
-<option value="SA">🇸🇦 Arabia Saudita</option>
-<option value="AE">🇦🇪 EAU</option>
-<option value="MA">🇲🇦 Marocco</option>
-<option value="DZ">🇩🇿 Algeria</option>
-<option value="KW">🇰🇼 Kuwait</option>
-<option value="QA">🇶🇦 Qatar</option>
-<option value="BH">🇧🇭 Bahrein</option>
-<option value="OM">🇴🇲 Oman</option>
-<option value="JO">🇯🇴 Giordania</option>
-<option value="LB">🇱🇧 Libano</option>
-<option value="IQ">🇮🇶 Iraq</option>
-<option value="SY">🇸🇾 Siria</option>
-<option value="US">🇺🇸 Stati Uniti</option>
-<option value="GB">🇬🇧 Regno Unito</option>
-<option value="FR">🇫🇷 Francia</option>
-<option value="DE">🇩🇪 Germania</option>
-<option value="IT">🇮🇹 Italia</option>
-<option value="ES">🇪🇸 Spagna</option>
-<option value="TR">🇹🇷 Turchia</option>
+<option value="global" data-i18n="matchGlobal">🌐 全球（智能匹配）</option>
+<option value="PS">🇵🇸 Palestine</option>
+<option value="EG">🇪🇬 Egypt</option>
+<option value="SA">🇸🇦 Saudi Arabia</option>
+<option value="CN">🇨🇳 中国</option>
+<option value="US">🇺🇸 United States</option>
+<option value="GB">🇬🇧 United Kingdom</option>
+<option value="FR">🇫🇷 France</option>
+<option value="DE">🇩🇪 Germany</option>
+<option value="IT">🇮🇹 Italy</option>
+<option value="ES">🇪🇸 Spain</option>
 <option value="IN">🇮🇳 India</option>
 </select>
 </div>
 
 <div class="select-wrapper">
 <select id="translationLang" class="filter-select">
-<option value="none" data-i18n="noTranslation">Nessuna traduzione</option>
+<option value="none" data-i18n="noTranslation">不翻译</option>
 <option value="ar">العربية</option>
 <option value="en">English</option>
 <option value="es">Español</option>
@@ -239,44 +236,29 @@ Lo sconosciuto sta scrivendo...
 <option value="de">Deutsch</option>
 <option value="it">Italiano</option>
 <option value="pt">Português</option>
+<option value="zh">中文</option>
 </select>
 </div>
 
 <div class="quick-actions">
-<button class="btn-action-icon modern-btn video-only-btn" id="micBtn" onclick="toggleMic()" title="Microfono">
-<i class="fas fa-microphone"></i>
-</button>
-<button class="btn-action-icon modern-btn video-only-btn" id="camBtn" onclick="toggleCam()" title="Fotocamera">
-<i class="fas fa-video"></i>
-</button>
-<button class="btn-action-icon modern-btn video-only-btn" id="maskBtn" onclick="toggleMask()" title="Effetti viso">
-<i class="fas fa-masks-theater"></i>
-</button>
-<button class="btn-action-icon modern-btn video-only-btn" id="muteBtn" onclick="toggleSoundMute()" title="Audio">
-<i class="fas fa-volume-up"></i>
-</button>
-<button class="btn-action-icon modern-btn" id="copyLinkBtn" onclick="saveRoomLink()" title="Copia link stanza">
-<i class="fas fa-link"></i>
-</button>
-<button class="btn-action-icon modern-btn" onclick="reportUser()" title="Segnala">
-<i class="fas fa-flag"></i>
-</button>
-<button class="btn-action-icon modern-btn btn-close-chat" onclick="leaveSession()" title="Esci">
-<i class="fas fa-phone-slash"></i>
-</button>
+<button class="btn-action-icon modern-btn video-only-btn" id="micBtn" onclick="toggleMic()" title="麦克风"><i class="fas fa-microphone"></i></button>
+<button class="btn-action-icon modern-btn video-only-btn" id="camBtn" onclick="toggleCam()" title="摄像头"><i class="fas fa-video"></i></button>
+<button class="btn-action-icon modern-btn video-only-btn" id="maskBtn" onclick="toggleMask()" title="面部特效"><i class="fas fa-masks-theater"></i></button>
+<button class="btn-action-icon modern-btn video-only-btn" id="muteBtn" onclick="toggleSoundMute()" title="声音"><i class="fas fa-volume-up"></i></button>
+<button class="btn-action-icon modern-btn" id="copyLinkBtn" onclick="saveRoomLink()" title="复制房间链接"><i class="fas fa-link"></i></button>
+<button class="btn-action-icon modern-btn" onclick="reportUser()" title="举报"><i class="fas fa-flag"></i></button>
+<button class="btn-action-icon modern-btn btn-close-chat" onclick="leaveSession()" title="离开"><i class="fas fa-phone-slash"></i></button>
 </div>
 </div>
 
 <div class="bottom-action-bar" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; width: 100%;">
 <button class="btn-start-main" id="nextBtn" onclick="handleMainButton()" style="white-space: nowrap; flex-shrink: 0; padding: 10px 14px;">
-<i class="fas fa-forward"></i> <span data-i18n="skipStartBtn">Salta / Inizia</span>
+<i class="fas fa-forward"></i> <span data-i18n="skipStartBtn">跳过 / 开始</span>
 </button>
 
 <div class="input-container chat-input-wrapper" style="display: flex; flex-direction: row; flex: 1; align-items: center; background: var(--bg-card); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; min-width: 0;">
-<input type="text" id="msgInput" data-i18n-placeholder="msgPlaceholder" placeholder="Scrivi qui il tuo messaggio..." onkeydown="if(event.key === 'Enter') sendMsg()" style="flex: 1; direction: auto; text-align: start; padding: 12px; border: none; background: transparent; color: var(--text-main); outline: none; min-width: 0;">
-<button class="btn-send-inside" id="sendBtn" onclick="sendMsg()" style="padding: 10px 14px; border: none; background: transparent; color: var(--accent-purple); cursor: pointer; flex-shrink: 0;">
-<i class="fas fa-paper-plane" style="font-size: 1.2rem;"></i>
-</button>
+<input type="text" id="msgInput" data-i18n-placeholder="msgPlaceholder" placeholder="在此输入您的消息..." onkeydown="if(event.key === 'Enter') sendMsg()" style="flex: 1; direction: auto; text-align: start; padding: 12px; border: none; background: transparent; color: var(--text-main); outline: none; min-width: 0;">
+<button class="btn-send-inside" id="sendBtn" onclick="sendMsg()" style="padding: 10px 14px; border: none; background: transparent; color: var(--accent-purple); cursor: pointer; flex-shrink: 0;"><i class="fas fa-paper-plane" style="font-size: 1.2rem;"></i></button>
 </div>
 </div>
 </div>
@@ -286,10 +268,10 @@ Lo sconosciuto sta scrivendo...
 <div id="gameBoardOverlay" class="game-overlay" style="display: none;">
 <div class="game-card">
 <div class="game-header">
-<h3>Gioco XO 🎮</h3>
+<h3>井字棋游戏 🎮</h3>
 <button class="close-game" onclick="closeGame()">✕</button>
 </div>
-<p id="gameStatusText" data-i18n="turnText">Tocca a te</p>
+<p id="gameStatusText" data-i18n="turnText">轮到你了</p>
 <div class="xo-grid">
 <div class="xo-cell" onclick="makeMove(0)"></div>
 <div class="xo-cell" onclick="makeMove(1)"></div>
