@@ -783,3 +783,7 @@ html, body {
 .top-ad-bar {
   min-height: 60px;
 }
+
+#videoSection {
+  display: none;
+}
