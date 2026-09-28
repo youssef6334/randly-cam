@@ -19,6 +19,7 @@ let buttonState = 'start';
 let currentRoomId = null;
 let currentPartnerCountry = null;
 
+
 // العناصر الأساسية
 const landingPage = document.getElementById('landingPage');
 const remoteVideo = document.getElementById('remoteVideo');
@@ -307,6 +308,8 @@ function clearRemoteVideo() {
     if (flagElement) flagElement.textContent = '';
     const nameElement = document.getElementById('remoteUserCountryName');
     if (nameElement) nameElement.textContent = '';
+        const textInfoBoxClear = document.getElementById('textChatPartnerInfo');
+    if (textInfoBoxClear) textInfoBoxClear.style.display = 'none';
     currentPartnerCountry = null;
 }
 
@@ -595,6 +598,21 @@ socket.on('matched', async (data) => {
     if (flagElement) {
         flagElement.textContent = getFlagEmoji(currentPartnerCountry);
     }
+    const textFlagEl = document.getElementById('textFlagIcon');
+const textNameEl = document.getElementById('textCountryName');
+const textInfoBox = document.getElementById('textChatPartnerInfo');
+if (textInfoBox) textInfoBox.style.display = 'block';
+if (textFlagEl) textFlagEl.textContent = getFlagEmoji(currentPartnerCountry);
+if (textNameEl) {
+    if (currentPartnerCountry === 'global') {
+        textNameEl.textContent = translations[currentLang]?.matchGlobal || '';
+    } else {
+        try {
+            const rn = new Intl.DisplayNames([currentLang], { type: 'region' });
+            textNameEl.textContent = rn.of(currentPartnerCountry.toUpperCase());
+        } catch(e) { textNameEl.textContent = ''; }
+    }
+}
     if (nameElement) {
         if (currentPartnerCountry === 'global') {
             nameElement.textContent = translations[currentLang]?.matchGlobal || 'عالمي (Smart Match)';
