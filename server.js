@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
 const { Server } = require('socket.io');
-const geoip = require('geoip-lite'); 
+const geoip = require('geoip-lite');
 
 // إعداد Socket.io مع السماح بالاتصال من أي مصدر
 const io = new Server(http, {
@@ -16,13 +16,12 @@ const io = new Server(http, {
 app.use(express.static(__dirname));
 
 let activeUsers = new Map();
-
 // طابور الانتظار يخزن كائنات تحتوي على (id, interests, mode, searchCountry, actualCountry)
 let waitingQueue = [];
 
 // نظام حفظ الغرف لمدة 72 ساعة
 let savedRooms = new Map();
-const ROOM_EXPIRY = 72 * 60 * 60 * 1000; 
+const ROOM_EXPIRY = 72 * 60 * 60 * 1000;
 
 setInterval(() => {
     const now = Date.now();
@@ -31,25 +30,26 @@ setInterval(() => {
             savedRooms.delete(roomId);
         }
     }
-}, 60 * 60 * 1000); 
+}, 60 * 60 * 1000);
+
+// --- Smart Match: لو محدش من الدولة المطلوبة متصل خلال المدة دي، نوسّع البحث لأي دولة ---
+const COUNTRY_FALLBACK_MS = 10000; // 10 ثواني
+let fallbackTimers = new Map(); // socket.id -> timeout handle
 
 io.on('connection', (socket) => {
     // --- قراءة الـ IP الحقيقي وتخطي حماية الاستضافات ---
-    let clientIp = socket.handshake.headers['x-forwarded-for'] || 
-                   socket.handshake.headers['cf-connecting-ip'] || 
-                   socket.handshake.headers['x-real-ip'] || 
-                   socket.handshake.address;
-         if (clientIp) {
-clientIp = clientIp.split(',')[0].trim();
-if (clientIp.startsWith('::ffff:')) {
-clientIp = clientIp.substring(7);
-}
-// Azure بيحط البورت مع الـ IP (مثال: 41.33.12.5:54321) - لازم نشيله
-if (clientIp.includes(':') && clientIp.split(':').length === 2) {
-clientIp = clientIp.split(':')[0];
-}
-}
-    
+    let clientIp = socket.handshake.headers['x-forwarded-for'] ||
+        socket.handshake.headers['cf-connecting-ip'] ||
+        socket.handshake.headers['x-real-ip'] ||
+        socket.handshake.address;
+
+    if (clientIp) {
+        clientIp = clientIp.split(',')[0].trim();
+        if (clientIp.startsWith('::ffff:')) {
+            clientIp = clientIp.substring(7);
+        }
+    }
+
     // لو بنعمل تست على نفس الجهاز (Localhost)
     if (!clientIp || clientIp === '127.0.0.1' || clientIp === '::1') {
         clientIp = '197.35.0.0'; // IP مصري للتجربة
@@ -62,29 +62,29 @@ clientIp = clientIp.split(':')[0];
     activeUsers.set(socket.id, { room: null, peer: null, actualCountry: actualCountry });
     io.emit('online-count', activeUsers.size);
 
-    // المطابقة المبنية على الاهتمامات والدولة
-    socket.on('find-match', (data) => {
+    // --- منطق المطابقة، مستخرج في دالة مستقلة عشان نقدر نستدعيه تاني وقت الـ fallback ---
+    function tryMatch(data) {
         waitingQueue = waitingQueue.filter(u => u.id !== socket.id);
 
         let matchIndex = -1;
         const myInterests = data.interests || [];
-        const searchCountry = data.country || 'global'; 
-        const myActualCountry = activeUsers.get(socket.id).actualCountry; 
+        const searchCountry = data.country || 'global';
+        const myActualCountry = activeUsers.get(socket.id).actualCountry;
 
         const isCountryMatch = (c1, c2) => {
             return c1 === 'global' || c2 === 'global' || c1 === c2;
         };
 
         if (myInterests.length > 0) {
-            matchIndex = waitingQueue.findIndex(u => 
-                u.mode === data.mode && 
+            matchIndex = waitingQueue.findIndex(u =>
+                u.mode === data.mode &&
                 isCountryMatch(searchCountry, u.searchCountry) &&
                 u.interests && u.interests.some(interest => myInterests.includes(interest))
             );
         }
 
         if (matchIndex === -1) {
-            matchIndex = waitingQueue.findIndex(u => 
+            matchIndex = waitingQueue.findIndex(u =>
                 u.mode === data.mode &&
                 isCountryMatch(searchCountry, u.searchCountry)
             );
@@ -110,31 +110,55 @@ clientIp = clientIp.split(':')[0];
                     mode: data.mode
                 });
 
-                socket.emit('matched', { 
-                    isInitiator: true, 
-                    xoRole: 'X', 
+                socket.emit('matched', {
+                    isInitiator: true,
+                    xoRole: 'X',
                     roomId: roomId,
-                    partnerCountry: peerData.actualCountry 
+                    partnerCountry: peerData.actualCountry
                 });
-                
-                peerSocket.emit('matched', { 
-                    isInitiator: false, 
-                    xoRole: 'O', 
+
+                peerSocket.emit('matched', {
+                    isInitiator: false,
+                    xoRole: 'O',
                     roomId: roomId,
-                    partnerCountry: myActualCountry 
+                    partnerCountry: myActualCountry
                 });
-            } else {
-                waitingQueue.push({ id: socket.id, interests: myInterests, mode: data.mode, searchCountry: searchCountry, actualCountry: myActualCountry });
+                return true;
             }
-        } else {
-            waitingQueue.push({ id: socket.id, interests: myInterests, mode: data.mode, searchCountry: searchCountry, actualCountry: myActualCountry });
+        }
+
+        waitingQueue.push({ id: socket.id, interests: myInterests, mode: data.mode, searchCountry: searchCountry, actualCountry: myActualCountry });
+        return false;
+    }
+
+    // المطابقة المبنية على الاهتمامات والدولة
+    socket.on('find-match', (data) => {
+        // نلغي أي مؤقت fallback سابق لنفس المستخدم
+        if (fallbackTimers.has(socket.id)) {
+            clearTimeout(fallbackTimers.get(socket.id));
+            fallbackTimers.delete(socket.id);
+        }
+
+        const matched = tryMatch(data);
+
+        // لو مفيش تطابق فوري، والمستخدم مختار دولة محددة (مش عالمي)، نبدأ مؤقت الـ fallback
+        if (!matched && data.country && data.country !== 'global') {
+            const timer = setTimeout(() => {
+                fallbackTimers.delete(socket.id);
+                const stillWaiting = waitingQueue.some(u => u.id === socket.id);
+                if (stillWaiting) {
+                    waitingQueue = waitingQueue.filter(u => u.id !== socket.id);
+                    socket.emit('no-country-match');
+                    tryMatch({ ...data, country: 'global' });
+                }
+            }, COUNTRY_FALLBACK_MS);
+            fallbackTimers.set(socket.id, timer);
         }
     });
 
     // الانضمام لغرفة محفوظة
     socket.on('join-saved-room', (data) => {
         const { roomId, mode } = data;
-        
         if (savedRooms.has(roomId)) {
             socket.join(roomId);
             const userInfo = activeUsers.get(socket.id);
@@ -144,14 +168,11 @@ clientIp = clientIp.split(':')[0];
             if (clientsInRoom && clientsInRoom.size === 2) {
                 const clientsArr = Array.from(clientsInRoom);
                 const peerId = clientsArr.find(id => id !== socket.id);
-                
                 if (peerId) {
                     activeUsers.get(socket.id).peer = peerId;
                     activeUsers.get(peerId).peer = socket.id;
-
                     const myActualCountry = activeUsers.get(socket.id).actualCountry;
                     const peerActualCountry = activeUsers.get(peerId).actualCountry;
-
                     socket.emit('matched', { isInitiator: true, xoRole: 'X', roomId: roomId, partnerCountry: peerActualCountry });
                     io.to(peerId).emit('matched', { isInitiator: false, xoRole: 'O', roomId: roomId, partnerCountry: myActualCountry });
                 }
@@ -206,6 +227,12 @@ clientIp = clientIp.split(':')[0];
 });
 
 function handleUserDisconnect(socket) {
+    // نلغي أي مؤقت fallback شغال للمستخدم ده
+    if (fallbackTimers.has(socket.id)) {
+        clearTimeout(fallbackTimers.get(socket.id));
+        fallbackTimers.delete(socket.id);
+    }
+
     waitingQueue = waitingQueue.filter(u => u.id !== socket.id);
     const user = activeUsers.get(socket.id);
     if (user) {
