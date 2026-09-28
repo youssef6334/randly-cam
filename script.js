@@ -61,7 +61,7 @@ const REMAINING_COUNTRY_CODES = [
     "BO","BA","BW","BN","BG","BF","BI","KH","CM","CV","CF","TD","CL","CO","KM","CG","CD",
     "CR","CI","HR","CU","CY","CZ","DK","DJ","DM","DO","DZ","EC","SV","GQ","ER","EE","SZ","ET","FJ","FI",
     "GA","GM","GE","GH","GR","GD","GT","GN","GW","GY","HT","HN","HU","IS","IR","IQ",
-    "IE","IL","ID","JM","JO","KZ","KE","KI","KP","KG","LA","LV","LB","LS","LR","LY","LI",
+    "IE","ID","JM","JO","KZ","KE","KI","KP","KG","LA","LV","LB","LS","LR","LY","LI",
     "LT","LU","MG","MW","MY","MV","ML","MT","MH","MR","MA","MU","FM","MD","MC","MN","ME","MZ","MM",
     "NA","NR","NP","NZ","NI","NE","NG","MK","NO","OM","PK","PW","PA","PG","PY","PE","PH","PL","PT",
     "PS","RO","RW","KN","LC","VC","WS","SM","ST","SN","RS","SC","SL","SG","SK","SI","SB",
