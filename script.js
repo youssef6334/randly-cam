@@ -138,8 +138,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('randly_theme');
     if (savedTheme === 'light') {
         document.documentElement.setAttribute('data-theme', 'light');
-        const themeBtn = document.querySelector('.theme-toggle');
-        if (themeBtn) themeBtn.textContent = '☀️';
+        const themeBtns = document.querySelectorAll('.theme-toggle');
+    themeBtns.forEach(btn => {
+        const knob = btn.querySelector('.switch-knob');
+        if (knob) knob.textContent = '☀️';
+    });
     }
 
     const muteBtn = document.getElementById('muteBtn');
@@ -235,14 +238,20 @@ function toggleSoundMute() {
 function toggleTheme() {
     const htmlElement = document.documentElement;
     const currentTheme = htmlElement.getAttribute('data-theme');
-    const themeBtn = document.querySelector('.theme-toggle');
+    const themeBtns = document.querySelectorAll('.theme-toggle');
     if (currentTheme === 'light') {
         htmlElement.removeAttribute('data-theme');
-        if (themeBtn) themeBtn.textContent = '🌙';
+        themeBtns.forEach(btn => {
+            const knob = btn.querySelector('.switch-knob');
+            if (knob) knob.textContent = '🌙';
+        });
         localStorage.setItem('randly_theme', 'dark');
     } else {
         htmlElement.setAttribute('data-theme', 'light');
-        if (themeBtn) themeBtn.textContent = '☀️';
+        themeBtns.forEach(btn => {
+            const knob = btn.querySelector('.switch-knob');
+            if (knob) knob.textContent = '☀️';
+        });
         localStorage.setItem('randly_theme', 'light');
     }
 }
@@ -1068,7 +1077,7 @@ const translations = {
         faq4Q: "É seguro usar o Randly?",
         faq4A: "Sim, o Randly usa filtragem automática de conteúdo inadequado e um recurso de denúncia instantânea, e não armazena nenhuma conversa nem exige cadastro de dados pessoais.",
         faq5Q: "Como funciona o chat aleatório no Randly?",
-        faq5A: "Basta clicar em \"Chat de Vídeo\" ou \"Chat de Texto\" e você será conectado instantaneamente a uma pessoa aleatória online agora; você pode pular para a próxima pessoa a qualquer momento com um clique.",
+        faq5A: "Basta clicar em \"Chat de Vídeo\" أو \"Chat de Texto\" e você será conectado instantaneamente a uma pessoa aleatória online agora; você pode pular para a próxima pessoa a qualquer momento com um clique.",
         faq6Q: "Posso escolher o país da pessoa com quem estou falando?",
         faq6A: "Sim, o Randly oferece um filtro para se conectar com pessoas de um país específico, ou usar o modo \"Global\" para se conectar com qualquer pessoa no mundo.",
         faq7Q: "Qual é a idade mínima para usar o Randly?",
@@ -1276,7 +1285,7 @@ const translations = {
         faq4Q: "Apakah aman menggunakan Randly?",
         faq4A: "Ya, Randly menggunakan filter otomatis untuk konten yang tidak pantas dan fitur pelaporan instan, serta tidak menyimpan percakapan chat atau meminta registrasi data pribadi.",
         faq5Q: "Bagaimana cara kerja chat acak di Randly?",
-        faq5A: "Cukup klik \"Video Chat\" atau \"Text Chat\", dan Anda akan langsung terhubung dengan orang acak yang sedang online; Anda bisa lewati ke orang berikutnya kapan saja dengan satu klik.",
+        faq5A: "Cukup klik \"Video Chat\" أو \"Text Chat\", dan Anda akan langsung terhubung dengan orang acak yang sedang online; Anda bisa lewati ke orang berikutnya kapan saja dengan satu klik.",
         faq6Q: "Bisakah saya memilih negara orang yang saya ajak bicara?",
         faq6A: "Ya, Randly menyediakan filter untuk terhubung dengan orang dari negara tertentu, atau gunakan mode \"Global\" untuk terhubung dengan siapa saja di seluruh dunia.",
         faq7Q: "Berapa usia minimum untuk menggunakan Randly?",

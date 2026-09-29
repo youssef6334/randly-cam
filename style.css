@@ -784,3 +784,94 @@ html, body {
   min-height: 60px;
 }
 
+
+/* ===== Responsive header fix (prevents cutoff on mobile) ===== */
+.header-right {
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.header-right::-webkit-scrollbar {
+    display: none;
+}
+
+@media (max-width: 480px) {
+    .app-header {
+        padding: 0 10px;
+        gap: 6px;
+    }
+    .header-right {
+        gap: 6px;
+    }
+    .logo {
+        font-size: 1.05rem;
+    }
+    .site-lang-select {
+        font-size: 0.7rem;
+        padding: 3px 5px;
+    }
+    .btn-icon {
+        font-size: 0.95rem;
+        padding: 4px;
+    }
+}
+
+/* ===== Modern theme toggle switch ===== */
+.theme-switch-btn {
+    position: relative;
+    width: 46px;
+    height: 24px;
+    border-radius: 999px;
+    background: #2a2a35;
+    border: 1px solid rgba(255,255,255,0.15);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    padding: 2px;
+    flex-shrink: 0;
+    transition: background 0.3s ease;
+}
+.theme-switch-btn .switch-knob {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    transition: transform 0.3s ease;
+    transform: translateX(0);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+html[data-theme="light"] .theme-switch-btn {
+    background: #d8dce3;
+}
+html[data-theme="light"] .theme-switch-btn .switch-knob {
+    transform: translateX(22px);
+}
+
+/* ===== Modern online badge with glowing dot ===== */
+.online-badge-modern {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.06);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    border: 1px solid rgba(255,255,255,0.1);
+    white-space: nowrap;
+    flex-shrink: 0;
+    color: var(--text-main);
+}
+.online-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #2ecc71;
+    box-shadow: 0 0 6px 1px rgba(46, 204, 113, 0.7);
+    display: inline-block;
+    flex-shrink: 0;
+}
