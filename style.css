@@ -568,6 +568,26 @@ html, body {
     margin-bottom: 40px;
 }
 
+@media (min-width: 900px) {
+    .features-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+    }
+    .feature-card {
+        padding: 18px 14px;
+    }
+    .feature-card i {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+    .feature-card h3 {
+        font-size: 1.05rem;
+    }
+    .feature-card p {
+        font-size: 0.85rem;
+    }
+}
+
 .feature-card {
     background: var(--bg-card);
     padding: 25px 20px;
