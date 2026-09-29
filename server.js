@@ -56,6 +56,7 @@ io.on('connection', (socket) => {
     }
 
     const geo = geoip.lookup(clientIp);
+    console.log(`[GEO DEBUG] clientIp=${clientIp} | geo=${JSON.stringify(geo)}`);
     const actualCountry = geo ? geo.country : 'global';
 
     // تسجيل المستخدم الجديد
