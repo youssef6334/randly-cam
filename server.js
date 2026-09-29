@@ -42,13 +42,17 @@ io.on('connection', (socket) => {
         socket.handshake.headers['cf-connecting-ip'] ||
         socket.handshake.headers['x-real-ip'] ||
         socket.handshake.address;
-
-    if (clientIp) {
-        clientIp = clientIp.split(',')[0].trim();
-        if (clientIp.startsWith('::ffff:')) {
-            clientIp = clientIp.substring(7);
-        }
+if (clientIp) {
+    clientIp = clientIp.split(',')[0].trim();
+    if (clientIp.startsWith('::ffff:')) {
+        clientIp = clientIp.substring(7);
     }
+    // شيل رقم البورت لو موجود ملزوق بالـ IP (زي 41.35.231.29:46244)
+    const ipv4WithPortMatch = clientIp.match(/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):\d+$/);
+    if (ipv4WithPortMatch) {
+        clientIp = ipv4WithPortMatch[1];
+    }
+}
 
     // لو بنعمل تست على نفس الجهاز (Localhost)
     if (!clientIp || clientIp === '127.0.0.1' || clientIp === '::1') {
