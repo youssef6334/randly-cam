@@ -102,8 +102,11 @@
 </head>
 <body>
 <div id="landingPage" class="landing-container">
-<div style="position: absolute; top: 20px; right: 20px; z-index: 100;">
-<label for="landingLangSelect" class="sr-only">Escolher idioma</label>
+<header class="app-header">
+<div class="header-left">
+<div class="logo">Randly</div>
+</div>
+<div class="header-right" style="display: flex; align-items: center; gap: 10px;">
 <select id="landingLangSelect" class="site-lang-select" onchange="changeGlobalLanguage(this.value)" style="padding: 8px 12px; border-radius: 8px; background: var(--bg-card, #222); color: var(--text-main, #fff); border: 1px solid rgba(255,255,255,0.2);">
 <option value="ar">العربية</option>
 <option value="en">English</option>
@@ -113,13 +116,16 @@
 <option value="it">Italiano</option>
 <option value="pt" selected>Português</option>
 </select>
+<span class="online-badge-modern">
+<span class="online-dot"></span>
+<span data-i18n="onlineNow">Online Now</span>: <span id="landingOnlineCount">0</span>+
+</span>
+<button class="theme-switch-btn theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode"><span class="switch-knob">🌙</span></button>
 </div>
+</header>
 <div class="landing-card">
 <h1 data-i18n="logoTitle">Randly - Chat de Vídeo Aleatório Grátis com Estranhos</h1>
 <p data-i18n="landingSub">Converse com pessoas aleatórias de todo o mundo com segurança e rapidez!</p>
-<div class="online-counter">
-🔴 <span data-i18n="onlineNow">Online agora</span>: <span id="landingOnlineCount">0</span>
-</div>
 <div class="interests-box">
 <div id="interestsTagsContainer" class="interests-tags-container" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: var(--bg-card, #222); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); min-height: 48px; cursor: text;" onclick="document.getElementById('interestTagInput').focus()">
 <input type="text" id="interestTagInput" data-i18n-placeholder="interestsPlaceholder" placeholder="Digite seus interesses (digite e pressione Enter)..." style="border: none; background: transparent; color: var(--text-main, #fff); outline: none; flex: 1; min-width: 140px; padding: 4px;">
@@ -210,6 +216,7 @@
 <a href="rules.html" data-i18n="rulesLink">Regras</a>
 <a href="privacy.html" data-i18n="privacyLink">Política de Privacidade</a>
 <a href="about-pt.html">Sobre</a>
+<a href="about-pt.html" data-i18n="aboutLink">About</a>
 <a href="mailto:contact@randly.live" data-i18n="contactLink">Fale Conosco</a>
 </div>
 </footer>
@@ -219,7 +226,7 @@
 <header class="app-header">
 <div class="header-left">
 <div class="logo">Randly</div>
-<span class="user-display-name" id="userDisplayName"><i class="fas fa-user"></i> <span data-i18n="visitor">Convidado</span></span>
+</span>
 </div>
 <div class="header-right" style="display: flex; align-items: center; gap: 10px;">
 <label for="siteLang" class="sr-only">Escolher idioma</label>
@@ -232,11 +239,12 @@
 <option value="it">Italiano</option>
 <option value="pt" selected>Português</option>
 </select>
-<span class="online-badge" style="display: inline-flex; align-items: center; background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 15px; font-weight: bold; border: 1px solid rgba(255,255,255,0.1);">
-🔴 <span data-i18n="onlineNow" style="margin: 0 5px;">Online agora</span>: <span id="headerOnlineCount" style="margin: 0 5px; color: #fff;">0</span>
+<span class="online-badge-modern">
+<span class="online-dot"></span>
+<span data-i18n="onlineNow">Online Now</span>: <span id="headerOnlineCount">0</span>+
 </span>
 <button class="btn-icon" onclick="requestGame()" aria-label="Jogar jogo da velha">🎮</button>
-<button class="btn-icon theme-toggle" onclick="toggleTheme()" aria-label="Alternar modo escuro/claro">🌙</button>
+<button class="theme-switch-btn theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode"><span class="switch-knob">🌙</span></button>
 </div>
 </header>
 <div class="top-ad-bar" id="adContainer" style="min-height: 60px;">
@@ -266,6 +274,9 @@
 </div>
 <div id="chatSection" class="chat-section">
 <div class="status-bar" id="status" data-i18n="connectedStatus">Conectado!</div>
+<div id="textChatPartnerInfo" style="display: none; text-align: center; padding: 4px 10px; font-size: 13px; color: #ffd700; font-weight: bold;">
+<span id="textFlagIcon"></span> <span id="textCountryName"></span>
+</div>
 <div id="skeletonLoader" style="display: none; text-align: center; padding: 20px; color: #888; font-weight: bold;">
 ⏳ <span data-i18n="searchingText">Procurando uma pessoa aleatória...</span>
 </div>
