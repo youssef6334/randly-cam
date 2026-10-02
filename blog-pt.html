@@ -77,27 +77,31 @@ html,body{margin:0;background:#121218;color:#e6e6e6;font-family:-apple-system,"S
 </head>
 <body>
 
-<header class="blog-header">
-<a class="logo" href="/pt.html">Randly</a>
-<nav style="display:flex;align-items:center;gap:4px;">
-<a href="/pt.html">Início</a>
-<a href="/about-pt.html">Sobre o Randly</a>
-<a href="/blog-pt.html">Blog</a>
-<select class="blog-lang-select" onchange="if(this.value) location.href=this.value">
-<option value="" disabled selected>🌐</option>
-<option value="/blog-ar.html">العربية</option>
-<option value="/blog-en.html">English</option>
-<option value="/blog-es.html">Español</option>
-<option value="/blog-fr.html">Français</option>
-<option value="/blog-de.html">Deutsch</option>
-<option value="/blog-it.html">Italiano</option>
-<option value="/blog-tr.html">Türkçe</option>
-<option value="/blog-ru.html">Русский</option>
-<option value="/blog-hi.html">हिन्दी</option>
-<option value="/blog-id.html">Bahasa Indonesia</option>
-<option value="/blog-zh.html">中文</option>
-</select>
-</nav>
+<header class="app-header" style="justify-content: space-between;">
+    <div class="header-left">
+        <a href="pt.html" class="logo" style="text-decoration: none;">Randly</a>
+    </div>
+    <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
+        <nav style="display: flex; gap: 14px;">
+            <a href="pt.html" style="color: var(--text-main); text-decoration: none; opacity: .85; font-size: .9rem;">Início</a>
+            <a href="about-pt.html" style="color: var(--text-main); text-decoration: none; opacity: .85; font-size: .9rem;">Sobre</a>
+            <a href="blog-pt.html" style="color: var(--accent-purple); text-decoration: none; font-size: .9rem; font-weight: bold;">Blog</a>
+        </nav>
+        <select class="site-lang-select" onchange="window.location.href=this.value">
+            <option value="blog-ar.html">العربية</option>
+            <option value="blog-en.html">English</option>
+            <option value="blog-es.html">Español</option>
+            <option value="blog-fr.html">Français</option>
+            <option value="blog-de.html">Deutsch</option>
+            <option value="blog-it.html">Italiano</option>
+            <option value="blog-pt.html" selected>Português</option>
+            <option value="blog-tr.html">Türkçe</option>
+            <option value="blog-ru.html">Русский</option>
+            <option value="blog-hi.html">हिन्दी</option>
+            <option value="blog-id.html">Bahasa Indonesia</option>
+            <option value="blog-zh.html">中文</option>
+        </select>
+    </div>
 </header>
 
 <div class="blog-article">

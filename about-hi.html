@@ -30,19 +30,34 @@
 </head>
 <body>
 
-<div style="position: absolute; top: 20px; left: 20px; z-index: 100;">
-<select class="site-lang-select" onchange="window.location.href=this.value" style="padding: 8px 12px; border-radius: 8px; background: var(--bg-card, #222); color: var(--text-main, #fff); border: 1px solid rgba(255,255,255,0.2);">
-<option value="about.html">العربية</option>
-<option value="about-en.html">English</option>
-<option value="about-tr.html">Türkçe</option>
-<option value="about-ru.html">Русский</option>
-<option value="about-hi.html" selected>हिन्दी</option>
-<option value="about-id.html">Indonesia</option>
-<option value="about-zh.html">中文</option>
-</select>
-</div>
+<header class="app-header" style="justify-content: space-between;">
+    <div class="header-left">
+        <a href="hi.html" class="logo" style="text-decoration: none;">Randly</a>
+    </div>
+    <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
+        <nav style="display: flex; gap: 14px;">
+            <a href="hi.html" style="color: var(--text-main); text-decoration: none; opacity: .85; font-size: .9rem;">होम</a>
+            <a href="about-hi.html" style="color: var(--accent-purple); text-decoration: none; font-size: .9rem; font-weight: bold;">हमारे बारे में</a>
+            <a href="blog-hi.html" style="color: var(--text-main); text-decoration: none; opacity: .85; font-size: .9rem;">ब्लॉग</a>
+        </nav>
+        <select class="site-lang-select" onchange="window.location.href=this.value">
+            <option value="about.html">العربية</option>
+            <option value="about-en.html">English</option>
+            <option value="about-es.html">Español</option>
+            <option value="about-fr.html">Français</option>
+            <option value="about-de.html">Deutsch</option>
+            <option value="about-it.html">Italiano</option>
+            <option value="about-pt.html">Português</option>
+            <option value="about-tr.html">Türkçe</option>
+            <option value="about-ru.html">Русский</option>
+            <option value="about-hi.html" selected>हिन्दी</option>
+            <option value="about-id.html">Bahasa Indonesia</option>
+            <option value="about-zh.html">中文</option>
+        </select>
+    </div>
+</header>
 
-<main style="max-width: 800px; margin: 80px auto 40px; padding: 20px; color: var(--text-main, #fff); line-height: 1.8;">
+<main style="max-width: 800px; margin: 40px auto; padding: 20px; color: var(--text-main, #fff); line-height: 1.8;">
 
 <h1>Randly - रैंडम वीडियो चैट के लिए 100% मुफ्त Omegle विकल्प</h1>
 
