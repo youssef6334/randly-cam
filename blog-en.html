@@ -51,13 +51,10 @@
 }
 </script>
 <style>
-/* تصميم احتياطي ثابت (يشتغل حتى لو style.css مش متاح)، وبرضو بيورث متغيرات الموقع الأصلية لو اتحمّلت */
-html,body{margin:0;background:#121218;color:#e6e6e6;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
-.blog-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.08)}
-.blog-header .logo{font-size:1.4rem;font-weight:bold;color:var(--text-main,#fff);text-decoration:none}
-.blog-header nav a{color:var(--text-main,#fff);opacity:.85;text-decoration:none;margin-right:16px;font-size:.92rem}
-.blog-header nav a:hover{opacity:1;color:var(--accent-purple,#8a2be2)}
-.blog-lang-select{padding:6px 10px;border-radius:8px;background:var(--bg-card,#222);color:var(--text-main,#fff);border:1px solid rgba(255,255,255,.2);font-size:.85rem}
+/* إصلاح مشكلة عدم القدرة على عمل سكرول (style.css الأساسي بيمنع السكرول عشان تطبيق الشات) */
+html, body { overflow: auto !important; height: auto !important; min-height: 100%; }
+
+/* تنسيقات خاصة بمحتوى المقال بس (الهيدر بقى بيستخدم كلاسات الموقع الأساسية) */
 .blog-article{max-width:760px;margin:0 auto;padding:30px 20px 10px;line-height:1.8;color:var(--text-main,#eee)}
 .blog-article h1{font-size:1.8rem;margin-bottom:6px}
 .blog-article .updated{opacity:.6;font-size:.85rem;margin-bottom:20px}
@@ -67,34 +64,36 @@ html,body{margin:0;background:#121218;color:#e6e6e6;font-family:-apple-system,"S
 .blog-article ul{padding-left:20px}
 .blog-article a{color:var(--accent-purple,#8a2be2)}
 .blog-cta{display:inline-block;margin-top:24px;padding:12px 22px;background:var(--accent-purple,#8a2be2);color:#fff;border-radius:8px;text-decoration:none;font-weight:bold}
-.app-footer{text-align:center;padding:26px 16px 36px;opacity:.9}
-.footer-links a{margin:0 8px;color:var(--text-main,#fff);text-decoration:none;opacity:.8}
-.footer-links a:hover{opacity:1;color:var(--accent-purple,#8a2be2)}
 </style>
 </head>
 <body>
 
-<header class="blog-header">
-<a class="logo" href="/en.html">Randly</a>
-<nav style="display:flex;align-items:center;gap:4px;">
-<a href="/en.html">Home</a>
-<a href="/about-en.html">About Randly</a>
-<a href="/blog-en.html">Blog</a>
-<select class="blog-lang-select" onchange="if(this.value) location.href=this.value">
-<option value="" disabled selected>🌐</option>
-<option value="/blog-ar.html">العربية</option>
-<option value="/blog-es.html">Español</option>
-<option value="/blog-fr.html">Français</option>
-<option value="/blog-de.html">Deutsch</option>
-<option value="/blog-it.html">Italiano</option>
-<option value="/blog-pt.html">Português</option>
-<option value="/blog-tr.html">Türkçe</option>
-<option value="/blog-ru.html">Русский</option>
-<option value="/blog-hi.html">हिन्दी</option>
-<option value="/blog-id.html">Bahasa Indonesia</option>
-<option value="/blog-zh.html">中文</option>
-</select>
-</nav>
+<!-- هيدر موحّد بنفس تصميم باقي الموقع -->
+<header class="app-header" style="justify-content: space-between;">
+    <div class="header-left">
+        <a href="en.html" class="logo" style="text-decoration: none;">Randly</a>
+    </div>
+    <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
+        <nav style="display: flex; gap: 14px;">
+            <a href="en.html" style="color: var(--text-main); text-decoration: none; opacity: .85; font-size: .9rem;">Home</a>
+            <a href="about-en.html" style="color: var(--text-main); text-decoration: none; opacity: .85; font-size: .9rem;">About Randly</a>
+            <a href="blog-en.html" style="color: var(--accent-purple); text-decoration: none; font-size: .9rem; font-weight: bold;">Blog</a>
+        </nav>
+        <select class="site-lang-select" onchange="window.location.href=this.value">
+            <option value="blog-ar.html">العربية</option>
+            <option value="blog-en.html" selected>English</option>
+            <option value="blog-es.html">Español</option>
+            <option value="blog-fr.html">Français</option>
+            <option value="blog-de.html">Deutsch</option>
+            <option value="blog-it.html">Italiano</option>
+            <option value="blog-pt.html">Português</option>
+            <option value="blog-tr.html">Türkçe</option>
+            <option value="blog-ru.html">Русский</option>
+            <option value="blog-hi.html">हिन्दी</option>
+            <option value="blog-id.html">Bahasa Indonesia</option>
+            <option value="blog-zh.html">中文</option>
+        </select>
+    </div>
 </header>
 
 <div class="blog-article">
