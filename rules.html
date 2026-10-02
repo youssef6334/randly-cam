@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* حل نهائي لمشكلة السكرول وتمرير الصفحة بحرية */
+‎        /* حل نهائي لمشكلة السكرول وتمرير الصفحة بحرية */
         html, body {
             height: auto !important;
             overflow: auto !important;
@@ -36,6 +36,35 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3125079750975955" crossorigin="anonymous"></script>
 </head>
 <body>
+
+‎<!-- هيدر موحّد بنفس تصميم باقي الموقع -->
+<header class="app-header" style="justify-content: space-between;">
+    <div class="header-left">
+        <a href="index.html" class="logo" style="text-decoration: none;">Randly</a>
+    </div>
+    <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
+        <nav style="display: flex; gap: 14px;">
+            <a href="index.html" style="color: var(--text-main); text-decoration: none; opacity: .85; font-size: .9rem;">الرئيسية</a>
+            <a href="about.html" style="color: var(--text-main); text-decoration: none; opacity: .85; font-size: .9rem;">عن الموقع</a>
+            <a href="blog-ar.html" style="color: var(--text-main); text-decoration: none; opacity: .85; font-size: .9rem;">المدونة</a>
+        </nav>
+        <select class="site-lang-select" onchange="window.location.href=this.value">
+            <option value="about.html" selected>العربية</option>
+            <option value="about-en.html">English</option>
+            <option value="about-es.html">Español</option>
+            <option value="about-fr.html">Français</option>
+            <option value="about-de.html">Deutsch</option>
+            <option value="about-it.html">Italiano</option>
+            <option value="about-pt.html">Português</option>
+            <option value="about-tr.html">Türkçe</option>
+            <option value="about-ru.html">Русский</option>
+            <option value="about-hi.html">हिन्दी</option>
+            <option value="about-id.html">Bahasa Indonesia</option>
+            <option value="about-zh.html">中文</option>
+        </select>
+    </div>
+</header>
+
     <div style="position: relative; width: 100%; min-height: 100vh; overflow-y: auto;">
         <main class="vip-seo-section" style="padding-top: 20px;">
             <div class="legal-page">
