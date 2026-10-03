@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" id="htmlRoot">
 <head>
+<!-- perf-optimized -->
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -41,9 +42,10 @@
     <link rel="stylesheet" href="style.css">
 
     <!-- مكتبة الأيقونات الحديثة (FontAwesome) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
 
-    <script src="/socket.io/socket.io.js"></script>
+    
 
     <!-- FAQ Structured Data (JSON-LD) -->
     <script type="application/ld+json">
@@ -114,7 +116,7 @@
         <div class="logo">Randly</div>
     </div>
     <div class="header-right" style="display: flex; align-items: center; gap: 10px;">
-        <select id="landingLangSelect" class="site-lang-select" onchange="changeGlobalLanguage(this.value)">
+        <select id="landingLangSelect" aria-label="اختيار لغة الموقع" class="site-lang-select" onchange="changeGlobalLanguage(this.value)">
             <option value="ar">العربية</option>
             <option value="en">English</option>
             <option value="es">Español</option>
@@ -255,7 +257,7 @@
             <div class="header-right" style="display: flex; align-items: center; gap: 10px;">
                 <!-- قائمة اللغات الثابتة داخل الشات وفي كل صفحات الموقع -->
                 <label for="siteLang" class="sr-only">اختر اللغة</label>
-                <select id="siteLang" class="site-lang-select" onchange="changeGlobalLanguage(this.value)">
+                <select id="siteLang" aria-label="اختيار لغة الموقع" class="site-lang-select" onchange="changeGlobalLanguage(this.value)">
                     <option value="ar">العربية</option>
                     <option value="en">English</option>
                     <option value="es">Español</option>
@@ -336,7 +338,7 @@
                     <div class="select-wrapper">
                         <!-- قائمة الأعلام والدول -->
                         <label for="countrySelect" class="sr-only">اختر الدولة</label>
-                        <select id="countrySelect" class="filter-select">
+                        <select id="countrySelect" aria-label="اختيار الدولة" class="filter-select">
                             <option value="global" data-i18n="matchGlobal">🌐 عالمي (Smart Match)</option>
                             <option value="PS">🇵🇸 فلسطين</option>
                             <option value="EG">🇪🇬 مصر</option>
@@ -366,7 +368,7 @@
                     <!-- قائمة لغة الترجمة الفورية -->
                     <div class="select-wrapper">
                         <label for="translationLang" class="sr-only">لغة الترجمة</label>
-                        <select id="translationLang" class="filter-select">
+                        <select id="translationLang" aria-label="لغة الترجمة" class="filter-select">
                             <option value="none" data-i18n="noTranslation">بدون ترجمة</option>
                             <option value="ar">العربية</option>
                             <option value="en">English</option>
@@ -452,7 +454,8 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script defer src="/socket.io/socket.io.js"></script>
+<script src="script.js"></script>
 <script src="i18n-extra.js"></script>
     <script defer type="text/javascript" src="https://pl30790288.effectivecpmnetwork.com/af/01/4f/af014f7d78a0555fd804897f8175cc44.js"></script>
 </body>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr" id="htmlRoot">
 <head>
+<!-- perf-optimized -->
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -37,8 +38,9 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="style.css">
 <!-- Modern icons library (FontAwesome) -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<script src="/socket.io/socket.io.js"></script>
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
+
 <script type="application/ld+json">
 {
 "@context": "https://schema.org",
@@ -117,7 +119,7 @@
 <div class="logo">Randly</div>
 </div>
 <div class="header-right" style="display: flex; align-items: center; gap: 10px;">
-<select id="landingLangSelect" class="site-lang-select" onchange="changeGlobalLanguage(this.value)" style="padding: 8px 12px; border-radius: 8px; background: var(--bg-card, #222); color: var(--text-main, #fff); border: 1px solid rgba(255,255,255,0.2);">
+<select id="landingLangSelect" aria-label="اختيار لغة الموقع" class="site-lang-select" onchange="changeGlobalLanguage(this.value)" style="padding: 8px 12px; border-radius: 8px; background: var(--bg-card, #222); color: var(--text-main, #fff); border: 1px solid rgba(255,255,255,0.2);">
 <option value="ar">العربية</option>
 <option value="en" selected>English</option>
 <option value="es">Español</option>
@@ -242,7 +244,7 @@
 </div>
 <div class="header-right" style="display: flex; align-items: center; gap: 10px;">
 <label for="siteLang" class="sr-only">Choose language</label>
-<select id="siteLang" class="site-lang-select" onchange="changeGlobalLanguage(this.value)">
+<select id="siteLang" aria-label="اختيار لغة الموقع" class="site-lang-select" onchange="changeGlobalLanguage(this.value)">
 <option value="ar">العربية</option>
 <option value="en" selected>English</option>
 <option value="es">Español</option>
@@ -301,7 +303,7 @@ Stranger is typing...
 <div class="filter-controls-row">
 <div class="select-wrapper">
 <label for="countrySelect" class="sr-only">Choose country</label>
-<select id="countrySelect" class="filter-select">
+<select id="countrySelect" aria-label="اختيار الدولة" class="filter-select">
 <option value="global" data-i18n="matchGlobal">🌐 Global (Smart Match)</option>
 <option value="PS">🇵🇸 Palestine</option>
 <option value="EG">🇪🇬 Egypt</option>
@@ -329,7 +331,7 @@ Stranger is typing...
 </div>
 <div class="select-wrapper">
 <label for="translationLang" class="sr-only">Translation language</label>
-<select id="translationLang" class="filter-select">
+<select id="translationLang" aria-label="لغة الترجمة" class="filter-select">
 <option value="none" data-i18n="noTranslation">No translation</option>
 <option value="ar">العربية</option>
 <option value="en">English</option>
@@ -399,6 +401,7 @@ Stranger is typing...
 </div>
 </div>
 </div>
+<script defer src="/socket.io/socket.io.js"></script>
 <script src="script.js"></script>
 <script src="i18n-extra.js"></script>
 <script defer type="text/javascript" src="https://pl30790288.effectivecpmnetwork.com/af/01/4f/af014f7d78a0555fd804897f8175cc44.js"></script>
