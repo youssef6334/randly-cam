@@ -1,99 +1,63 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<!-- perf-optimized -->
+<meta charset="UTF-8">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>القواعد - Randly</title>
-    <meta name="description" content="قواعد استخدام موقع Randly للدردشة العشوائية مع الغرباء عبر الفيديو والنص.">
-    <link rel="stylesheet" href="style.css">
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>القواعد - Randly</title>
+<meta name="description" content="قواعد استخدام موقع Randly للدردشة العشوائية مع الغرباء عبر الفيديو والنص.">
+<link rel="canonical" href="https://randly.live/rules.html">
+<link rel="stylesheet" href="style.css">
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
-    <style>
-‎        /* حل نهائي لمشكلة السكرول وتمرير الصفحة بحرية */
-        html, body {
-            height: auto !important;
-            overflow: auto !important;
-            background-color: var(--bg-primary, #121212);
-            color: var(--text-main, #ffffff);
-            margin: 0;
-            padding: 0;
-        }
-        .legal-page {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 40px 20px 80px;
-            line-height: 1.9;
-        }
-        .legal-page h1 { margin-bottom: 8px; color: var(--accent-purple, #00f2fe); }
+<style>
+        html, body { height: auto !important; overflow: auto !important; background-color: var(--bg-primary, #121212); color: var(--text-main, #ffffff); margin: 0; padding: 0; }
+        .legal-page { max-width: 800px; margin: 0 auto; padding: 40px 20px 80px; line-height: 1.9; }
+        .legal-page h1 { margin-bottom: 8px; color: var(--accent); }
         .legal-page .updated { opacity: 0.6; font-size: 14px; margin-bottom: 32px; }
         .legal-page section { margin-bottom: 28px; }
-        .legal-page h2 { font-size: 20px; margin-bottom: 10px; color: var(--text-main, #ffffff); }
+        .legal-page h2 { font-size: 20px; margin-bottom: 10px; color: var(--text-main); }
         .legal-page ul { padding-right: 20px; margin: 10px 0; }
-        .legal-page li { margin-bottom: 6px; color: var(--text-muted, #b0b0b0); }
-        .legal-page p { color: var(--text-muted, #b0b0b0); }
-        .legal-back { display: inline-block; margin-bottom: 24px; color: var(--accent-purple, #00f2fe); text-decoration: none; font-weight: bold; }
-        .legal-back:hover { text-decoration: underline; }
-    </style>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3125079750975955" crossorigin="anonymous"></script>
+        .legal-page li { margin-bottom: 6px; color: var(--text-muted); }
+        .legal-page p { color: var(--text-muted); }
+        .legal-page a { color: var(--accent); }
+</style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3125079750975955" crossorigin="anonymous"></script>
 </head>
 <body>
 
-‎<!-- هيدر موحّد بنفس تصميم باقي الموقع -->
 <header class="app-header" style="justify-content: space-between;">
     <div class="header-left">
-        <a href="index.html" class="logo" style="text-decoration: none;">Randly</a>
+        <a href="/" class="logo" style="text-decoration: none;">Randly</a>
     </div>
-    <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
-        <nav style="display: flex; gap: 14px;">
-            <a href="index.html" style="color: var(--text-main); text-decoration: none; opacity: .85; font-size: .9rem;">الرئيسية</a>
-            <a href="about.html" style="color: var(--text-main); text-decoration: none; opacity: .85; font-size: .9rem;">عن الموقع</a>
-            <a href="blog-ar.html" style="color: var(--text-main); text-decoration: none; opacity: .85; font-size: .9rem;">المدونة</a>
-        </nav>
-        <select class="site-lang-select" onchange="window.location.href=this.value">
-            <option value="about.html" selected>العربية</option>
-            <option value="about-en.html">English</option>
-            <option value="about-es.html">Español</option>
-            <option value="about-fr.html">Français</option>
-            <option value="about-de.html">Deutsch</option>
-            <option value="about-it.html">Italiano</option>
-            <option value="about-pt.html">Português</option>
-            <option value="about-tr.html">Türkçe</option>
-            <option value="about-ru.html">Русский</option>
-            <option value="about-hi.html">हिन्दी</option>
-            <option value="about-id.html">Bahasa Indonesia</option>
-            <option value="about-zh.html">中文</option>
-        </select>
-    </div>
+    <nav class="header-right" style="display: flex; gap: 14px;">
+        <a href="/" style="color: var(--text-main); text-decoration: none; opacity: .85; font-size: .9rem;">الرئيسية</a>
+        <a href="about.html" style="color: var(--text-main); text-decoration: none; opacity: .85; font-size: .9rem;">عن الموقع</a>
+        <a href="blog-ar.html" style="color: var(--text-main); text-decoration: none; opacity: .85; font-size: .9rem;">المدونة</a>
+    </nav>
 </header>
 
-    <div style="position: relative; width: 100%; min-height: 100vh; overflow-y: auto;">
-        <main class="vip-seo-section" style="padding-top: 20px;">
-            <div class="legal-page">
-                <a href="index.html" class="legal-back"><i class="fas fa-arrow-right"></i> رجوع للرئيسية</a>
-                <h1>قواعد استخدام Randly</h1>
-                <p class="updated">آخر تحديث: 25 سبتمبر 2026</p>
+<main class="vip-seo-section" style="padding-top: 20px;">
+    <div class="legal-page">
+        <h1>قواعد استخدام Randly</h1>
+        <p class="updated">آخر تحديث: 4 أكتوبر 2026</p>
 
                 <section>
-                    <p>باستخدامك لموقع Randly، أنت توافق على الالتزام بالقواعد التالية. عدم الالتزام قد يؤدي إلى حظر فوري ودائم من الخدمة.</p>
+                    <p>باستخدامك لموقع Randly، أنت توافق على الالتزام بالقواعد التالية. عدم الالتزام قد يؤدي إلى حظر مؤقت من الخدمة.</p>
                 </section>
 
                 <section>
                     <h2>1. السن القانوني</h2>
-                    <p>يُمنع استخدام الموقع لمن هم أقل من 18 عامًا. باستخدامك للخدمة، أنت تقر بأنك تبلغ من العمر 18 عامًا أو أكثر.</p>
+                    <p>يُسمح باستخدام الموقع لمن بلغ 18 عاماً أو أكثر فقط. عند أول استخدام نطلب منك تأكيد ذلك، وبمتابعتك تقرّ بصحة هذا التأكيد.</p>
                 </section>
 
                 <section>
                     <h2>2. المحتوى الممنوع</h2>
                     <ul>
-                        <li>عرض أو مشاركة محتوى عاري أو جنسي - يتم رصده تلقائيًا عبر أنظمة الذكاء الاصطناعي بالإضافة للمراجعة البشرية</li>
+                        <li>عرض أو مشاركة محتوى عارٍ أو جنسي</li>
                         <li>العنف، أو التحريض على الكراهية، أو التمييز العنصري أو الديني أو الجنسي</li>
                         <li>مشاركة معلومات شخصية حساسة (أرقام هواتف، عناوين، بيانات مالية) عن نفسك أو عن الغير</li>
                         <li>الإعلانات التجارية أو الترويج لمواقع وخدمات أخرى</li>
@@ -103,21 +67,32 @@
                 </section>
 
                 <section>
-                    <h2>3. الإبلاغ</h2>
-                    <p>إذا واجهت سلوكًا مخالفًا لهذه القواعد، استخدم زر "الإبلاغ" 🚩 المتاح أثناء الشات فورًا. فريقنا يراجع البلاغات ويتخذ الإجراء المناسب.</p>
+                    <h2>3. الإبلاغ والإجراءات</h2>
+                    <p>إذا واجهت سلوكاً مخالفاً، استخدم زر «الإبلاغ» 🚩 أثناء الدردشة. نسجّل البلاغ مع سببه ومعرّف مشفّر (hash) لعنوان الـ IP، ولا نحتفظ بمحتوى المحادثة. عندما يتلقى مستخدم بلاغات من عدة أشخاص مختلفين خلال فترة قصيرة، يُحظر مؤقتاً بشكل تلقائي.</p><p>تعتمد الحماية حالياً على بلاغات المستخدمين والحظر المؤقت التلقائي، ولا يوجد فحص آلي لمحتوى الفيديو أو النص.</p>
                 </section>
 
                 <section>
                     <h2>4. حدود مسؤوليتنا</h2>
-                    <p>Randly منصة تربط بين غرباء بشكل عشوائي. نحن نبذل جهدًا لتوفير بيئة آمنة، لكن لا يمكننا ضمان سلوك كل مستخدم بنسبة 100%.</p>
+                    <p>Randly منصة تربط بين غرباء بشكل عشوائي. نبذل جهدنا لتوفير بيئة محترمة، لكن لا يمكننا ضمان سلوك كل مستخدم، فتحدّث بحذر ولا تشارك معلوماتك الخاصة.</p>
                 </section>
 
                 <section>
                     <h2>5. تواصل معنا</h2>
-                    <p>لأي استفسار يتعلق بهذه القواعد، راسلنا على البريد الرسمي: <a href="mailto:contact@randly.live" style="color: var(--accent-purple, #00f2fe);">contact@randly.live</a></p>
+                    <p>لأي استفسار يتعلق بـهذه القواعد، راسلنا على: <a href="mailto:contact@randly.live">contact@randly.live</a></p>
                 </section>
-            </div>
-        </main>
+
     </div>
+</main>
+
+<footer class="app-footer">
+<p>&copy; 2026 Randly.live - جميع الحقوق محفوظة.</p>
+<div class="footer-links">
+<a href="rules.html">القواعد</a>
+<a href="privacy.html">سياسة الخصوصية</a>
+<a href="terms.html">الشروط والأحكام</a>
+<a href="mailto:contact@randly.live">تواصل معنا</a>
+</div>
+</footer>
+
 </body>
 </html>

@@ -1,3 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /socket.io/
+Disallow: /api/
+Disallow: /healthz
+
 Sitemap: https://randly.live/sitemap.xml

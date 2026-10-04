@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="tr" dir="ltr" id="htmlRoot">
 <head>
+<meta charset="UTF-8">
 <!-- perf-optimized -->
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -9,7 +10,6 @@
 <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
 
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="siteTitle">Randly - Yabancılarla Ücretsiz Rastgele Görüntülü Sohbet</title>
 <meta name="description" content="Randly'de dünyanın her yerinden rastgele yabancılarla güvenli ve hızlı bir şekilde sohbet edin. Ücretsiz görüntülü ve yazılı sohbet, kayıt gerekmez.">
@@ -57,10 +57,26 @@
   "mainEntity": [
     {
       "@type": "Question",
+      "name": "Randly ücretsiz mi?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Evet, video veya yazı yoluyla yabancılarla tamamen ücretsiz, gizli ücret olmadan sohbet edebilirsiniz."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Randly'yi telefonumda kullanabilir miyim?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Kesinlikle! Site tüm mobil cihazlarda sorunsuz çalışacak şekilde tasarlanmıştır."
+      }
+    },
+    {
+      "@type": "Question",
       "name": "Omegle kapandıktan sonra en iyi alternatif nedir?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Randly, kayıt olmadan yabancılarla ücretsiz rastgele görüntülü ve yazılı sohbet sunan, daha güçlü güvenlik sistemleri ve ilgi alanına göre eşleştirme özelliğine sahip Omegle'ın en iyi alternatiflerinden biridir."
+        "text": "Randly, kayıt olmadan yabancılarla ücretsiz rastgele görüntülü ve yazılı sohbet sunan, ihlal edenler için bildirim ve geçici engelleme ile ilgi alanına göre eşleştirme özelliği bulunan Omegle'ın en iyi alternatiflerinden biridir."
       }
     },
     {
@@ -68,7 +84,7 @@
       "name": "Randly kullanmak güvenli mi?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Evet, Randly uygunsuz içerik için otomatik filtreleme ve anında bildirim özelliği kullanır; hiçbir sohbet konuşmasını saklamaz ve kişisel veri kaydı istemez."
+        "text": "Randly anında bildirim özelliği sunar ve birden fazla bildirim alan kullanıcıları otomatik olarak geçici süreyle engeller. Sohbetlerinizi saklamaz ve kişisel veri kaydı istemez. Yine de dikkatli olun ve yabancılarla özel bilgilerinizi paylaşmayın."
       }
     },
     {
@@ -76,7 +92,7 @@
       "name": "Randly'de rastgele sohbet nasıl çalışır?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Sadece Görüntülü Sohbet veya Yazılı Sohbet'e tıklayın, anında şu anda çevrimiçi olan rastgele bir kişiyle bağlanırsınız; istediğiniz zaman tek tıkla bir sonraki kişiye geçebilirsiniz."
+        "text": "Sadece \"Görüntülü Sohbet\" veya \"Yazılı Sohbet\"e tıklayın, anında şu anda çevrimiçi olan rastgele bir kişiyle bağlanırsınız; istediğiniz zaman tek tıkla bir sonraki kişiye geçebilirsiniz."
       }
     },
     {
@@ -84,7 +100,7 @@
       "name": "Konuştuğum kişinin ülkesini seçebilir miyim?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Evet, Randly belirli bir ülkeden insanlarla bağlanmak için bir filtre sunar veya dünyadaki herkesle eşleşmek için Küresel modunu kullanabilirsiniz."
+        "text": "Evet, Randly belirli bir ülkeden insanlarla bağlanmak için bir filtre sunar veya dünyadaki herkesle eşleşmek için \"Küresel\" modunu kullanabilirsiniz."
       }
     },
     {
@@ -115,7 +131,7 @@
 <div class="logo">Randly</div>
 </div>
 <div class="header-right" style="display: flex; align-items: center; gap: 10px;">
-<select id="landingLangSelect" aria-label="اختيار لغة الموقع" class="site-lang-select" onchange="changeGlobalLanguage(this.value)" style="padding: 8px 12px; border-radius: 8px; background: var(--bg-card, #222); color: var(--text-main, #fff); border: 1px solid rgba(255,255,255,0.2);">
+<select id="landingLangSelect" aria-label="اختيار لغة الموقع" class="site-lang-select" onchange="changeGlobalLanguage(this.value)" style="padding: 8px 12px; border-radius: 8px; background: var(--bg-card, #222); color: var(--text-main, #fff); border: 1px solid var(--border-color);">
 <option value="ar">العربية</option>
 <option value="en">English</option>
 <option value="es">Español</option>
@@ -133,10 +149,10 @@
 </div>
 </header>
 <div class="landing-card">
-<h1 data-i18n="logoTitle">Randly - Yabancılarla Ücretsiz Rastgele Görüntülü Sohbet</h1>
+<h1>Randly - Yabancılarla Ücretsiz Rastgele Görüntülü Sohbet</h1>
 <p data-i18n="landingSub">Dünyanın her yerinden rastgele insanlarla güvenli ve hızlı bir şekilde sohbet edin!</p>
 <div class="interests-box">
-<div id="interestsTagsContainer" class="interests-tags-container" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: var(--bg-card, #222); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); min-height: 48px; cursor: text;" onclick="document.getElementById('interestTagInput').focus()">
+<div id="interestsTagsContainer" class="interests-tags-container" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: var(--bg-card, #222); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); min-height: 48px; cursor: text;" onclick="document.getElementById('interestTagInput').focus()">
 <input type="text" id="interestTagInput" data-i18n-placeholder="interestsPlaceholder" placeholder="İlgi alanlarınızı girin (yazıp Enter'a basın)..." style="border: none; background: transparent; color: var(--text-main, #fff); outline: none; flex: 1; min-width: 140px; padding: 4px;">
 </div>
 </div>
@@ -165,57 +181,57 @@
 <article class="feature-card">
 <i class="fas fa-shield-alt"></i>
 <h3 data-i18n="feat4Title">Güvenli Ortam</h3>
-<p data-i18n="feat4Desc">Temiz ve saygılı sohbetler için otomatik koruma sistemleri ve şikayet özellikleri.</p>
+<p data-i18n="feat4Desc">Kuralları ihlal edenler için anında bildirim ve otomatik geçici engelleme; sohbetler saygılı kalsın diye.</p>
 </article>
 </div>
-<section class="faq-section" itemscope itemtype="https://schema.org/FAQPage">
+<section class="faq-section">
 <h2 data-i18n="faqTitle">Sıkça Sorulan Sorular</h2>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq1Q">Randly ücretsiz mi?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq1A">Evet, video veya yazı yoluyla yabancılarla tamamen ücretsiz, gizli ücret olmadan sohbet edebilirsiniz.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq1Q">Randly ücretsiz mi?</h3>
+<div class="faq-answer">
+<p data-i18n="faq1A">Evet, video veya yazı yoluyla yabancılarla tamamen ücretsiz, gizli ücret olmadan sohbet edebilirsiniz.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq2Q">Randly'yi telefonumda kullanabilir miyim?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq2A">Kesinlikle! Site tüm mobil cihazlarda sorunsuz çalışacak şekilde tasarlanmıştır.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq2Q">Randly'yi telefonumda kullanabilir miyim?</h3>
+<div class="faq-answer">
+<p data-i18n="faq2A">Kesinlikle! Site tüm mobil cihazlarda sorunsuz çalışacak şekilde tasarlanmıştır.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq3Q">Omegle kapandıktan sonra en iyi alternatif nedir?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq3A">Randly, kayıt olmadan yabancılarla ücretsiz rastgele görüntülü ve yazılı sohbet sunan, daha güçlü güvenlik sistemleri ve ilgi alanına göre eşleştirme özelliğine sahip Omegle'ın en iyi alternatiflerinden biridir.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq3Q">Omegle kapandıktan sonra en iyi alternatif nedir?</h3>
+<div class="faq-answer">
+<p data-i18n="faq3A">Randly, kayıt olmadan yabancılarla ücretsiz rastgele görüntülü ve yazılı sohbet sunan, ihlal edenler için bildirim ve geçici engelleme ile ilgi alanına göre eşleştirme özelliği bulunan Omegle'ın en iyi alternatiflerinden biridir.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq4Q">Randly kullanmak güvenli mi?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq4A">Evet, Randly uygunsuz içerik için otomatik filtreleme ve anında bildirim özelliği kullanır; hiçbir sohbet konuşmasını saklamaz ve kişisel veri kaydı istemez.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq4Q">Randly kullanmak güvenli mi?</h3>
+<div class="faq-answer">
+<p data-i18n="faq4A">Randly anında bildirim özelliği sunar ve birden fazla bildirim alan kullanıcıları otomatik olarak geçici süreyle engeller. Sohbetlerinizi saklamaz ve kişisel veri kaydı istemez. Yine de dikkatli olun ve yabancılarla özel bilgilerinizi paylaşmayın.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq5Q">Randly'de rastgele sohbet nasıl çalışır?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq5A">Sadece "Görüntülü Sohbet" veya "Yazılı Sohbet"e tıklayın, anında şu anda çevrimiçi olan rastgele bir kişiyle bağlanırsınız; istediğiniz zaman tek tıkla bir sonraki kişiye geçebilirsiniz.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq5Q">Randly'de rastgele sohbet nasıl çalışır?</h3>
+<div class="faq-answer">
+<p data-i18n="faq5A">Sadece "Görüntülü Sohbet" veya "Yazılı Sohbet"e tıklayın, anında şu anda çevrimiçi olan rastgele bir kişiyle bağlanırsınız; istediğiniz zaman tek tıkla bir sonraki kişiye geçebilirsiniz.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq6Q">Konuştuğum kişinin ülkesini seçebilir miyim?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq6A">Evet, Randly belirli bir ülkeden insanlarla bağlanmak için bir filtre sunar veya dünyadaki herkesle eşleşmek için "Küresel" modunu kullanabilirsiniz.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq6Q">Konuştuğum kişinin ülkesini seçebilir miyim?</h3>
+<div class="faq-answer">
+<p data-i18n="faq6A">Evet, Randly belirli bir ülkeden insanlarla bağlanmak için bir filtre sunar veya dünyadaki herkesle eşleşmek için "Küresel" modunu kullanabilirsiniz.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq7Q">Randly kullanmak için minimum yaş nedir?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq7A">Kullanıcıların, sitenin Kullanım Şartları'na göre Randly'yi kullanmak için 18 yaşında veya daha büyük olması gerekir.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq7Q">Randly kullanmak için minimum yaş nedir?</h3>
+<div class="faq-answer">
+<p data-i18n="faq7A">Kullanıcıların, sitenin Kullanım Şartları'na göre Randly'yi kullanmak için 18 yaşında veya daha büyük olması gerekir.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq8Q">Randly mesajları diller arasında otomatik olarak çevirir mi?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq8A">Evet, yazılı sohbet mesajları için anında çeviriyi etkinleştirebilir ve çeviri menüsünden tercih ettiğiniz dili seçebilirsiniz.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq8Q">Randly mesajları diller arasında otomatik olarak çevirir mi?</h3>
+<div class="faq-answer">
+<p data-i18n="faq8A">Evet, yazılı sohbet mesajları için anında çeviriyi etkinleştirebilir ve çeviri menüsünden tercih ettiğiniz dili seçebilirsiniz.</p>
 </div>
 </div>
 </section>
@@ -224,6 +240,7 @@
 <div class="footer-links">
 <a href="rules.html" data-i18n="rulesLink">Kurallar</a>
 <a href="privacy.html" data-i18n="privacyLink">Gizlilik Politikası</a>
+<a href="terms.html" data-i18n="termsLink">Kullanım Şartları</a>
 <a href="about-tr.html">Hakkında</a>
 <a href="about-tr.html" data-i18n="aboutLink">About</a>
 <a href="/blog-tr.html" id="footerBlogLink">Blog</a>
@@ -355,7 +372,7 @@ Yabancı yazıyor...
 <button class="btn-start-main" id="nextBtn" onclick="handleMainButton()" style="white-space: nowrap; flex-shrink: 0; padding: 10px 14px;">
 <i class="fas fa-forward"></i> <span data-i18n="skipStartBtn">Geç / Başlat</span>
 </button>
-<div class="input-container chat-input-wrapper" style="display: flex; flex-direction: row; flex: 1; align-items: center; background: var(--bg-card); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; min-width: 0;">
+<div class="input-container chat-input-wrapper" style="display: flex; flex-direction: row; flex: 1; align-items: center; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; min-width: 0;">
 <input type="text" id="msgInput" data-i18n-placeholder="msgPlaceholder" placeholder="Mesajınızı buraya yazın..." onkeydown="if(event.key === 'Enter') sendMsg()" style="flex: 1; direction: auto; text-align: start; padding: 12px; border: none; background: transparent; color: var(--text-main); outline: none; min-width: 0;">
 <button class="btn-send-inside" id="sendBtn" onclick="sendMsg()" style="padding: 10px 14px; border: none; background: transparent; color: var(--accent-purple); cursor: pointer; flex-shrink: 0;" aria-label="Mesaj gönder"><i class="fas fa-paper-plane" style="font-size: 1.2rem;"></i></button>
 </div>
@@ -386,6 +403,7 @@ Yabancı yazıyor...
 <script src="/socket.io/socket.io.js"></script>
 <script src="script.js"></script>
 <script src="i18n-extra.js"></script>
+<script src="randly-extra.js"></script>
 <script>/* ads-deferred-by-script */
 window.addEventListener('load', function() {
   var s = document.createElement('script');

@@ -65,6 +65,20 @@ if (STATIC_ROOT === __dirname) {
     console.warn('[WARN] مجلد public/ غير موجود — بنخدم من الجذر مع حظر ملفات السيرفر. انقل الملفات العامة لـ public/.');
 }
 
+// STUN + TURN (من متغيرات البيئة: TURN_URLS="turn:host:3478,turns:host:5349" TURN_USERNAME TURN_CREDENTIAL)
+app.get('/api/ice', (req, res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    const iceServers = [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }];
+    if (process.env.TURN_URLS && process.env.TURN_USERNAME && process.env.TURN_CREDENTIAL) {
+        iceServers.push({
+            urls: process.env.TURN_URLS.split(',').map(x => x.trim()).filter(Boolean),
+            username: process.env.TURN_USERNAME,
+            credential: process.env.TURN_CREDENTIAL
+        });
+    }
+    res.json({ iceServers });
+});
+
 app.get('/healthz', (req, res) => res.json({ ok: true, online: activeUsers.size }));
 
 app.use(express.static(STATIC_ROOT, {
@@ -370,6 +384,19 @@ io.on('connection', (socket) => {
             const peerSocket = peerId && io.sockets.sockets.get(peerId);
             if (peerSocket && activeUsers.has(peerId)) pair(socket, peerSocket, roomId, null);
         }
+    });
+
+    // غرفة خاصة جديدة (ميزة "ادعُ صديقك"): المنشئ بيستنى جوه الغرفة لحد ما صاحبه يفتح الرابط
+    on(socket, 'create-room', [5, 60000], (data) => {
+        if (isBanned()) return socket.emit('banned', { until: bans.get(ipHash) });
+        if (savedRooms.size > 20000) return;
+        const mode = isObj(data) && data.mode === 'video' ? 'video' : 'text';
+        detach(socket);
+        const roomId = `room_${crypto.randomUUID()}`;
+        savedRooms.set(roomId, { createdAt: Date.now(), mode });
+        socket.join(roomId);
+        activeUsers.get(socket.id).room = roomId;
+        socket.emit('room-created', { roomId });
     });
 
     on(socket, 'signal', [300, 10000], (data) => {

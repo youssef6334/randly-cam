@@ -3,12 +3,16 @@ const socket = io(window.location.origin, {
     secure: true
 });
 
-const rtcConfig = {
+let rtcConfig = {
     iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
         { urls: 'stun:stun1.l.google.com:19302' }
     ]
 };
+// السيرفر بيرجّع STUN + TURN (من متغيرات البيئة). لو فشل نكمل بالـ STUN الافتراضي
+fetch('/api/ice').then(r => r.json()).then(d => {
+    if (d && Array.isArray(d.iceServers) && d.iceServers.length) rtcConfig = { iceServers: d.iceServers };
+}).catch(() => {});
 
 let localStream = null;
 let peerConnection = null;
@@ -18,6 +22,8 @@ let isCamOff = false;
 let buttonState = 'start';
 let currentRoomId = null;
 let currentPartnerCountry = null;
+let pendingCandidates = [];
+let skipConfirmTimer = null;
 
 
 // العناصر الأساسية
@@ -160,8 +166,8 @@ document.addEventListener('DOMContentLoaded', () => {
         interestTagInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ',') {
                 e.preventDefault();
-                const val = interestTagInput.value.trim().replace(/,/g, '');
-                if (val && !interestsArray.includes(val)) {
+                const val = interestTagInput.value.trim().replace(/,/g, '').slice(0, 30);
+                if (val && !interestsArray.includes(val) && interestsArray.length < 10) {
                     interestsArray.push(val);
                     renderInterestTags();
                 }
@@ -177,6 +183,13 @@ document.addEventListener('DOMContentLoaded', () => {
     populateCountrySelects();
 });
 
+function interestLabel(v) {
+    try {
+        if (window.CHIP_SLUGS && window.CHIP_SLUGS.indexOf(v) !== -1 && typeof tr === 'function') return tr('chip_' + v);
+    } catch (e) {}
+    return v;
+}
+
 function renderInterestTags() {
     const container = document.getElementById('interestsTagsContainer');
     const interestTagInput = document.getElementById('interestTagInput');
@@ -185,8 +198,9 @@ function renderInterestTags() {
     interestsArray.forEach((interest, index) => {
         const tagEl = document.createElement('div');
         tagEl.className = 'interest-tag';
-        tagEl.style.cssText = 'background: var(--accent-purple, #8a2be2); color: #fff; padding: 4px 10px; border-radius: 15px; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; margin: 2px;';
-        tagEl.innerHTML = `<span>${interest} ✕</span>`;
+        const label = document.createElement('span');
+        label.textContent = interestLabel(interest) + ' ✕';   // textContent: مفيش HTML injection
+        tagEl.appendChild(label);
         tagEl.onclick = (e) => {
             e.stopPropagation();
             interestsArray.splice(index, 1);
@@ -275,15 +289,19 @@ function toggleAd() {
 
 function saveRoomLink() {
     if (!currentRoomId) {
-        alert('يجب أن تكون متصلاً بشخص أولاً لتتمكن من نسخ رابط الغرفة!');
+        alert(tr('needConnected'));
         return;
     }
     const url = `${window.location.origin}${window.location.pathname}?room=${currentRoomId}&mode=${currentMode}`;
+    if (navigator.share) {
+        navigator.share({ title: 'Randly', text: tr('shareText'), url: url }).catch(() => {});
+        return;
+    }
     navigator.clipboard.writeText(url).then(() => {
-        alert('✅ تم نسخ رابط الغرفة بنجاح!\nصلاحية الغرفة 72 ساعة، شارك الرابط مع صديقك للدخول.');
+        alert(tr('linkCopied'));
     }).catch(err => {
-        console.error('فشل في نسخ الرابط', err);
-        alert('عذراً، حدث خطأ أثناء نسخ الرابط.');
+        console.error('copy failed', err);
+        alert(tr('copyFailed'));
     });
 }
 
@@ -320,6 +338,7 @@ function clearRemoteVideo() {
         const textInfoBoxClear = document.getElementById('textChatPartnerInfo');
     if (textInfoBoxClear) textInfoBoxClear.style.display = 'none';
     currentPartnerCountry = null;
+    pendingCandidates = [];
 }
 
 function toggleMic() {
@@ -354,6 +373,8 @@ function toggleCam() {
 
 async function startSession(mode, specificRoomId = null) {
     currentMode = mode;
+    buttonState = 'skip';          // كان بيفضل 'start' فالضغطة الأولى كانت بتفتح الكاميرا مرتين
+    setNextBtn('skip');
     if (landingPage) landingPage.style.display = 'none';
     const videoOnlyBtns = document.querySelectorAll('.video-only-btn');
     const localBox = document.querySelector('.video-box.local-box');
@@ -363,10 +384,10 @@ async function startSession(mode, specificRoomId = null) {
         if (localBox) localBox.style.setProperty('display', 'flex', 'important');
         videoOnlyBtns.forEach(btn => btn.classList.remove('d-none'));
         try {
-            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            if (!localStream) localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             if (localVideo) localVideo.srcObject = localStream;
         } catch (err) {
-            appendSystemMessage('تعذر الوصول للكاميرا والمايكروفون.');
+            appendSystemMessage(tr('cameraError'));
         }
     } else {
         if (videoSection) videoSection.style.setProperty('display', 'none', 'important');
@@ -388,26 +409,42 @@ async function startSession(mode, specificRoomId = null) {
     }
 }
 
-function handleMainButton() {
+function setNextBtn(state) {
     const btn = document.getElementById('nextBtn');
-    const currentLang = document.documentElement.lang || 'ar';
-    const t = translations[currentLang] || translations['en'];
+    if (!btn) return;
+    const key = state === 'really' ? 'really' : (state === 'start' ? 'startBtn' : 'nextBtn');
+    btn.textContent = '';
+    const icon = document.createElement('i');
+    icon.className = state === 'really' ? 'fas fa-question-circle' : 'fas fa-forward';
+    const span = document.createElement('span');
+    span.setAttribute('data-i18n', key);
+    span.textContent = tr(key);
+    btn.appendChild(icon);
+    btn.appendChild(document.createTextNode(' '));
+    btn.appendChild(span);
+}
 
+function handleMainButton() {
+    clearTimeout(skipConfirmTimer);
     if (buttonState === 'start') {
         startSession(currentMode);
-        buttonState = 'skip';
-        if(btn) btn.innerHTML = `<i class="fas fa-forward"></i> ${t.skipStartBtn}`;
     } else if (buttonState === 'skip') {
+        // خطوة تأكيد ضد الضغط بالغلط: لو ما اتأكدتش خلال 3 ثواني الزر يرجع لوضعه
         buttonState = 'really';
-        if(btn) btn.innerHTML = '<i class="fas fa-question-circle"></i> Really?';
+        setNextBtn('really');
+        skipConfirmTimer = setTimeout(() => {
+            if (buttonState === 'really') { buttonState = 'skip'; setNextBtn('skip'); }
+        }, 3000);
     } else if (buttonState === 'really') {
         nextUser();
         buttonState = 'skip';
-        if(btn) btn.innerHTML = `<i class="fas fa-forward"></i> ${t.skipStartBtn}`;
+        setNextBtn('skip');
     }
 }
 
 function nextUser() {
+    clearTimeout(skipConfirmTimer);
+    if (buttonState === 'really') { buttonState = 'skip'; setNextBtn('skip'); }
     clearRemoteVideo();
     if(chatBox) chatBox.innerHTML = '';
     currentRoomId = null;
@@ -431,7 +468,11 @@ function joinSpecificRoom(roomId) {
     if(chatBox) chatBox.innerHTML = '';
     if(chatBox) chatBox.style.display = 'none';
     if(skeletonLoader) skeletonLoader.style.display = 'block';
-    if(statusDiv) statusDiv.textContent = 'جاري الانضمام للغرفة...';
+    if(statusDiv) statusDiv.textContent = tr('joiningRoom');
+    if (roomId === '__create__') {      // غرفة خاصة جديدة (ميزة ادعُ صديقك)
+        socket.emit('create-room', { mode: currentMode });
+        return;
+    }
     socket.emit('join-saved-room', { roomId: roomId, mode: currentMode });
 }
 
@@ -447,10 +488,8 @@ function leaveSession() {
     if (localBox) localBox.style.setProperty('display', 'none', 'important');
     buttonState = 'start';
     currentRoomId = null;
-    const btn = document.getElementById('nextBtn');
-    const currentLang = document.documentElement.lang || 'ar';
-    const t = translations[currentLang] || translations['en'];
-    if (btn) btn.innerHTML = `<i class="fas fa-forward"></i> ${t.skipStartBtn}`;
+    clearTimeout(skipConfirmTimer);
+    setNextBtn('start');
     window.history.pushState({}, document.title, window.location.pathname);
     socket.emit('leave-room');
 }
@@ -508,7 +547,7 @@ function toggleMask() {
 
 function reportUser() {
     socket.emit('submit-report', { reason: 'Inappropriate behavior' });
-    alert("تم تسجيل الإبلاغ عن هذا المستخدم.");
+    alert(tr('reported'));
 }
 
 let myGameSymbol = null;
@@ -531,7 +570,7 @@ function resetXOBoard() {
     const currentLang = document.documentElement.lang || 'ar';
     const t = translations[currentLang] || translations['en'];
     const gameStatus = document.getElementById('gameStatusText');
-    if(gameStatus) gameStatus.textContent = isMyTurn ? `${t.turnText} ( ${myGameSymbol} )` : 'انتظر دورك...';
+    if(gameStatus) gameStatus.textContent = isMyTurn ? `${t.turnText} ( ${myGameSymbol} )` : tr('waitTurn');
 }
 
 function makeMove(cellIndex) {
@@ -540,7 +579,7 @@ function makeMove(cellIndex) {
     document.querySelectorAll('.xo-cell')[cellIndex].textContent = myGameSymbol;
     isMyTurn = false;
     const gameStatus = document.getElementById('gameStatusText');
-    if(gameStatus) gameStatus.textContent = 'انتظر دورك...';
+    if(gameStatus) gameStatus.textContent = tr('waitTurn');
     socket.emit('xo-move', { index: cellIndex, symbol: myGameSymbol });
 }
 
@@ -585,6 +624,20 @@ function createPeerConnection() {
             socket.emit('signal', { candidate: event.candidate });
         }
     };
+
+    peerConnection.onconnectionstatechange = () => {
+        if (peerConnection && peerConnection.connectionState === 'failed') {
+            appendSystemMessage(tr('rtcFailed'));
+        }
+    };
+}
+
+async function flushPendingCandidates() {
+    const list = pendingCandidates;
+    pendingCandidates = [];
+    for (const c of list) {
+        try { await peerConnection.addIceCandidate(new RTCIceCandidate(c)); } catch (e) { console.warn('ICE', e); }
+    }
 }
 
 function getFlagEmoji(countryCode) {
@@ -640,7 +693,7 @@ if (textNameEl) {
     resetXOBoard();
 
     if (currentMode === 'video') {
-        createPeerConnection();
+        if (!peerConnection) createPeerConnection();   // ممكن يكون اتعمل بسبب offer وصل بدري
         if (data.isInitiator) {
             const offer = await peerConnection.createOffer();
             await peerConnection.setLocalDescription(offer);
@@ -650,32 +703,41 @@ if (textNameEl) {
 });
 
 socket.on('room-not-found', () => {
-    alert("هذه الغرفة انتهت صلاحيتها أو غير موجودة.");
+    alert(tr('roomNotFound'));
     leaveSession();
 });
 
 socket.on('signal', async (data) => {
-    if (data.offer) {
-        if (!peerConnection) createPeerConnection();
-        await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
-        const answer = await peerConnection.createAnswer();
-        await peerConnection.setLocalDescription(answer);
-        socket.emit('signal', { answer: answer });
-    } else if (data.answer) {
-        if (peerConnection) {
-            await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+    try {
+        if (data.offer) {
+            if (!peerConnection) createPeerConnection();
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+            await flushPendingCandidates();
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            socket.emit('signal', { answer: answer });
+        } else if (data.answer) {
+            if (peerConnection) {
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+                await flushPendingCandidates();
+            }
+        } else if (data.candidate) {
+            // الـ candidate قبل setRemoteDescription بيتحط في طابور بدل ما يرمي خطأ
+            if (peerConnection && peerConnection.remoteDescription) {
+                await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+            } else {
+                if (pendingCandidates.length < 100) pendingCandidates.push(data.candidate);
+            }
         }
-    } else if (data.candidate) {
-        if (peerConnection) {
-            await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
-        }
+    } catch (err) {
+        console.error('signal error', err);
     }
 });
 
 socket.on('peer-disconnected', () => {
     clearRemoteVideo();
-    if(statusDiv) statusDiv.textContent = 'انقطع الاتصال';
-    appendSystemMessage('الطرف الآخر غادر المحادثة.');
+    if(statusDiv) statusDiv.textContent = tr('disconnected');
+    appendSystemMessage(tr('partnerLeft'));
 });
 
 socket.on('receive-message', async (data) => {
@@ -694,7 +756,7 @@ socket.on('receive-message', async (data) => {
             }
         } catch (error) {
             console.error("خطأ في الترجمة الفورية:", error);
-            translatedText = "(فشل في الترجمة)";
+            translatedText = tr('translateFailed');
         }
     }
 
@@ -720,7 +782,7 @@ function appendMessage(text, type, translatedText = null) {
 
     if (translatedText) {
         const safeTrans = translatedText.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        msgDiv.innerHTML = `${safeText} <br><small style="color:var(--accent-purple); display:block; margin-top:5px; font-size:11px; font-weight:bold;">ترجمة: ${safeTrans}</small>`;
+        msgDiv.innerHTML = `${safeText} <br><small style="color:var(--accent-purple); display:block; margin-top:5px; font-size:11px; font-weight:bold;">${tr('translationLabel')}: ${safeTrans}</small>`;
     } else {
         msgDiv.textContent = text;
     }
@@ -735,6 +797,7 @@ function appendSystemMessage(text) {
     msgDiv.style.whiteSpace = 'pre-line';
     msgDiv.textContent = text;
     chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 // --- نظام الترجمة (الـ 12 لغة كاملة) ---
@@ -754,16 +817,16 @@ const translations = {
         feat3Title: "مجتمع عالمي",
         feat3Desc: "آلاف المستخدمين من جميع أنحاء العالم متصلون على مدار الساعة ليلاً ونهاراً.",
         feat4Title: "بيئة آمنة",
-        feat4Desc: "أنظمة حماية تلقائية وميزات للإبلاغ لضمان بقاء المحادثات نظيفة ومحترمة.",
+        feat4Desc: "ميزة إبلاغ فورية وحظر مؤقت تلقائي للمستخدمين المخالفين لإبقاء المحادثات محترمة.",
         faqTitle: "الأسئلة الشائعة",
         faq1Q: "هل موقع Randly مجاني؟",
         faq1A: "نعم، يمكنك الدردشة والتواصل مع الغرباء عبر الفيديو أو النص مجاناً تماماً وبدون أي رسوم خفية.",
         faq2Q: "هل يمكنني استخدام Randly على الهاتف؟",
         faq2A: "بالتأكيد! الموقع مصمم ليعمل بسلاسة تامة على جميع أجهزة الموبايل الذكية.",
         faq3Q: "ما هو أفضل بديل لموقع Omegle بعد إغلاقه؟",
-        faq3A: "Randly من أفضل البدائل لموقع أوميغل، حيث يوفر شات فيديو ونصي عشوائي مع الغرباء مجاناً وبدون تسجيل، مع أنظمة حماية أقوى وميزة تطابق الاهتمامات.",
+        faq3A: "Randly من أفضل البدائل لموقع أوميغل، حيث يوفر شات فيديو ونصي عشوائي مع الغرباء مجاناً وبدون تسجيل، مع ميزة إبلاغ وحظر مؤقت للمخالفين ومطابقة حسب الاهتمامات.",
         faq4Q: "هل موقع Randly آمن للاستخدام؟",
-        faq4A: "نعم، يستخدم Randly أنظمة فلترة تلقائية للمحتوى غير اللائق وميزة إبلاغ فورية، مع عدم تخزين أي محادثات أو الطلب من المستخدمين تسجيل بيانات شخصية.",
+        faq4A: "يوفر Randly ميزة إبلاغ فورية ويحظر تلقائياً بشكل مؤقت المستخدمين الذين يتلقون بلاغات متعددة، ولا يخزّن محادثاتك ولا يطلب منك تسجيل بيانات شخصية. ومع ذلك تحدّث بحذر ولا تشارك معلوماتك الخاصة مع الغرباء.",
         faq5Q: "كيف يعمل الشات العشوائي في Randly؟",
         faq5A: "ما عليك سوى الضغط على \"شات فيديو\" أو \"شات كتابي\"، وسيقوم الموقع بربطك تلقائياً بشخص عشوائي متصل الآن؛ يمكنك التخطي للشخص التالي في أي وقت بضغطة زر.",
         faq6Q: "هل يمكنني اختيار دولة الشخص الذي أتحدث معه؟",
@@ -806,16 +869,16 @@ const translations = {
         feat3Title: "Global Community",
         feat3Desc: "Thousands of users worldwide connected around the clock day and night.",
         feat4Title: "Safe Environment",
-        feat4Desc: "Automatic protection systems and report features to keep chats clean.",
+        feat4Desc: "An instant report button and automatic temporary bans for violators, to help keep chats respectful.",
         faqTitle: "FAQ",
         faq1Q: "Is Randly free?",
         faq1A: "Yes, you can chat with strangers via video or text completely free with no hidden fees.",
         faq2Q: "Can I use Randly on mobile?",
         faq2A: "Sure! The site is fully responsive and works smoothly on all mobile devices.",
         faq3Q: "What is the best alternative to Omegle now that it has shut down?",
-        faq3A: "Randly is one of the best alternatives to Omegle, offering free random video and text chat with strangers with no registration, plus stronger safety systems and interest-based matching.",
+        faq3A: "Randly is one of the best alternatives to Omegle, offering free random video and text chat with strangers with no registration, plus a report feature with temporary bans for violators and interest-based matching.",
         faq4Q: "Is Randly safe to use?",
-        faq4A: "Yes, Randly uses automatic content filtering and an instant reporting feature, and does not store any chat conversations or require personal registration.",
+        faq4A: "Randly offers an instant report feature and automatically applies temporary bans to users who receive multiple reports. It does not store your conversations or ask for personal registration. Still, chat with care and never share private information with strangers.",
         faq5Q: "How does random chat work on Randly?",
         faq5A: "Just click \"Video Chat\" or \"Text Chat\" and you'll be instantly connected with a random person online now; you can skip to the next person anytime with one click.",
         faq6Q: "Can I choose the country of the person I talk to?",
@@ -858,16 +921,16 @@ const translations = {
         feat3Title: "Comunidad Global",
         feat3Desc: "Miles de usuarios conectados las 24 horas.",
         feat4Title: "Entorno Seguro",
-        feat4Desc: "Sistemas de protección automática.",
+        feat4Desc: "Botón de denuncia instantánea y bloqueos temporales automáticos para quienes infrinjan las normas, para mantener los chats respetuosos.",
         faqTitle: "Preguntas Frecuentes",
         faq1Q: "¿Es Randly gratis?",
         faq1A: "Sí, puedes chatear completamente gratis.",
         faq2Q: "¿Puedo usarlo en el móvil?",
         faq2A: "¡Claro! Funciona perfectamente en dispositivos móviles.",
         faq3Q: "¿Cuál es la mejor alternativa a Omegle ahora que ha cerrado?",
-        faq3A: "Randly es una de las mejores alternativas a Omegle, ya que ofrece chat de video y texto aleatorio gratis con extraños sin registro, con sistemas de seguridad más fuertes y coincidencia por intereses.",
+        faq3A: "Randly es una de las mejores alternativas a Omegle: ofrece chat de video y texto aleatorio gratis con extraños, sin registro, con función de denuncia y bloqueos temporales para infractores, y coincidencia por intereses.",
         faq4Q: "¿Es seguro usar Randly?",
-        faq4A: "Sí, Randly utiliza filtrado automático de contenido inapropiado y una función de denuncia instantánea, y no almacena conversaciones ni solicita registro de datos personales.",
+        faq4A: "Randly ofrece denuncia instantánea y aplica bloqueos temporales automáticos a los usuarios que reciben varias denuncias. No almacena tus conversaciones ni te pide registrar datos personales. Aun así, chatea con cuidado y no compartas información privada con extraños.",
         faq5Q: "¿Cómo funciona el chat aleatorio en Randly?",
         faq5A: "Solo haz clic en \"Chat de Video\" o \"Chat de Texto\" y serás conectado al instante con una persona al azar conectada ahora; puedes saltar a la siguiente persona en cualquier momento con un clic.",
         faq6Q: "¿Puedo elegir el país de la persona con la que hablo?",
@@ -910,16 +973,16 @@ const translations = {
         feat3Title: "Communauté Mondiale",
         feat3Desc: "Des milliers d'utilisateurs connectés 24h/24.",
         feat4Title: "Environnement Sûr",
-        feat4Desc: "Systèmes de protection automatique.",
+        feat4Desc: "Signalement instantané et blocages temporaires automatiques pour les contrevenants, afin de garder des conversations respectueuses.",
         faqTitle: "FAQ",
         faq1Q: "Randly est-il gratuit ?",
         faq1A: "Oui, discutez entièrement gratuitement.",
         faq2Q: "Puis-je l'utiliser sur mobile ?",
         faq2A: "Bien sûr ! Fonctionne parfaitement sur mobile.",
         faq3Q: "Quelle est la meilleure alternative à Omegle depuis sa fermeture ?",
-        faq3A: "Randly est l'une des meilleures alternatives à Omegle, offrant un chat vidéo et texte aléatoire gratuit avec des inconnus sans inscription, avec des systèmes de sécurité renforcés et une correspondance par centres d'intérêt.",
+        faq3A: "Randly est l'une des meilleures alternatives à Omegle : chat vidéo et texte aléatoire gratuit avec des inconnus, sans inscription, avec signalement et blocages temporaires des contrevenants, et mise en relation par centres d'intérêt.",
         faq4Q: "Randly est-il sûr à utiliser ?",
-        faq4A: "Oui, Randly utilise un filtrage automatique du contenu inapproprié et une fonction de signalement instantané, et ne stocke aucune conversation ni ne demande d'inscription de données personnelles.",
+        faq4A: "Randly propose un signalement instantané et applique automatiquement des blocages temporaires aux utilisateurs qui reçoivent plusieurs signalements. Il ne stocke pas vos conversations et ne demande aucune inscription de données personnelles. Restez toutefois prudent et ne partagez jamais d'informations privées avec des inconnus.",
         faq5Q: "Comment fonctionne le chat aléatoire sur Randly ?",
         faq5A: "Cliquez simplement sur \"Chat Vidéo\" ou \"Chat Texte\" et vous serez instantanément connecté à une personne aléatoire en ligne ; vous pouvez passer à la personne suivante à tout moment en un clic.",
         faq6Q: "Puis-je choisir le pays de la personne à qui je parle ?",
@@ -962,16 +1025,16 @@ const translations = {
         feat3Title: "Globale Community",
         feat3Desc: "Tausende Nutzer rund um die Uhr.",
         feat4Title: "Sichere Umgebung",
-        feat4Desc: "Automatisierter Schutz.",
+        feat4Desc: "Sofort-Meldefunktion und automatische vorübergehende Sperren für Regelverstöße, damit Chats respektvoll bleiben.",
         faqTitle: "FAQ",
         faq1Q: "Ist Randly kostenlos?",
         faq1A: "Ja, völlig kostenlos.",
         faq2Q: "Auch auf dem Handy?",
         faq2A: "Ja, läuft reibungslos auf Mobilgeräten.",
         faq3Q: "Was ist die beste Alternative zu Omegle, nachdem es geschlossen wurde?",
-        faq3A: "Randly ist eine der besten Alternativen zu Omegle und bietet kostenlosen zufälligen Video- und Textchat mit Fremden ohne Registrierung, mit stärkeren Sicherheitssystemen und Interessen-Matching.",
+        faq3A: "Randly ist eine der besten Alternativen zu Omegle: kostenloser zufälliger Video- und Textchat mit Fremden ohne Registrierung, mit Meldefunktion und vorübergehenden Sperren für Regelverstöße sowie Interessen-Matching.",
         faq4Q: "Ist Randly sicher in der Nutzung?",
-        faq4A: "Ja, Randly verwendet automatische Inhaltsfilterung und eine sofortige Meldefunktion und speichert keine Chatverläufe oder verlangt eine persönliche Registrierung.",
+        faq4A: "Randly bietet eine Sofort-Meldefunktion und sperrt Nutzer automatisch vorübergehend, wenn sie mehrfach gemeldet werden. Chats werden nicht gespeichert und es ist keine Registrierung persönlicher Daten nötig. Trotzdem gilt: Sei vorsichtig und gib keine privaten Informationen an Fremde weiter.",
         faq5Q: "Wie funktioniert der Zufallschat auf Randly?",
         faq5A: "Klicke einfach auf \"Videochat\" oder \"Textchat\", und du wirst sofort mit einer zufälligen Person verbunden, die gerade online ist; du kannst jederzeit mit einem Klick zur nächsten Person wechseln.",
         faq6Q: "Kann ich das Land der Person auswählen, mit der ich spreche?",
@@ -1014,16 +1077,16 @@ const translations = {
         feat3Title: "Comunità Globale",
         feat3Desc: "Migliaia di utenti connessi 24 ore su 24.",
         feat4Title: "Ambiente Sicuro",
-        feat4Desc: "Sistemi di protezione automatica.",
+        feat4Desc: "Segnalazione immediata e blocchi temporanei automatici per chi viola le regole, per mantenere le conversazioni rispettose.",
         faqTitle: "FAQ",
         faq1Q: "Randly è gratuito?",
         faq1A: "Sì, completamente gratuito.",
         faq2Q: "Posso usarlo da cellulare?",
         faq2A: "Certo! Funziona perfettamente su dispositivi mobili.",
         faq3Q: "Qual è la migliore alternativa a Omegle ora che ha chiuso?",
-        faq3A: "Randly è una delle migliori alternative a Omegle, offrendo chat video e testo casuale gratuita con sconosciuti senza registrazione, con sistemi di sicurezza più forti e abbinamento per interessi.",
+        faq3A: "Randly è una delle migliori alternative a Omegle: chat video e testo casuale gratuita con sconosciuti, senza registrazione, con segnalazione e blocchi temporanei per chi viola le regole e abbinamento per interessi.",
         faq4Q: "È sicuro usare Randly?",
-        faq4A: "Sì, Randly utilizza un filtraggio automatico dei contenuti inappropriati e una funzione di segnalazione istantanea, e non memorizza alcuna conversazione né richiede la registrazione di dati personali.",
+        faq4A: "Randly offre la segnalazione immediata e applica automaticamente blocchi temporanei agli utenti che ricevono più segnalazioni. Non memorizza le tue conversazioni e non richiede la registrazione di dati personali. Chatta comunque con prudenza e non condividere informazioni private con gli sconosciuti.",
         faq5Q: "Come funziona la chat casuale su Randly?",
         faq5A: "Basta cliccare su \"Video Chat\" o \"Chat Testuale\" e sarai connesso istantaneamente con una persona casuale online in quel momento; puoi passare alla persona successiva in qualsiasi momento con un clic.",
         faq6Q: "Posso scegliere il paese della persona con cui parlo?",
@@ -1066,16 +1129,16 @@ const translations = {
         feat3Title: "Comunidade Global",
         feat3Desc: "Milhares de usuários conectados 24 horas por dia.",
         feat4Title: "Ambiente Seguro",
-        feat4Desc: "Sistemas de proteção automática.",
+        feat4Desc: "Denúncia instantânea e bloqueios temporários automáticos para quem violar as regras, para manter as conversas respeitosas.",
         faqTitle: "FAQ",
         faq1Q: "O Randly é gratuito?",
         faq1A: "Sim, totalmente gratuito.",
         faq2Q: "Posso usar no celular?",
         faq2A: "Com certeza! Funciona perfeitamente em dispositivos móveis.",
         faq3Q: "Qual é a melhor alternativa ao Omegle agora que ele foi encerrado?",
-        faq3A: "O Randly é uma das melhores alternativas ao Omegle, oferecendo chat de vídeo e texto aleatório grátis com estranhos sem cadastro, com sistemas de segurança mais fortes e correspondência por interesses.",
+        faq3A: "O Randly é uma das melhores alternativas ao Omegle: chat de vídeo e texto aleatório grátis com estranhos, sem cadastro, com denúncia e bloqueios temporários para infratores e correspondência por interesses.",
         faq4Q: "É seguro usar o Randly?",
-        faq4A: "Sim, o Randly usa filtragem automática de conteúdo inadequado e um recurso de denúncia instantânea, e não armazena nenhuma conversa nem exige cadastro de dados pessoais.",
+        faq4A: "O Randly oferece denúncia instantânea e aplica bloqueios temporários automáticos a usuários que recebem várias denúncias. Não armazena suas conversas nem exige cadastro de dados pessoais. Mesmo assim, converse com cuidado e nunca compartilhe informações privadas com estranhos.",
         faq5Q: "Como funciona o chat aleatório no Randly?",
         faq5A: "Basta clicar em \"Chat de Vídeo\" أو \"Chat de Texto\" e você será conectado instantaneamente a uma pessoa aleatória online agora; você pode pular para a próxima pessoa a qualquer momento com um clique.",
         faq6Q: "Posso escolher o país da pessoa com quem estou falando?",
@@ -1118,16 +1181,16 @@ const translations = {
         feat3Title: "Küresel Topluluk",
         feat3Desc: "Binlerce kullanıcı 7/24 çevrimiçi.",
         feat4Title: "Güvenli Ortam",
-        feat4Desc: "Otomatik koruma sistemleri.",
+        feat4Desc: "Kuralları ihlal edenler için anında bildirim ve otomatik geçici engelleme; sohbetler saygılı kalsın diye.",
         faqTitle: "Sıkça Sorulan Sorular",
         faq1Q: "Randly ücretsiz mi?",
         faq1A: "Evet, tamamen ücretsiz sohbet edebilirsiniz.",
         faq2Q: "Telefonumda kullanabilir miyim?",
         faq2A: "Kesinlikle! Mobil cihazlarda sorunsuz çalışır.",
         faq3Q: "Omegle kapandıktan sonra en iyi alternatif nedir?",
-        faq3A: "Randly, kayıt olmadan yabancılarla ücretsiz rastgele görüntülü ve yazılı sohbet sunan, daha güçlü güvenlik sistemleri ve ilgi alanına göre eşleştirme özelliğine sahip Omegle'ın en iyi alternatiflerinden biridir.",
+        faq3A: "Randly, kayıt olmadan yabancılarla ücretsiz rastgele görüntülü ve yazılı sohbet sunan, ihlal edenler için bildirim ve geçici engelleme ile ilgi alanına göre eşleştirme özelliği bulunan Omegle'ın en iyi alternatiflerinden biridir.",
         faq4Q: "Randly kullanmak güvenli mi?",
-        faq4A: "Evet, Randly uygunsuz içerik için otomatik filtreleme ve anında bildirim özelliği kullanır; hiçbir sohbet konuşmasını saklamaz ve kişisel veri kaydı istemez.",
+        faq4A: "Randly anında bildirim özelliği sunar ve birden fazla bildirim alan kullanıcıları otomatik olarak geçici süreyle engeller. Sohbetlerinizi saklamaz ve kişisel veri kaydı istemez. Yine de dikkatli olun ve yabancılarla özel bilgilerinizi paylaşmayın.",
         faq5Q: "Randly'de rastgele sohbet nasıl çalışır?",
         faq5A: "Sadece \"Görüntülü Sohbet\" veya \"Yazılı Sohbet\"e tıklayın, anında şu anda çevrimiçi olan rastgele bir kişiyle bağlanırsınız; istediğiniz zaman tek tıkla bir sonraki kişiye geçebilirsiniz.",
         faq6Q: "Konuştuğum kişinin ülkesini seçebilir miyim?",
@@ -1170,16 +1233,16 @@ const translations = {
         feat3Title: "Глобальное Сообщество",
         feat3Desc: "Тысячи пользователей онлайн 24/7.",
         feat4Title: "Безопасная Среда",
-        feat4Desc: "Автоматические системы защиты.",
+        feat4Desc: "Мгновенные жалобы и автоматические временные блокировки нарушителей, чтобы общение оставалось уважительным.",
         faqTitle: "Часто Задаваемые Вопросы",
         faq1Q: "Randly бесплатный?",
         faq1A: "Да, полностью бесплатно.",
         faq2Q: "Могу ли я использовать на телефоне?",
         faq2A: "Конечно! Плавно работает на мобильных устройствах.",
         faq3Q: "Какая лучшая альтернатива Omegle после его закрытия?",
-        faq3A: "Randly — одна из лучших альтернатив Omegle, предлагающая бесплатный случайный видео и текстовый чат с незнакомцами без регистрации, с более надёжными системами безопасности и подбором по интересам.",
+        faq3A: "Randly — одна из лучших альтернатив Omegle: бесплатный случайный видео- и текстовый чат с незнакомцами без регистрации, с функцией жалоб и временными блокировками нарушителей, а также подбором по интересам.",
         faq4Q: "Безопасно ли использовать Randly?",
-        faq4A: "Да, Randly использует автоматическую фильтрацию неприемлемого контента и функцию мгновенной жалобы, а также не сохраняет переписку и не требует регистрации личных данных.",
+        faq4A: "В Randly есть мгновенные жалобы, а пользователи, получившие несколько жалоб, автоматически блокируются на время. Мы не храним ваши переписки и не требуем регистрации личных данных. Тем не менее общайтесь осторожно и не делитесь личной информацией с незнакомцами.",
         faq5Q: "Как работает случайный чат на Randly?",
         faq5A: "Просто нажмите \"Видеочат\" или \"Текстовый чат\", и вы мгновенно подключитесь к случайному человеку, находящемуся сейчас онлайн; вы можете пропустить и перейти к следующему человеку в любой момент одним кликом.",
         faq6Q: "Могу ли я выбрать страну собеседника?",
@@ -1222,16 +1285,16 @@ const translations = {
         feat3Title: "वैश्विक समुदाय",
         feat3Desc: "हजारों उपयोगकर्ता 24/7 ऑनलाइन।",
         feat4Title: "सुरक्षित वातावरण",
-        feat4Desc: "स्वचालित सुरक्षा प्रणालियाँ।",
+        feat4Desc: "नियम तोड़ने वालों के लिए तुरंत रिपोर्ट और स्वचालित अस्थायी ब्लॉक, ताकि चैट सम्मानजनक बनी रहे।",
         faqTitle: "अक्सर पूछे जाने वाले सवाल",
         faq1Q: "क्या Randly मुफ्त है?",
         faq1A: "हाँ, पूरी तरह से मुफ्त।",
         faq2Q: "क्या मैं फोन पर इस्तेमाल कर सकता हूँ?",
         faq2A: "बिल्कुल! मोबाइल डिवाइस पर सुचारू रूप से काम करता है।",
         faq3Q: "Omegle बंद होने के बाद इसका सबसे अच्छा विकल्प क्या है?",
-        faq3A: "Randly, Omegle के सबसे अच्छे विकल्पों में से एक है, जो बिना रजिस्ट्रेशन के अजनबियों के साथ मुफ्त रैंडम वीडियो और टेक्स्ट चैट प्रदान करता है, साथ ही मजबूत सुरक्षा प्रणालियाँ और रुचि-आधारित मिलान भी।",
+        faq3A: "Randly, Omegle के सबसे अच्छे विकल्पों में से एक है: बिना रजिस्ट्रेशन अजनबियों के साथ मुफ्त रैंडम वीडियो और टेक्स्ट चैट, नियम तोड़ने वालों के लिए रिपोर्ट और अस्थायी ब्लॉक की सुविधा, और रुचि-आधारित मिलान के साथ।",
         faq4Q: "क्या Randly का उपयोग करना सुरक्षित है?",
-        faq4A: "हाँ, Randly अनुचित सामग्री को स्वचालित रूप से फ़िल्टर करता है और तुरंत रिपोर्ट करने की सुविधा देता है, और यह किसी भी चैट बातचीत को संग्रहीत नहीं करता है या व्यक्तिगत रजिस्ट्रेशन की मांग नहीं करता है।",
+        faq4A: "Randly तुरंत रिपोर्ट करने की सुविधा देता है और कई रिपोर्ट पाने वाले उपयोगकर्ताओं को स्वचालित रूप से कुछ समय के लिए ब्लॉक कर देता है। यह आपकी बातचीत स्टोर नहीं करता और व्यक्तिगत रजिस्ट्रेशन नहीं माँगता। फिर भी सावधानी से चैट करें और अजनबियों से निजी जानकारी साझा न करें।",
         faq5Q: "Randly पर रैंडम चैट कैसे काम करता है?",
         faq5A: "बस \"वीडियो चैट\" या \"टेक्स्ट चैट\" पर क्लिक करें, और आप तुरंत ऑनलाइन मौजूद किसी रैंडम व्यक्ति से जुड़ जाएंगे; आप किसी भी समय एक क्लिक में अगले व्यक्ति पर स्किप कर सकते हैं।",
         faq6Q: "क्या मैं उस व्यक्ति का देश चुन सकता हूँ जिससे मैं बात कर रहा हूँ?",
@@ -1274,16 +1337,16 @@ const translations = {
         feat3Title: "Komunitas Global",
         feat3Desc: "Ribuan pengguna online 24/7.",
         feat4Title: "Lingkungan Aman",
-        feat4Desc: "Sistem perlindungan otomatis.",
+        feat4Desc: "Laporan instan dan pemblokiran sementara otomatis bagi pelanggar, agar obrolan tetap saling menghormati.",
         faqTitle: "Pertanyaan yang Sering Diajukan",
         faq1Q: "Apakah Randly gratis?",
         faq1A: "Ya, sepenuhnya gratis.",
         faq2Q: "Bisakah saya gunakan di ponsel?",
         faq2A: "Tentu saja! Berjalan lancar di perangkat mobile.",
         faq3Q: "Apa alternatif terbaik untuk Omegle setelah ditutup?",
-        faq3A: "Randly adalah salah satu alternatif terbaik untuk Omegle, menawarkan video dan text chat acak gratis dengan orang asing tanpa registrasi, dengan sistem keamanan yang lebih kuat dan pencocokan berdasarkan minat.",
+        faq3A: "Randly adalah salah satu alternatif terbaik untuk Omegle: video dan text chat acak gratis dengan orang asing tanpa registrasi, dengan fitur laporan dan pemblokiran sementara bagi pelanggar serta pencocokan berdasarkan minat.",
         faq4Q: "Apakah aman menggunakan Randly?",
-        faq4A: "Ya, Randly menggunakan filter otomatis untuk konten yang tidak pantas dan fitur pelaporan instan, serta tidak menyimpan percakapan chat atau meminta registrasi data pribadi.",
+        faq4A: "Randly menyediakan laporan instan dan otomatis memblokir sementara pengguna yang menerima banyak laporan. Randly tidak menyimpan percakapan Anda dan tidak meminta registrasi data pribadi. Tetap berhati-hati dan jangan bagikan informasi pribadi kepada orang asing.",
         faq5Q: "Bagaimana cara kerja chat acak di Randly?",
         faq5A: "Cukup klik \"Video Chat\" أو \"Text Chat\", dan Anda akan langsung terhubung dengan orang acak yang sedang online; Anda bisa lewati ke orang berikutnya kapan saja dengan satu klik.",
         faq6Q: "Bisakah saya memilih negara orang yang saya ajak bicara?",
@@ -1326,16 +1389,16 @@ const translations = {
         feat3Title: "全球社区",
         feat3Desc: "数千名用户全天候在线。",
         feat4Title: "安全环境",
-        feat4Desc: "自动保护系统。",
+        feat4Desc: "即时举报功能，并对违规用户自动临时封禁，让聊天保持文明。",
         faqTitle: "常见问题",
         faq1Q: "Randly 是免费的吗？",
         faq1A: "是的，完全免费。",
         faq2Q: "我可以在手机上使用吗？",
         faq2A: "当然可以！在移动设备上流畅运行。",
         faq3Q: "Omegle 关闭后，最好的替代平台是什么？",
-        faq3A: "Randly 是 Omegle 最好的替代平台之一，提供无需注册的免费随机视频和文字聊天，并拥有更强大的安全系统和兴趣匹配功能。",
+        faq3A: "Randly 是 Omegle 最好的替代平台之一：无需注册即可与陌生人免费随机视频和文字聊天，提供举报功能和对违规用户的临时封禁，并支持按兴趣匹配。",
         faq4Q: "使用 Randly 安全吗？",
-        faq4A: "是的，Randly 使用自动过滤不当内容和即时举报功能，不会存储任何聊天记录，也不要求注册个人数据。",
+        faq4A: "Randly 提供即时举报功能，并会对收到多次举报的用户自动临时封禁。Randly 不会存储您的聊天记录，也不要求注册个人资料。不过请谨慎聊天，切勿向陌生人透露私人信息。",
         faq5Q: "Randly 上的随机聊天是如何运作的？",
         faq5A: "只需点击\"视频聊天\"或\"文字聊天\"，您就会立即与当前在线的随机用户连接；您可以随时一键跳到下一位用户。",
         faq6Q: "我可以选择与我聊天的对方所在的国家吗？",
@@ -1418,12 +1481,4 @@ function changeGlobalLanguage(lang) {
     localStorage.setItem('randly_lang', lang);
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-    let savedLang = localStorage.getItem('randly_lang');
-    if (!savedLang) {
-        const browserLang = navigator.language || navigator.userLanguage;
-        const shortLang = browserLang ? browserLang.split('-')[0] : 'ar';
-        savedLang = translations[shortLang] ? shortLang : 'en';
-    }
-    changeGlobalLanguage(savedLang);
-});
+// تهيئة اللغة بتتم في i18n-extra.js من <html lang> (من غير اكتشاف لغة المتصفح، عشان الصفحة تفضل بلغتها الثابتة)

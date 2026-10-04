@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru" dir="ltr" id="htmlRoot">
 <head>
+<meta charset="UTF-8">
 <!-- perf-optimized -->
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -9,7 +10,6 @@
 <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
 
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="siteTitle">Randly - Бесплатный Случайный Видеочат с Незнакомцами</title>
 <meta name="description" content="Общайтесь со случайными незнакомцами со всего мира безопасно и быстро на Randly. Бесплатный видео и текстовый чат, без регистрации.">
@@ -57,10 +57,26 @@
   "mainEntity": [
     {
       "@type": "Question",
+      "name": "Randly бесплатный?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Да, вы можете общаться с незнакомцами по видео или тексту совершенно бесплатно, без скрытых платежей."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Могу ли я использовать Randly на телефоне?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Конечно! Сайт разработан для плавной работы на всех мобильных устройствах."
+      }
+    },
+    {
+      "@type": "Question",
       "name": "Какая лучшая альтернатива Omegle после его закрытия?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Randly — одна из лучших альтернатив Omegle, предлагающая бесплатный случайный видео и текстовый чат с незнакомцами без регистрации, с более надёжными системами безопасности и подбором по интересам."
+        "text": "Randly — одна из лучших альтернатив Omegle: бесплатный случайный видео- и текстовый чат с незнакомцами без регистрации, с функцией жалоб и временными блокировками нарушителей, а также подбором по интересам."
       }
     },
     {
@@ -68,7 +84,7 @@
       "name": "Безопасно ли использовать Randly?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Да, Randly использует автоматическую фильтрацию неприемлемого контента и функцию мгновенной жалобы, а также не сохраняет переписку и не требует регистрации личных данных."
+        "text": "В Randly есть мгновенные жалобы, а пользователи, получившие несколько жалоб, автоматически блокируются на время. Мы не храним ваши переписки и не требуем регистрации личных данных. Тем не менее общайтесь осторожно и не делитесь личной информацией с незнакомцами."
       }
     },
     {
@@ -76,7 +92,7 @@
       "name": "Как работает случайный чат на Randly?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Просто нажмите Видеочат или Текстовый чат, и вы мгновенно подключитесь к случайному человеку, находящемуся сейчас онлайн; вы можете пропустить и перейти к следующему человеку в любой момент одним кликом."
+        "text": "Просто нажмите \"Видеочат\" или \"Текстовый чат\", и вы мгновенно подключитесь к случайному человеку, находящемуся сейчас онлайн; вы можете пропустить и перейти к следующему человеку в любой момент одним кликом."
       }
     },
     {
@@ -84,7 +100,7 @@
       "name": "Могу ли я выбрать страну собеседника?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Да, Randly предлагает фильтр для подключения к людям из определённой страны, или можно использовать режим Глобально для подключения к кому угодно в мире."
+        "text": "Да, Randly предлагает фильтр для подключения к людям из определённой страны, или можно использовать режим \"Глобально\" для подключения к кому угодно в мире."
       }
     },
     {
@@ -115,7 +131,7 @@
 <div class="logo">Randly</div>
 </div>
 <div class="header-right" style="display: flex; align-items: center; gap: 10px;">
-<select id="landingLangSelect" aria-label="اختيار لغة الموقع" class="site-lang-select" onchange="changeGlobalLanguage(this.value)" style="padding: 8px 12px; border-radius: 8px; background: var(--bg-card, #222); color: var(--text-main, #fff); border: 1px solid rgba(255,255,255,0.2);">
+<select id="landingLangSelect" aria-label="اختيار لغة الموقع" class="site-lang-select" onchange="changeGlobalLanguage(this.value)" style="padding: 8px 12px; border-radius: 8px; background: var(--bg-card, #222); color: var(--text-main, #fff); border: 1px solid var(--border-color);">
 <option value="ar">العربية</option>
 <option value="en">English</option>
 <option value="es">Español</option>
@@ -134,10 +150,10 @@
 </div>
 </header>
 <div class="landing-card">
-<h1 data-i18n="logoTitle">Randly - Бесплатный Случайный Видеочат с Незнакомцами</h1>
+<h1>Randly - Бесплатный Случайный Видеочат с Незнакомцами</h1>
 <p data-i18n="landingSub">Общайтесь со случайными людьми со всего мира безопасно и быстро!</p>
 <div class="interests-box">
-<div id="interestsTagsContainer" class="interests-tags-container" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: var(--bg-card, #222); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); min-height: 48px; cursor: text;" onclick="document.getElementById('interestTagInput').focus()">
+<div id="interestsTagsContainer" class="interests-tags-container" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: var(--bg-card, #222); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); min-height: 48px; cursor: text;" onclick="document.getElementById('interestTagInput').focus()">
 <input type="text" id="interestTagInput" data-i18n-placeholder="interestsPlaceholder" placeholder="Введите свои интересы (напишите и нажмите Enter)..." style="border: none; background: transparent; color: var(--text-main, #fff); outline: none; flex: 1; min-width: 140px; padding: 4px;">
 </div>
 </div>
@@ -166,57 +182,57 @@
 <article class="feature-card">
 <i class="fas fa-shield-alt"></i>
 <h3 data-i18n="feat4Title">Безопасная Среда</h3>
-<p data-i18n="feat4Desc">Автоматические системы защиты и функции жалоб для чистых и уважительных чатов.</p>
+<p data-i18n="feat4Desc">Мгновенные жалобы и автоматические временные блокировки нарушителей, чтобы общение оставалось уважительным.</p>
 </article>
 </div>
-<section class="faq-section" itemscope itemtype="https://schema.org/FAQPage">
+<section class="faq-section">
 <h2 data-i18n="faqTitle">Часто Задаваемые Вопросы</h2>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq1Q">Randly бесплатный?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq1A">Да, вы можете общаться с незнакомцами по видео или тексту совершенно бесплатно, без скрытых платежей.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq1Q">Randly бесплатный?</h3>
+<div class="faq-answer">
+<p data-i18n="faq1A">Да, вы можете общаться с незнакомцами по видео или тексту совершенно бесплатно, без скрытых платежей.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq2Q">Могу ли я использовать Randly на телефоне?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq2A">Конечно! Сайт разработан для плавной работы на всех мобильных устройствах.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq2Q">Могу ли я использовать Randly на телефоне?</h3>
+<div class="faq-answer">
+<p data-i18n="faq2A">Конечно! Сайт разработан для плавной работы на всех мобильных устройствах.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq3Q">Какая лучшая альтернатива Omegle после его закрытия?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq3A">Randly — одна из лучших альтернатив Omegle, предлагающая бесплатный случайный видео и текстовый чат с незнакомцами без регистрации, с более надёжными системами безопасности и подбором по интересам.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq3Q">Какая лучшая альтернатива Omegle после его закрытия?</h3>
+<div class="faq-answer">
+<p data-i18n="faq3A">Randly — одна из лучших альтернатив Omegle: бесплатный случайный видео- и текстовый чат с незнакомцами без регистрации, с функцией жалоб и временными блокировками нарушителей, а также подбором по интересам.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq4Q">Безопасно ли использовать Randly?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq4A">Да, Randly использует автоматическую фильтрацию неприемлемого контента и функцию мгновенной жалобы, а также не сохраняет переписку и не требует регистрации личных данных.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq4Q">Безопасно ли использовать Randly?</h3>
+<div class="faq-answer">
+<p data-i18n="faq4A">В Randly есть мгновенные жалобы, а пользователи, получившие несколько жалоб, автоматически блокируются на время. Мы не храним ваши переписки и не требуем регистрации личных данных. Тем не менее общайтесь осторожно и не делитесь личной информацией с незнакомцами.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq5Q">Как работает случайный чат на Randly?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq5A">Просто нажмите "Видеочат" или "Текстовый чат", и вы мгновенно подключитесь к случайному человеку, находящемуся сейчас онлайн; вы можете пропустить и перейти к следующему человеку в любой момент одним кликом.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq5Q">Как работает случайный чат на Randly?</h3>
+<div class="faq-answer">
+<p data-i18n="faq5A">Просто нажмите "Видеочат" или "Текстовый чат", и вы мгновенно подключитесь к случайному человеку, находящемуся сейчас онлайн; вы можете пропустить и перейти к следующему человеку в любой момент одним кликом.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq6Q">Могу ли я выбрать страну собеседника?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq6A">Да, Randly предлагает фильтр для подключения к людям из определённой страны, или можно использовать режим "Глобально" для подключения к кому угодно в мире.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq6Q">Могу ли я выбрать страну собеседника?</h3>
+<div class="faq-answer">
+<p data-i18n="faq6A">Да, Randly предлагает фильтр для подключения к людям из определённой страны, или можно использовать режим "Глобально" для подключения к кому угодно в мире.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq7Q">Какой минимальный возраст для использования Randly?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq7A">Пользователи должны быть не моложе 18 лет для использования Randly в соответствии с Условиями использования сайта.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq7Q">Какой минимальный возраст для использования Randly?</h3>
+<div class="faq-answer">
+<p data-i18n="faq7A">Пользователи должны быть не моложе 18 лет для использования Randly в соответствии с Условиями использования сайта.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq8Q">Переводит ли Randly сообщения автоматически между языками?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq8A">Да, вы можете включить мгновенный перевод для сообщений текстового чата и выбрать предпочитаемый язык в меню перевода.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq8Q">Переводит ли Randly сообщения автоматически между языками?</h3>
+<div class="faq-answer">
+<p data-i18n="faq8A">Да, вы можете включить мгновенный перевод для сообщений текстового чата и выбрать предпочитаемый язык в меню перевода.</p>
 </div>
 </div>
 </section>
@@ -225,6 +241,7 @@
 <div class="footer-links">
 <a href="rules.html" data-i18n="rulesLink">Правила</a>
 <a href="privacy.html" data-i18n="privacyLink">Политика Конфиденциальности</a>
+<a href="terms.html" data-i18n="termsLink">Условия использования</a>
 <a href="about-ru.html">О нас</a>
 <a href="about-ru.html" data-i18n="aboutLink">About</a>
 <a href="/blog-ru.html" id="footerBlogLink">Блог</a>
@@ -354,7 +371,7 @@ window.addEventListener('load', function() {
 <button class="btn-start-main" id="nextBtn" onclick="handleMainButton()" style="white-space: nowrap; flex-shrink: 0; padding: 10px 14px;">
 <i class="fas fa-forward"></i> <span data-i18n="skipStartBtn">Пропустить / Начать</span>
 </button>
-<div class="input-container chat-input-wrapper" style="display: flex; flex-direction: row; flex: 1; align-items: center; background: var(--bg-card); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; min-width: 0;">
+<div class="input-container chat-input-wrapper" style="display: flex; flex-direction: row; flex: 1; align-items: center; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; min-width: 0;">
 <input type="text" id="msgInput" data-i18n-placeholder="msgPlaceholder" placeholder="Введите сообщение здесь..." onkeydown="if(event.key === 'Enter') sendMsg()" style="flex: 1; direction: auto; text-align: start; padding: 12px; border: none; background: transparent; color: var(--text-main); outline: none; min-width: 0;">
 <button class="btn-send-inside" id="sendBtn" onclick="sendMsg()" style="padding: 10px 14px; border: none; background: transparent; color: var(--accent-purple); cursor: pointer; flex-shrink: 0;" aria-label="Отправить сообщение"><i class="fas fa-paper-plane" style="font-size: 1.2rem;"></i></button>
 </div>
@@ -385,6 +402,7 @@ window.addEventListener('load', function() {
 <script src="/socket.io/socket.io.js"></script>
 <script src="script.js"></script>
 <script src="i18n-extra.js"></script>
+<script src="randly-extra.js"></script>
 <script>/* ads-deferred-by-script */
 window.addEventListener('load', function() {
   var s = document.createElement('script');

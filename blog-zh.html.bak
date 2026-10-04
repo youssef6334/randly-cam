@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh" dir="ltr">
+<head>
+<!-- perf-optimized -->
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>博客 - Randly</title>
+<meta name="description" content="关于随机聊天以及在 Randly 上安全结识新朋友的文章和技巧。">
+<link rel="canonical" href="https://randly.live/blog-zh.html">
+<link rel="alternate" hreflang="ar" href="https://randly.live/blog-ar.html">
+<link rel="alternate" hreflang="en" href="https://randly.live/blog-en.html">
+<link rel="alternate" hreflang="es" href="https://randly.live/blog-es.html">
+<link rel="alternate" hreflang="fr" href="https://randly.live/blog-fr.html">
+<link rel="alternate" hreflang="de" href="https://randly.live/blog-de.html">
+<link rel="alternate" hreflang="it" href="https://randly.live/blog-it.html">
+<link rel="alternate" hreflang="pt" href="https://randly.live/blog-pt.html">
+<link rel="alternate" hreflang="tr" href="https://randly.live/blog-tr.html">
+<link rel="alternate" hreflang="ru" href="https://randly.live/blog-ru.html">
+<link rel="alternate" hreflang="hi" href="https://randly.live/blog-hi.html">
+<link rel="alternate" hreflang="id" href="https://randly.live/blog-id.html">
+<link rel="alternate" hreflang="zh" href="https://randly.live/blog-zh.html">
+<link rel="alternate" hreflang="x-default" href="https://randly.live/blog-ar.html">
+<link rel="stylesheet" href="style.css">
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
+<style>
+html,body{overflow:auto!important;height:auto!important;min-height:100%}
+/* كل الألوان من متغيرات موقعك (style.css) عشان تتناسق معاه تلقائيًا */
+.blog-wrap{max-width:900px;margin:30px auto 10px;padding:0 16px;color:var(--text-main)}
+.blog-wrap h1{text-align:center;font-size:2rem;margin:20px 0 28px;color:var(--text-main)}
+.blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.blog-card{display:flex;flex-direction:column;background:var(--bg-card);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:20px;transition:border-color .15s,transform .15s}
+.blog-card:hover{border-color:var(--accent-purple);transform:translateY(-2px)}
+.blog-card h2{font-size:1.1rem;line-height:1.6;margin:0 0 10px}
+.blog-card h2 a{color:var(--accent-purple);text-decoration:none}
+.blog-card p{color:var(--text-main);opacity:.8;line-height:1.8;margin:0 0 12px;flex:1;font-size:.95rem}
+.blog-more{color:var(--accent-purple);font-weight:bold;text-decoration:none}
+.blog-more:hover{text-decoration:underline}
+.blog-card time{display:block;margin-top:12px;font-size:.8rem;opacity:.55}
+.app-footer{text-align:center;padding:26px 16px 36px}
+.footer-links a{margin:0 8px;color:var(--text-main);text-decoration:none;opacity:.8}
+</style>
+</head>
+<body>
+
+<header class="app-header" style="justify-content: space-between;">
+    <div class="header-left">
+        <a href="zh.html" class="logo" style="text-decoration: none;">Randly</a>
+    </div>
+    <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
+        <nav style="display: flex; gap: 14px;">
+            <a href="zh.html" style="color: var(--text-main); text-decoration: none; opacity: .85; font-size: .9rem;">首页</a>
+            <a href="about-zh.html" style="color: var(--text-main); text-decoration: none; opacity: .85; font-size: .9rem;">关于我们</a>
+            <a href="blog-zh.html" style="color: var(--accent-purple); text-decoration: none; font-size: .9rem; font-weight: bold;">博客</a>
+        </nav>
+        <select class="site-lang-select" onchange="window.location.href=this.value">
+            <option value="blog-ar.html">العربية</option>
+            <option value="blog-en.html">English</option>
+            <option value="blog-es.html">Español</option>
+            <option value="blog-fr.html">Français</option>
+            <option value="blog-de.html">Deutsch</option>
+            <option value="blog-it.html">Italiano</option>
+            <option value="blog-pt.html">Português</option>
+            <option value="blog-tr.html">Türkçe</option>
+            <option value="blog-ru.html">Русский</option>
+            <option value="blog-hi.html">हिन्दी</option>
+            <option value="blog-id.html">Bahasa Indonesia</option>
+            <option value="blog-zh.html" selected>中文</option>
+        </select>
+    </div>
+</header>
+
+<main class="blog-wrap">
+<h1>博客</h1>
+<div class="blog-grid">
+
+<!-- ===== كارت المقال الثاني ===== -->
+<article class="blog-card">
+<h2><a href="post-free-video-chat-zh.html">2026 无需注册的免费随机视频聊天：完整指南</a></h2>
+<p>无需注册或下载应用程序即可与陌生人开始免费随机视频聊天，支持国家筛选和即时翻译… <a class="blog-more" href="post-free-video-chat-zh.html">阅读更多</a></p>
+<time datetime="2026-10-03">2026年10月3日</time>
+</article>
+<!-- ===== نهاية الكارت ===== -->
+
+<!-- ===== كارت مقال ===== (لمقال جديد: انسخ الـ article كله تحت وغيّر الرابط والعنوان والملخص والتاريخ) -->
+<article class="blog-card">
+<h2><a href="post-omegle-alternative-zh.html">2026年最佳 Omegle 替代品：完整指南</a></h2>
+<p>在2026年寻找安全的 Omegle 替代品？了解为什么 Randly 是顶级之选：免费视频和文字聊天、国家选择与即时翻译。 <a class="blog-more" href="post-omegle-alternative-zh.html">阅读更多</a></p>
+<time datetime="2026-10-01">2026年10月1日</time>
+</article>
+<!-- ===== نهاية الكارت ===== -->
+
+</div>
+</main>
+
+<footer class="app-footer">
+<p>&copy; 2026 Randly.live - 版权所有。</p>
+<div class="footer-links">
+<a href="/rules.html">规则</a>
+<a href="/privacy.html">隐私政策</a>
+<a href="/about-zh.html">关于 Randly</a>
+<a href="/blog-zh.html">博客</a>
+<a href="mailto:contact@randly.live">联系我们</a>
+</div>
+</footer>
+
+</body>
+</html>

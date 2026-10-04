@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id" dir="ltr" id="htmlRoot">
 <head>
+<meta charset="UTF-8">
 <!-- perf-optimized -->
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -9,7 +10,6 @@
 <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
 
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="siteTitle">Randly - Video Chat Acak Gratis dengan Orang Asing</title>
 <meta name="description" content="Ngobrol dengan orang asing acak dari seluruh dunia dengan aman dan cepat di Randly. Video dan text chat gratis, tanpa registrasi.">
@@ -57,10 +57,26 @@
   "mainEntity": [
     {
       "@type": "Question",
+      "name": "Apakah Randly gratis?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ya, Anda bisa ngobrol dan terhubung dengan orang asing melalui video atau teks sepenuhnya gratis, tanpa biaya tersembunyi."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Bisakah saya menggunakan Randly di ponsel saya?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Tentu saja! Situs ini dirancang untuk berjalan lancar di semua perangkat mobile."
+      }
+    },
+    {
+      "@type": "Question",
       "name": "Apa alternatif terbaik untuk Omegle setelah ditutup?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Randly adalah salah satu alternatif terbaik untuk Omegle, menawarkan video dan text chat acak gratis dengan orang asing tanpa registrasi, dengan sistem keamanan yang lebih kuat dan pencocokan berdasarkan minat."
+        "text": "Randly adalah salah satu alternatif terbaik untuk Omegle: video dan text chat acak gratis dengan orang asing tanpa registrasi, dengan fitur laporan dan pemblokiran sementara bagi pelanggar serta pencocokan berdasarkan minat."
       }
     },
     {
@@ -68,7 +84,7 @@
       "name": "Apakah aman menggunakan Randly?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Ya, Randly menggunakan filter otomatis untuk konten yang tidak pantas dan fitur pelaporan instan, serta tidak menyimpan percakapan chat atau meminta registrasi data pribadi."
+        "text": "Randly menyediakan laporan instan dan otomatis memblokir sementara pengguna yang menerima banyak laporan. Randly tidak menyimpan percakapan Anda dan tidak meminta registrasi data pribadi. Tetap berhati-hati dan jangan bagikan informasi pribadi kepada orang asing."
       }
     },
     {
@@ -76,7 +92,7 @@
       "name": "Bagaimana cara kerja chat acak di Randly?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Cukup klik Video Chat atau Text Chat, dan Anda akan langsung terhubung dengan orang acak yang sedang online; Anda bisa lewati ke orang berikutnya kapan saja dengan satu klik."
+        "text": "Cukup klik \"Video Chat\" atau \"Text Chat\", dan Anda akan langsung terhubung dengan orang acak yang sedang online; Anda bisa lewati ke orang berikutnya kapan saja dengan satu klik."
       }
     },
     {
@@ -84,7 +100,7 @@
       "name": "Bisakah saya memilih negara orang yang saya ajak bicara?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Ya, Randly menyediakan filter untuk terhubung dengan orang dari negara tertentu, atau gunakan mode Global untuk terhubung dengan siapa saja di seluruh dunia."
+        "text": "Ya, Randly menyediakan filter untuk terhubung dengan orang dari negara tertentu, atau gunakan mode \"Global\" untuk terhubung dengan siapa saja di seluruh dunia."
       }
     },
     {
@@ -115,7 +131,7 @@
 <div class="logo">Randly</div>
 </div>
 <div class="header-right" style="display: flex; align-items: center; gap: 10px;">
-<select id="landingLangSelect" aria-label="اختيار لغة الموقع" class="site-lang-select" onchange="changeGlobalLanguage(this.value)" style="padding: 8px 12px; border-radius: 8px; background: var(--bg-card, #222); color: var(--text-main, #fff); border: 1px solid rgba(255,255,255,0.2);">
+<select id="landingLangSelect" aria-label="اختيار لغة الموقع" class="site-lang-select" onchange="changeGlobalLanguage(this.value)" style="padding: 8px 12px; border-radius: 8px; background: var(--bg-card, #222); color: var(--text-main, #fff); border: 1px solid var(--border-color);">
 <option value="ar">العربية</option>
 <option value="en">English</option>
 <option value="es">Español</option>
@@ -136,10 +152,10 @@
 </div>
 </header>
 <div class="landing-card">
-<h1 data-i18n="logoTitle">Randly - Video Chat Acak Gratis dengan Orang Asing</h1>
+<h1>Randly - Video Chat Acak Gratis dengan Orang Asing</h1>
 <p data-i18n="landingSub">Ngobrol dengan orang acak dari seluruh dunia dengan aman dan cepat!</p>
 <div class="interests-box">
-<div id="interestsTagsContainer" class="interests-tags-container" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: var(--bg-card, #222); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); min-height: 48px; cursor: text;" onclick="document.getElementById('interestTagInput').focus()">
+<div id="interestsTagsContainer" class="interests-tags-container" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: var(--bg-card, #222); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); min-height: 48px; cursor: text;" onclick="document.getElementById('interestTagInput').focus()">
 <input type="text" id="interestTagInput" data-i18n-placeholder="interestsPlaceholder" placeholder="Masukkan minat Anda (ketik dan tekan Enter)..." style="border: none; background: transparent; color: var(--text-main, #fff); outline: none; flex: 1; min-width: 140px; padding: 4px;">
 </div>
 </div>
@@ -168,57 +184,57 @@
 <article class="feature-card">
 <i class="fas fa-shield-alt"></i>
 <h3 data-i18n="feat4Title">Lingkungan Aman</h3>
-<p data-i18n="feat4Desc">Sistem perlindungan otomatis dan fitur pelaporan untuk obrolan yang bersih dan sopan.</p>
+<p data-i18n="feat4Desc">Laporan instan dan pemblokiran sementara otomatis bagi pelanggar, agar obrolan tetap saling menghormati.</p>
 </article>
 </div>
-<section class="faq-section" itemscope itemtype="https://schema.org/FAQPage">
+<section class="faq-section">
 <h2 data-i18n="faqTitle">Pertanyaan yang Sering Diajukan</h2>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq1Q">Apakah Randly gratis?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq1A">Ya, Anda bisa ngobrol dan terhubung dengan orang asing melalui video atau teks sepenuhnya gratis, tanpa biaya tersembunyi.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq1Q">Apakah Randly gratis?</h3>
+<div class="faq-answer">
+<p data-i18n="faq1A">Ya, Anda bisa ngobrol dan terhubung dengan orang asing melalui video atau teks sepenuhnya gratis, tanpa biaya tersembunyi.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq2Q">Bisakah saya menggunakan Randly di ponsel saya?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq2A">Tentu saja! Situs ini dirancang untuk berjalan lancar di semua perangkat mobile.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq2Q">Bisakah saya menggunakan Randly di ponsel saya?</h3>
+<div class="faq-answer">
+<p data-i18n="faq2A">Tentu saja! Situs ini dirancang untuk berjalan lancar di semua perangkat mobile.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq3Q">Apa alternatif terbaik untuk Omegle setelah ditutup?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq3A">Randly adalah salah satu alternatif terbaik untuk Omegle, menawarkan video dan text chat acak gratis dengan orang asing tanpa registrasi, dengan sistem keamanan yang lebih kuat dan pencocokan berdasarkan minat.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq3Q">Apa alternatif terbaik untuk Omegle setelah ditutup?</h3>
+<div class="faq-answer">
+<p data-i18n="faq3A">Randly adalah salah satu alternatif terbaik untuk Omegle: video dan text chat acak gratis dengan orang asing tanpa registrasi, dengan fitur laporan dan pemblokiran sementara bagi pelanggar serta pencocokan berdasarkan minat.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq4Q">Apakah aman menggunakan Randly?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq4A">Ya, Randly menggunakan filter otomatis untuk konten yang tidak pantas dan fitur pelaporan instan, serta tidak menyimpan percakapan chat atau meminta registrasi data pribadi.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq4Q">Apakah aman menggunakan Randly?</h3>
+<div class="faq-answer">
+<p data-i18n="faq4A">Randly menyediakan laporan instan dan otomatis memblokir sementara pengguna yang menerima banyak laporan. Randly tidak menyimpan percakapan Anda dan tidak meminta registrasi data pribadi. Tetap berhati-hati dan jangan bagikan informasi pribadi kepada orang asing.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq5Q">Bagaimana cara kerja chat acak di Randly?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq5A">Cukup klik "Video Chat" atau "Text Chat", dan Anda akan langsung terhubung dengan orang acak yang sedang online; Anda bisa lewati ke orang berikutnya kapan saja dengan satu klik.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq5Q">Bagaimana cara kerja chat acak di Randly?</h3>
+<div class="faq-answer">
+<p data-i18n="faq5A">Cukup klik "Video Chat" atau "Text Chat", dan Anda akan langsung terhubung dengan orang acak yang sedang online; Anda bisa lewati ke orang berikutnya kapan saja dengan satu klik.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq6Q">Bisakah saya memilih negara orang yang saya ajak bicara?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq6A">Ya, Randly menyediakan filter untuk terhubung dengan orang dari negara tertentu, atau gunakan mode "Global" untuk terhubung dengan siapa saja di seluruh dunia.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq6Q">Bisakah saya memilih negara orang yang saya ajak bicara?</h3>
+<div class="faq-answer">
+<p data-i18n="faq6A">Ya, Randly menyediakan filter untuk terhubung dengan orang dari negara tertentu, atau gunakan mode "Global" untuk terhubung dengan siapa saja di seluruh dunia.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq7Q">Berapa usia minimum untuk menggunakan Randly?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq7A">Pengguna harus berusia 18 tahun atau lebih untuk menggunakan Randly, sesuai dengan Syarat dan Ketentuan situs.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq7Q">Berapa usia minimum untuk menggunakan Randly?</h3>
+<div class="faq-answer">
+<p data-i18n="faq7A">Pengguna harus berusia 18 tahun atau lebih untuk menggunakan Randly, sesuai dengan Syarat dan Ketentuan situs.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq8Q">Apakah Randly menerjemahkan pesan secara otomatis antar bahasa?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq8A">Ya, Anda bisa mengaktifkan terjemahan instan untuk pesan text chat dan memilih bahasa pilihan Anda dari menu terjemahan.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq8Q">Apakah Randly menerjemahkan pesan secara otomatis antar bahasa?</h3>
+<div class="faq-answer">
+<p data-i18n="faq8A">Ya, Anda bisa mengaktifkan terjemahan instan untuk pesan text chat dan memilih bahasa pilihan Anda dari menu terjemahan.</p>
 </div>
 </div>
 </section>
@@ -227,6 +243,7 @@
 <div class="footer-links">
 <a href="rules.html" data-i18n="rulesLink">Aturan</a>
 <a href="privacy.html" data-i18n="privacyLink">Kebijakan Privasi</a>
+<a href="terms.html" data-i18n="termsLink">Syarat &amp; Ketentuan</a>
 <a href="about-id.html">Tentang</a>
 <a href="about-id.html" data-i18n="aboutLink">About</a>
 <a href="/blog-id.html" id="footerBlogLink">Blog</a>
@@ -358,7 +375,7 @@ Orang asing sedang mengetik...
 <button class="btn-start-main" id="nextBtn" onclick="handleMainButton()" style="white-space: nowrap; flex-shrink: 0; padding: 10px 14px;">
 <i class="fas fa-forward"></i> <span data-i18n="skipStartBtn">Lewati / Mulai</span>
 </button>
-<div class="input-container chat-input-wrapper" style="display: flex; flex-direction: row; flex: 1; align-items: center; background: var(--bg-card); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; min-width: 0;">
+<div class="input-container chat-input-wrapper" style="display: flex; flex-direction: row; flex: 1; align-items: center; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; min-width: 0;">
 <input type="text" id="msgInput" data-i18n-placeholder="msgPlaceholder" placeholder="Ketik pesan Anda di sini..." onkeydown="if(event.key === 'Enter') sendMsg()" style="flex: 1; direction: auto; text-align: start; padding: 12px; border: none; background: transparent; color: var(--text-main); outline: none; min-width: 0;">
 <button class="btn-send-inside" id="sendBtn" onclick="sendMsg()" style="padding: 10px 14px; border: none; background: transparent; color: var(--accent-purple); cursor: pointer; flex-shrink: 0;" aria-label="Kirim pesan"><i class="fas fa-paper-plane" style="font-size: 1.2rem;"></i></button>
 </div>
@@ -389,6 +406,7 @@ Orang asing sedang mengetik...
 <script src="/socket.io/socket.io.js"></script>
 <script src="script.js"></script>
 <script src="i18n-extra.js"></script>
+<script src="randly-extra.js"></script>
 <script>/* ads-deferred-by-script */
 window.addEventListener('load', function() {
   var s = document.createElement('script');

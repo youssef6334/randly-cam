@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<!-- perf-optimized -->
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog - Randly</title>
+<meta name="description" content="Articles et conseils sur le chat aléatoire et les rencontres en ligne en toute sécurité sur Randly.">
+<link rel="canonical" href="https://randly.live/blog-fr.html">
+<link rel="alternate" hreflang="ar" href="https://randly.live/blog-ar.html">
+<link rel="alternate" hreflang="en" href="https://randly.live/blog-en.html">
+<link rel="alternate" hreflang="es" href="https://randly.live/blog-es.html">
+<link rel="alternate" hreflang="fr" href="https://randly.live/blog-fr.html">
+<link rel="alternate" hreflang="de" href="https://randly.live/blog-de.html">
+<link rel="alternate" hreflang="it" href="https://randly.live/blog-it.html">
+<link rel="alternate" hreflang="pt" href="https://randly.live/blog-pt.html">
+<link rel="alternate" hreflang="tr" href="https://randly.live/blog-tr.html">
+<link rel="alternate" hreflang="ru" href="https://randly.live/blog-ru.html">
+<link rel="alternate" hreflang="hi" href="https://randly.live/blog-hi.html">
+<link rel="alternate" hreflang="id" href="https://randly.live/blog-id.html">
+<link rel="alternate" hreflang="zh" href="https://randly.live/blog-zh.html">
+<link rel="alternate" hreflang="x-default" href="https://randly.live/blog-ar.html">
+<link rel="stylesheet" href="style.css">
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
+<style>
+html,body{overflow:auto!important;height:auto!important;min-height:100%}
+/* كل الألوان من متغيرات موقعك (style.css) عشان تتناسق معاه تلقائيًا */
+.blog-wrap{max-width:900px;margin:30px auto 10px;padding:0 16px;color:var(--text-main)}
+.blog-wrap h1{text-align:center;font-size:2rem;margin:20px 0 28px;color:var(--text-main)}
+.blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.blog-card{display:flex;flex-direction:column;background:var(--bg-card);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:20px;transition:border-color .15s,transform .15s}
+.blog-card:hover{border-color:var(--accent-purple);transform:translateY(-2px)}
+.blog-card h2{font-size:1.1rem;line-height:1.6;margin:0 0 10px}
+.blog-card h2 a{color:var(--accent-purple);text-decoration:none}
+.blog-card p{color:var(--text-main);opacity:.8;line-height:1.8;margin:0 0 12px;flex:1;font-size:.95rem}
+.blog-more{color:var(--accent-purple);font-weight:bold;text-decoration:none}
+.blog-more:hover{text-decoration:underline}
+.blog-card time{display:block;margin-top:12px;font-size:.8rem;opacity:.55}
+.app-footer{text-align:center;padding:26px 16px 36px}
+.footer-links a{margin:0 8px;color:var(--text-main);text-decoration:none;opacity:.8}
+</style>
+</head>
+<body>
+
+<header class="app-header" style="justify-content: space-between;">
+    <div class="header-left">
+        <a href="fr.html" class="logo" style="text-decoration: none;">Randly</a>
+    </div>
+    <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
+        <nav style="display: flex; gap: 14px;">
+            <a href="fr.html" style="color: var(--text-main); text-decoration: none; opacity: .85; font-size: .9rem;">Accueil</a>
+            <a href="about-fr.html" style="color: var(--text-main); text-decoration: none; opacity: .85; font-size: .9rem;">À propos</a>
+            <a href="blog-fr.html" style="color: var(--accent-purple); text-decoration: none; font-size: .9rem; font-weight: bold;">Blog</a>
+        </nav>
+        <select class="site-lang-select" onchange="window.location.href=this.value">
+            <option value="blog-ar.html">العربية</option>
+            <option value="blog-en.html">English</option>
+            <option value="blog-es.html">Español</option>
+            <option value="blog-fr.html" selected>Français</option>
+            <option value="blog-de.html">Deutsch</option>
+            <option value="blog-it.html">Italiano</option>
+            <option value="blog-pt.html">Português</option>
+            <option value="blog-tr.html">Türkçe</option>
+            <option value="blog-ru.html">Русский</option>
+            <option value="blog-hi.html">हिन्दी</option>
+            <option value="blog-id.html">Bahasa Indonesia</option>
+            <option value="blog-zh.html">中文</option>
+        </select>
+    </div>
+</header>
+
+<main class="blog-wrap">
+<h1>Blog</h1>
+<div class="blog-grid">
+
+<!-- ===== كارت المقال الثاني ===== -->
+<article class="blog-card">
+<h2><a href="post-free-video-chat-fr.html">Chat Vidéo Aléatoire Gratuit Sans Inscription 2026 : Le Guide Complet</a></h2>
+<p>Démarrez un chat vidéo aléatoire gratuit avec des inconnus sans inscription ni téléchargement d’application, avec filtre par pays… <a class="blog-more" href="post-free-video-chat-fr.html">Lire la suite</a></p>
+<time datetime="2026-10-03">3 octobre 2026</time>
+</article>
+<!-- ===== نهاية الكارت ===== -->
+
+<!-- ===== كارت مقال ===== (لمقال جديد: انسخ الـ article كله تحت وغيّر الرابط والعنوان والملخص والتاريخ) -->
+<article class="blog-card">
+<h2><a href="post-omegle-alternative-fr.html">Meilleure alternative à Omegle en 2026 : le guide complet</a></h2>
+<p>Vous cherchez une alternative sûre à Omegle en 2026 ? Découvrez pourquoi Randly est l'une des meilleures : chat vidéo et texte gratuit, choix du pays… <a class="blog-more" href="post-omegle-alternative-fr.html">Lire la suite</a></p>
+<time datetime="2026-10-01">1 octobre 2026</time>
+</article>
+<!-- ===== نهاية الكارت ===== -->
+
+</div>
+</main>
+
+<footer class="app-footer">
+<p>&copy; 2026 Randly.live - Tous droits réservés.</p>
+<div class="footer-links">
+<a href="/rules.html">Règles</a>
+<a href="/privacy.html">Confidentialité</a>
+<a href="/about-fr.html">À propos de Randly</a>
+<a href="/blog-fr.html">Blog</a>
+<a href="mailto:contact@randly.live">Contact</a>
+</div>
+</footer>
+
+</body>
+</html>

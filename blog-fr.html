@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr" dir="ltr">
 <head>
+<meta charset="UTF-8">
 <!-- perf-optimized -->
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -9,7 +10,6 @@
 <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
 
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Blog - Randly</title>
 <meta name="description" content="Articles et conseils sur le chat aléatoire et les rencontres en ligne en toute sécurité sur Randly.">
@@ -36,7 +36,7 @@ html,body{overflow:auto!important;height:auto!important;min-height:100%}
 .blog-wrap{max-width:900px;margin:30px auto 10px;padding:0 16px;color:var(--text-main)}
 .blog-wrap h1{text-align:center;font-size:2rem;margin:20px 0 28px;color:var(--text-main)}
 .blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
-.blog-card{display:flex;flex-direction:column;background:var(--bg-card);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:20px;transition:border-color .15s,transform .15s}
+.blog-card{display:flex;flex-direction:column;background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:20px;transition:border-color .15s,transform .15s}
 .blog-card:hover{border-color:var(--accent-purple);transform:translateY(-2px)}
 .blog-card h2{font-size:1.1rem;line-height:1.6;margin:0 0 10px}
 .blog-card h2 a{color:var(--accent-purple);text-decoration:none}
@@ -105,6 +105,7 @@ html,body{overflow:auto!important;height:auto!important;min-height:100%}
 <div class="footer-links">
 <a href="/rules.html">Règles</a>
 <a href="/privacy.html">Confidentialité</a>
+<a href="/terms.html">Conditions d'utilisation</a>
 <a href="/about-fr.html">À propos de Randly</a>
 <a href="/blog-fr.html">Blog</a>
 <a href="mailto:contact@randly.live">Contact</a>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="de" dir="ltr" id="htmlRoot">
 <head>
+<meta charset="UTF-8">
 <!-- perf-optimized -->
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -9,7 +10,6 @@
 <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
 
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="siteTitle">Randly - Kostenloser Zufälliger Videochat mit Fremden</title>
 <meta name="description" content="Chatte sicher und schnell mit zufälligen Fremden aus der ganzen Welt auf Randly. Kostenloser Video- und Textchat, keine Registrierung erforderlich.">
@@ -58,10 +58,26 @@
   "mainEntity": [
     {
       "@type": "Question",
+      "name": "Ist Randly kostenlos?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ja, du kannst völlig kostenlos mit Fremden per Video oder Text chatten, ohne versteckte Gebühren."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Kann ich Randly auf meinem Handy nutzen?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Auf jeden Fall! Die Seite ist so gestaltet, dass sie auf allen Mobilgeräten reibungslos funktioniert."
+      }
+    },
+    {
+      "@type": "Question",
       "name": "Was ist die beste Alternative zu Omegle, nachdem es geschlossen wurde?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Randly ist eine der besten Alternativen zu Omegle und bietet kostenlosen zufälligen Video- und Textchat mit Fremden ohne Registrierung, mit stärkeren Sicherheitssystemen und Interessen-Matching."
+        "text": "Randly ist eine der besten Alternativen zu Omegle: kostenloser zufälliger Video- und Textchat mit Fremden ohne Registrierung, mit Meldefunktion und vorübergehenden Sperren für Regelverstöße sowie Interessen-Matching."
       }
     },
     {
@@ -69,7 +85,7 @@
       "name": "Ist Randly sicher in der Nutzung?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Ja, Randly verwendet automatische Inhaltsfilterung und eine sofortige Meldefunktion und speichert keine Chatverläufe oder verlangt eine persönliche Registrierung."
+        "text": "Randly bietet eine Sofort-Meldefunktion und sperrt Nutzer automatisch vorübergehend, wenn sie mehrfach gemeldet werden. Chats werden nicht gespeichert und es ist keine Registrierung persönlicher Daten nötig. Trotzdem gilt: Sei vorsichtig und gib keine privaten Informationen an Fremde weiter."
       }
     },
     {
@@ -77,7 +93,7 @@
       "name": "Wie funktioniert der Zufallschat auf Randly?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Klicke einfach auf Videochat oder Textchat, und du wirst sofort mit einer zufälligen Person verbunden, die gerade online ist; du kannst jederzeit mit einem Klick zur nächsten Person wechseln."
+        "text": "Klicke einfach auf \"Videochat\" oder \"Textchat\", und du wirst sofort mit einer zufälligen Person verbunden, die gerade online ist; du kannst jederzeit mit einem Klick zur nächsten Person wechseln."
       }
     },
     {
@@ -85,7 +101,7 @@
       "name": "Kann ich das Land der Person auswählen, mit der ich spreche?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Ja, Randly bietet einen Filter, um mit Personen aus einem bestimmten Land verbunden zu werden, oder du nutzt den Modus Global, um mit jedem weltweit gematcht zu werden."
+        "text": "Ja, Randly bietet einen Filter, um mit Personen aus einem bestimmten Land verbunden zu werden, oder du nutzt den Modus \"Global\", um mit jedem weltweit gematcht zu werden."
       }
     },
     {
@@ -116,7 +132,7 @@
 <div class="logo">Randly</div>
 </div>
 <div class="header-right" style="display: flex; align-items: center; gap: 10px;">
-<select id="landingLangSelect" aria-label="اختيار لغة الموقع" class="site-lang-select" onchange="changeGlobalLanguage(this.value)" style="padding: 8px 12px; border-radius: 8px; background: var(--bg-card, #222); color: var(--text-main, #fff); border: 1px solid rgba(255,255,255,0.2);">
+<select id="landingLangSelect" aria-label="اختيار لغة الموقع" class="site-lang-select" onchange="changeGlobalLanguage(this.value)" style="padding: 8px 12px; border-radius: 8px; background: var(--bg-card, #222); color: var(--text-main, #fff); border: 1px solid var(--border-color);">
 <option value="ar">العربية</option>
 <option value="en">English</option>
 <option value="es">Español</option>
@@ -133,10 +149,10 @@
 </div>
 </header>
 <div class="landing-card">
-<h1 data-i18n="logoTitle">Randly - Kostenloser Zufälliger Videochat mit Fremden</h1>
+<h1>Randly - Kostenloser Zufälliger Videochat mit Fremden</h1>
 <p data-i18n="landingSub">Chatte sicher und schnell mit zufälligen Menschen aus der ganzen Welt!</p>
 <div class="interests-box">
-<div id="interestsTagsContainer" class="interests-tags-container" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: var(--bg-card, #222); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); min-height: 48px; cursor: text;" onclick="document.getElementById('interestTagInput').focus()">
+<div id="interestsTagsContainer" class="interests-tags-container" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: var(--bg-card, #222); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); min-height: 48px; cursor: text;" onclick="document.getElementById('interestTagInput').focus()">
 <input type="text" id="interestTagInput" data-i18n-placeholder="interestsPlaceholder" placeholder="Gib deine Interessen ein (tippen und Enter drücken)..." style="border: none; background: transparent; color: var(--text-main, #fff); outline: none; flex: 1; min-width: 140px; padding: 4px;">
 </div>
 </div>
@@ -165,57 +181,57 @@
 <article class="feature-card">
 <i class="fas fa-shield-alt"></i>
 <h3 data-i18n="feat4Title">Sichere Umgebung</h3>
-<p data-i18n="feat4Desc">Automatische Schutzsysteme und Meldefunktionen für saubere und respektvolle Chats.</p>
+<p data-i18n="feat4Desc">Sofort-Meldefunktion und automatische vorübergehende Sperren für Regelverstöße, damit Chats respektvoll bleiben.</p>
 </article>
 </div>
-<section class="faq-section" itemscope itemtype="https://schema.org/FAQPage">
+<section class="faq-section">
 <h2 data-i18n="faqTitle">Häufig Gestellte Fragen</h2>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq1Q">Ist Randly kostenlos?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq1A">Ja, du kannst völlig kostenlos mit Fremden per Video oder Text chatten, ohne versteckte Gebühren.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq1Q">Ist Randly kostenlos?</h3>
+<div class="faq-answer">
+<p data-i18n="faq1A">Ja, du kannst völlig kostenlos mit Fremden per Video oder Text chatten, ohne versteckte Gebühren.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq2Q">Kann ich Randly auf meinem Handy nutzen?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq2A">Auf jeden Fall! Die Seite ist so gestaltet, dass sie auf allen Mobilgeräten reibungslos funktioniert.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq2Q">Kann ich Randly auf meinem Handy nutzen?</h3>
+<div class="faq-answer">
+<p data-i18n="faq2A">Auf jeden Fall! Die Seite ist so gestaltet, dass sie auf allen Mobilgeräten reibungslos funktioniert.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq3Q">Was ist die beste Alternative zu Omegle, nachdem es geschlossen wurde?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq3A">Randly ist eine der besten Alternativen zu Omegle und bietet kostenlosen zufälligen Video- und Textchat mit Fremden ohne Registrierung, mit stärkeren Sicherheitssystemen und Interessen-Matching.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq3Q">Was ist die beste Alternative zu Omegle, nachdem es geschlossen wurde?</h3>
+<div class="faq-answer">
+<p data-i18n="faq3A">Randly ist eine der besten Alternativen zu Omegle: kostenloser zufälliger Video- und Textchat mit Fremden ohne Registrierung, mit Meldefunktion und vorübergehenden Sperren für Regelverstöße sowie Interessen-Matching.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq4Q">Ist Randly sicher in der Nutzung?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq4A">Ja, Randly verwendet automatische Inhaltsfilterung und eine sofortige Meldefunktion und speichert keine Chatverläufe oder verlangt eine persönliche Registrierung.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq4Q">Ist Randly sicher in der Nutzung?</h3>
+<div class="faq-answer">
+<p data-i18n="faq4A">Randly bietet eine Sofort-Meldefunktion und sperrt Nutzer automatisch vorübergehend, wenn sie mehrfach gemeldet werden. Chats werden nicht gespeichert und es ist keine Registrierung persönlicher Daten nötig. Trotzdem gilt: Sei vorsichtig und gib keine privaten Informationen an Fremde weiter.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq5Q">Wie funktioniert der Zufallschat auf Randly?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq5A">Klicke einfach auf "Videochat" oder "Textchat", und du wirst sofort mit einer zufälligen Person verbunden, die gerade online ist; du kannst jederzeit mit einem Klick zur nächsten Person wechseln.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq5Q">Wie funktioniert der Zufallschat auf Randly?</h3>
+<div class="faq-answer">
+<p data-i18n="faq5A">Klicke einfach auf "Videochat" oder "Textchat", und du wirst sofort mit einer zufälligen Person verbunden, die gerade online ist; du kannst jederzeit mit einem Klick zur nächsten Person wechseln.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq6Q">Kann ich das Land der Person auswählen, mit der ich spreche?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq6A">Ja, Randly bietet einen Filter, um mit Personen aus einem bestimmten Land verbunden zu werden, oder du nutzt den Modus "Global", um mit jedem weltweit gematcht zu werden.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq6Q">Kann ich das Land der Person auswählen, mit der ich spreche?</h3>
+<div class="faq-answer">
+<p data-i18n="faq6A">Ja, Randly bietet einen Filter, um mit Personen aus einem bestimmten Land verbunden zu werden, oder du nutzt den Modus "Global", um mit jedem weltweit gematcht zu werden.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq7Q">Was ist das Mindestalter für die Nutzung von Randly?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq7A">Nutzer müssen mindestens 18 Jahre alt sein, um Randly gemäß den Nutzungsbedingungen der Seite zu verwenden.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq7Q">Was ist das Mindestalter für die Nutzung von Randly?</h3>
+<div class="faq-answer">
+<p data-i18n="faq7A">Nutzer müssen mindestens 18 Jahre alt sein, um Randly gemäß den Nutzungsbedingungen der Seite zu verwenden.</p>
 </div>
 </div>
-<div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-<h3 itemprop="name" class="faq-question" data-i18n="faq8Q">Übersetzt Randly Nachrichten automatisch zwischen Sprachen?</h3>
-<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="faq-answer">
-<p itemprop="text" data-i18n="faq8A">Ja, du kannst die sofortige Übersetzung für Textchat-Nachrichten aktivieren und deine bevorzugte Sprache aus dem Übersetzungsmenü wählen.</p>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq8Q">Übersetzt Randly Nachrichten automatisch zwischen Sprachen?</h3>
+<div class="faq-answer">
+<p data-i18n="faq8A">Ja, du kannst die sofortige Übersetzung für Textchat-Nachrichten aktivieren und deine bevorzugte Sprache aus dem Übersetzungsmenü wählen.</p>
 </div>
 </div>
 </section>
@@ -224,6 +240,7 @@
 <div class="footer-links">
 <a href="rules.html" data-i18n="rulesLink">Regeln</a>
 <a href="privacy.html" data-i18n="privacyLink">Datenschutzrichtlinie</a>
+<a href="terms.html" data-i18n="termsLink">Nutzungsbedingungen</a>
 <a href="about-de.html">Über uns</a>
 <a href="about-de.html" data-i18n="aboutLink">About</a>
 <a href="/blog-de.html" id="footerBlogLink">Blog</a>
@@ -374,7 +391,7 @@ Der Fremde schreibt gerade...
 <button class="btn-start-main" id="nextBtn" onclick="handleMainButton()" style="white-space: nowrap; flex-shrink: 0; padding: 10px 14px;">
 <i class="fas fa-forward"></i> <span data-i18n="skipStartBtn">Überspringen / Start</span>
 </button>
-<div class="input-container chat-input-wrapper" style="display: flex; flex-direction: row; flex: 1; align-items: center; background: var(--bg-card); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; min-width: 0;">
+<div class="input-container chat-input-wrapper" style="display: flex; flex-direction: row; flex: 1; align-items: center; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; min-width: 0;">
 <input type="text" id="msgInput" data-i18n-placeholder="msgPlaceholder" placeholder="Schreibe deine Nachricht hier..." onkeydown="if(event.key === 'Enter') sendMsg()" style="flex: 1; direction: auto; text-align: start; padding: 12px; border: none; background: transparent; color: var(--text-main); outline: none; min-width: 0;">
 <button class="btn-send-inside" id="sendBtn" onclick="sendMsg()" style="padding: 10px 14px; border: none; background: transparent; color: var(--accent-purple); cursor: pointer; flex-shrink: 0;" aria-label="Nachricht senden">
 <i class="fas fa-paper-plane" style="font-size: 1.2rem;"></i>
@@ -407,6 +424,7 @@ Der Fremde schreibt gerade...
 <script src="/socket.io/socket.io.js"></script>
 <script src="script.js"></script>
 <script src="i18n-extra.js"></script>
+<script src="randly-extra.js"></script>
 <script>/* ads-deferred-by-script */
 window.addEventListener('load', function() {
   var s = document.createElement('script');

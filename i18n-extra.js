@@ -12,7 +12,7 @@
       feat1Title: "Kayıt Yok (Anonim)", feat1Desc: "Hesap açmadan tek tıkla hemen sohbete başla, gizliliğin güvende.",
       feat2Title: "İlgi Alanına Göre Eşleşme", feat2Desc: "Sevdiğin konuları ekle, aynı tutkuyu paylaşan kişilerle eşleş.",
       feat3Title: "Küresel Topluluk", feat3Desc: "Dünyanın her yerinden binlerce kullanıcı gece gündüz çevrimiçi.",
-      feat4Title: "Güvenli Ortam", feat4Desc: "Otomatik koruma sistemleri ve şikâyet özellikleriyle sohbetler temiz kalır.",
+      feat4Title: "Güvenli Ortam", feat4Desc: "Kuralları ihlal edenler için anında bildirim ve otomatik geçici engelleme; sohbetler saygılı kalsın diye.",
       faqTitle: "Sık Sorulan Sorular", faq1Q: "Randly ücretsiz mi?",
       faq1A: "Evet, yabancılarla görüntülü veya yazılı sohbet tamamen ücretsizdir, gizli ücret yoktur.",
       faq2Q: "Randly'yi telefonda kullanabilir miyim?", faq2A: "Elbette! Site tüm mobil cihazlarda sorunsuz çalışır.",
@@ -30,7 +30,7 @@
       feat1Title: "Без регистрации (анонимно)", feat1Desc: "Начните общение одним нажатием, без аккаунта — ваша конфиденциальность под защитой.",
       feat2Title: "Подбор по интересам", feat2Desc: "Добавьте любимые темы, и мы найдём собеседников с такими же увлечениями.",
       feat3Title: "Глобальное сообщество", feat3Desc: "Тысячи пользователей со всего мира онлайн круглосуточно.",
-      feat4Title: "Безопасная среда", feat4Desc: "Автоматическая защита и функция жалоб помогают сохранять чаты чистыми и уважительными.",
+      feat4Title: "Безопасная среда", feat4Desc: "Мгновенные жалобы и автоматические временные блокировки нарушителей, чтобы общение оставалось уважительным.",
       faqTitle: "Частые вопросы", faq1Q: "Randly бесплатный?",
       faq1A: "Да, видео- и текстовое общение с незнакомцами полностью бесплатно, без скрытых платежей.",
       faq2Q: "Можно ли пользоваться Randly на телефоне?", faq2A: "Конечно! Сайт адаптирован и отлично работает на всех мобильных устройствах.",
@@ -48,7 +48,7 @@
       feat1Title: "बिना रजिस्ट्रेशन (गुमनाम)", feat1Desc: "खाता बनाए बिना एक क्लिक में चैट शुरू करें, आपकी प्राइवेसी सुरक्षित है।",
       feat2Title: "रुचि के आधार पर मैच", feat2Desc: "अपने पसंदीदा विषय जोड़ें और समान शौक वाले लोगों से जुड़ें।",
       feat3Title: "वैश्विक समुदाय", feat3Desc: "दुनिया भर के हज़ारों यूज़र्स दिन-रात ऑनलाइन रहते हैं।",
-      feat4Title: "सुरक्षित माहौल", feat4Desc: "ऑटोमैटिक सुरक्षा सिस्टम और रिपोर्ट सुविधा से चैट साफ़-सुथरी रहती है।",
+      feat4Title: "सुरक्षित माहौल", feat4Desc: "नियम तोड़ने वालों के लिए तुरंत रिपोर्ट और स्वचालित अस्थायी ब्लॉक, ताकि चैट सम्मानजनक बनी रहे।",
       faqTitle: "अक्सर पूछे जाने वाले प्रश्न", faq1Q: "क्या Randly मुफ़्त है?",
       faq1A: "हाँ, अजनबियों के साथ वीडियो या टेक्स्ट चैट पूरी तरह मुफ़्त है, कोई छिपा शुल्क नहीं।",
       faq2Q: "क्या मैं Randly को मोबाइल पर इस्तेमाल कर सकता हूँ?", faq2A: "बिल्कुल! साइट सभी मोबाइल डिवाइस पर आसानी से चलती है।",
@@ -66,7 +66,7 @@
       feat1Title: "Tanpa Daftar (Anonim)", feat1Desc: "Mulai ngobrol seketika dengan satu klik, tanpa akun, privasimu aman.",
       feat2Title: "Pencocokan Minat", feat2Desc: "Tambahkan topik favoritmu dan terhubung dengan orang yang punya minat sama.",
       feat3Title: "Komunitas Global", feat3Desc: "Ribuan pengguna dari seluruh dunia online siang dan malam.",
-      feat4Title: "Lingkungan Aman", feat4Desc: "Sistem perlindungan otomatis dan fitur laporan menjaga obrolan tetap bersih.",
+      feat4Title: "Lingkungan Aman", feat4Desc: "Laporan instan dan pemblokiran sementara otomatis bagi pelanggar, agar obrolan tetap saling menghormati.",
       faqTitle: "Pertanyaan Umum", faq1Q: "Apakah Randly gratis?",
       faq1A: "Ya, kamu bisa ngobrol dengan orang asing lewat video atau teks sepenuhnya gratis tanpa biaya tersembunyi.",
       faq2Q: "Bisakah saya memakai Randly di ponsel?", faq2A: "Tentu! Situs ini responsif dan berjalan lancar di semua perangkat seluler.",
@@ -84,7 +84,7 @@
       feat1Title: "无需注册（匿名）", feat1Desc: "无需账号，一键即可开始聊天，隐私有保障。",
       feat2Title: "兴趣匹配", feat2Desc: "添加你喜欢的话题，与志趣相投的人配对。",
       feat3Title: "全球社区", feat3Desc: "来自世界各地的数千名用户昼夜在线。",
-      feat4Title: "安全环境", feat4Desc: "自动防护系统和举报功能，让聊天保持文明整洁。",
+      feat4Title: "安全环境", feat4Desc: "即时举报功能，并对违规用户自动临时封禁，让聊天保持文明。",
       faqTitle: "常见问题", faq1Q: "Randly 免费吗？", faq1A: "是的，视频或文字聊天完全免费，没有任何隐藏费用。",
       faq2Q: "可以在手机上使用 Randly 吗？", faq2A: "当然可以！网站适配所有移动设备，运行流畅。",
       rights: "版权所有。", rulesLink: "规则", privacyLink: "隐私政策", contactLink: "联系我们",
@@ -114,7 +114,8 @@
     zh: ["无法访问摄像头和麦克风。","正在加入房间...","需要先与某人连接，才能复制房间链接！","✅ 房间链接已复制！\n房间有效期为 72 小时，把链接分享给朋友即可加入。","抱歉，复制链接时出错。","确定吗？","已举报该用户。","请等待你的回合...","该房间已过期或不存在。","连接已断开","对方已离开聊天。","（翻译失败）","翻译","麦克风","摄像头","面部特效","声音","复制房间链接","举报","离开"]
   };
 
-  Object.keys(NEW_LANGS).forEach(l => { translations[l] = NEW_LANGS[l]; });
+  // دمج بدل الاستبدال: عشان مفاتيح الـ FAQ (faq3..faq8) الموجودة في script.js ما تضيعش
+  Object.keys(NEW_LANGS).forEach(l => { translations[l] = Object.assign({}, translations[l] || {}, NEW_LANGS[l]); });
   Object.keys(V).forEach(l => {
     translations[l] = translations[l] || {};
     K.forEach((k, i) => { translations[l][k] = V[l][i]; });
