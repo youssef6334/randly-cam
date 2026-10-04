@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<!-- perf-optimized -->
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>À propos de Randly - Chat vidéo et texte aléatoire gratuit</title>
+<meta name="description" content="Découvrez Randly : chat vidéo et texte aléatoire gratuit avec des personnes du monde entier, sans inscription, avec mise en relation par intérêts et choix du pays.">
+<link rel="canonical" href="https://randly.live/about-fr.html">
+<link rel="alternate" hreflang="ar" href="https://randly.live/about.html">
+<link rel="alternate" hreflang="en" href="https://randly.live/about-en.html">
+<link rel="alternate" hreflang="es" href="https://randly.live/about-es.html">
+<link rel="alternate" hreflang="fr" href="https://randly.live/about-fr.html">
+<link rel="alternate" hreflang="de" href="https://randly.live/about-de.html">
+<link rel="alternate" hreflang="it" href="https://randly.live/about-it.html">
+<link rel="alternate" hreflang="pt" href="https://randly.live/about-pt.html">
+<link rel="alternate" hreflang="tr" href="https://randly.live/about-tr.html">
+<link rel="alternate" hreflang="ru" href="https://randly.live/about-ru.html">
+<link rel="alternate" hreflang="hi" href="https://randly.live/about-hi.html">
+<link rel="alternate" hreflang="id" href="https://randly.live/about-id.html">
+<link rel="alternate" hreflang="zh" href="https://randly.live/about-zh.html">
+<link rel="alternate" hreflang="x-default" href="https://randly.live/about.html">
+
+<link rel="stylesheet" href="style.css">
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3125079750975955" crossorigin="anonymous"></script>
+<style>
+  html, body { overflow: auto !important; height: auto !important; min-height: 100%; }
+</style>
+</head>
+<body>
+
+<header class="app-header" style="justify-content: space-between;">
+    <div class="header-left">
+        <a href="fr.html" class="logo" style="text-decoration: none;">Randly</a>
+    </div>
+    <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
+        <nav style="display: flex; gap: 14px;">
+            <a href="fr.html" style="color: var(--text-main); text-decoration: none; opacity: .85; font-size: .9rem;">Accueil</a>
+            <a href="about-fr.html" style="color: var(--accent-purple); text-decoration: none; font-size: .9rem; font-weight: bold;">À propos</a>
+            <a href="blog-fr.html" style="color: var(--text-main); text-decoration: none; opacity: .85; font-size: .9rem;">Blog</a>
+        </nav>
+        <select class="site-lang-select" onchange="window.location.href=this.value">
+            <option value="about.html">العربية</option>
+            <option value="about-en.html">English</option>
+            <option value="about-es.html">Español</option>
+            <option value="about-fr.html" selected>Français</option>
+            <option value="about-de.html">Deutsch</option>
+            <option value="about-it.html">Italiano</option>
+            <option value="about-pt.html">Português</option>
+            <option value="about-tr.html">Türkçe</option>
+            <option value="about-ru.html">Русский</option>
+            <option value="about-hi.html">हिन्दी</option>
+            <option value="about-id.html">Bahasa Indonesia</option>
+            <option value="about-zh.html">中文</option>
+        </select>
+    </div>
+</header>
+
+<main style="max-width: 800px; margin: 40px auto; padding: 20px; color: var(--text-main, #fff); line-height: 1.8;">
+
+<h1>À propos de Randly : chat vidéo et texte aléatoire sans inscription</h1>
+
+<p>
+Randly est un site gratuit de chat vidéo et texte aléatoire avec des personnes du monde entier. Rien à installer et aucun compte à créer : ouvrez le site, choisissez Chat Vidéo ou Chat Texte, et vous êtes mis en relation avec quelqu'un de connecté en ce moment.
+</p>
+
+<h2>Pourquoi Randly est-il la Meilleure Alternative Gratuite à Omegle ?</h2>
+<p>L'Omegle original a fermé, et la plupart des sites prétendant être des alternatives sont payants ou remplis de publicités gênantes. Randly est différent : le service principal est entièrement gratuit - chat vidéo aléatoire, chat texte et correspondance par centres d'intérêt, le tout sans abonnement ni compte.</p>
+
+<h2>Chat Vidéo Aléatoire avec des Inconnus du Monde Entier</h2>
+<p>En un clic, vous êtes connecté à une nouvelle personne aléatoire qui parle l'une des 12 langues prises en charge par le site. Que vous vouliez parler à quelqu'un de votre pays ou découvrir de nouvelles cultures d'autres pays, la vidéo aléatoire de Randly vous connecte à de vraies personnes en quelques secondes.</p>
+
+<h2>Randly est-il Vraiment Sûr et Gratuit ?</h2>
+<p>
+Randly est réservé aux adultes de 18 ans et plus. Vous pouvez signaler n'importe quel utilisateur d'un seul geste, et les utilisateurs signalés par plusieurs personnes différentes sont automatiquement bloqués pour une courte durée. Nous n'enregistrons ni ne stockons vos conversations, et aucun compte n'est requis. Aucune modération n'attrape tout : ne partagez jamais votre téléphone, votre adresse ou vos données financières avec des inconnus.
+</p>
+
+<h2>Connectez-vous Selon Vos Centres d'Intérêt, Pas Complètement au Hasard</h2>
+<p>Une fonctionnalité de Randly introuvable ailleurs : vous pouvez saisir vos centres d'intérêt (football, programmation, musique, n'importe quoi) et nous vous mettrons en relation avec des personnes partageant les mêmes passions, rendant la conversation plus profonde qu'un simple chat aléatoire.</p>
+
+<h2>Commencez à Discuter Aléatoirement Dès Maintenant Depuis N'importe Quel Appareil</h2>
+<p>Randly fonctionne parfaitement sur mobile et ordinateur sans télécharger aucune application. Ouvrez le site, cliquez sur "Chat Vidéo" ou "Chat Texte", et commencez à parler à des inconnus du monde entier instantanément et entièrement gratuitement.</p>
+
+<p style="margin-top: 40px;">
+<a href="fr.html" style="color: var(--accent-purple, #8a2be2); font-weight: bold;">← Commencer à discuter maintenant</a>
+</p>
+
+</main>
+
+<footer class="app-footer">
+<p>&copy; 2026 Randly.live - Tous droits réservés.</p>
+<div class="footer-links">
+<a href="rules.html">Règles</a>
+<a href="privacy.html">Confidentialité</a>
+<a href="terms.html">Conditions d'utilisation</a>
+<a href="mailto:contact@randly.live">Contact</a>
+</div>
+</footer>
+
+</body>
+</html>

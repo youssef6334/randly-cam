@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ru" dir="ltr" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<!-- perf-optimized -->
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="siteTitle">Randly - Бесплатный Случайный Видеочат с Незнакомцами</title>
+<meta name="description" content="Общайтесь со случайными незнакомцами со всего мира безопасно и быстро на Randly. Бесплатный видео и текстовый чат, без регистрации.">
+<link rel="canonical" href="https://randly.live/ru.html">
+<link rel="alternate" hreflang="ar" href="https://randly.live/">
+<link rel="alternate" hreflang="en" href="https://randly.live/en.html">
+<link rel="alternate" hreflang="es" href="https://randly.live/es.html">
+<link rel="alternate" hreflang="fr" href="https://randly.live/fr.html">
+<link rel="alternate" hreflang="de" href="https://randly.live/de.html">
+<link rel="alternate" hreflang="it" href="https://randly.live/it.html">
+<link rel="alternate" hreflang="pt" href="https://randly.live/pt.html">
+<link rel="alternate" hreflang="tr" href="https://randly.live/tr.html">
+<link rel="alternate" hreflang="ru" href="https://randly.live/ru.html">
+<link rel="alternate" hreflang="hi" href="https://randly.live/hi.html">
+<link rel="alternate" hreflang="id" href="https://randly.live/id.html">
+<link rel="alternate" hreflang="zh" href="https://randly.live/zh.html">
+<link rel="alternate" hreflang="x-default" href="https://randly.live/">
+<meta property="og:title" content="Randly - Бесплатный Случайный Видеочат с Незнакомцами">
+<meta property="og:description" content="Общайтесь со случайными незнакомцами со всего мира безопасно и быстро на Randly.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://randly.live/ru.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://randly.live/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="style.css">
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
+
+<script type="application/ld+json">
+{
+"@context": "https://schema.org",
+"@type": "WebApplication",
+"name": "Randly",
+"url": "https://randly.live/ru.html",
+"applicationCategory": "SocialNetworkingApplication",
+"operatingSystem": "Web",
+"description": "Бесплатный случайный видео и текстовый чат с незнакомцами со всего мира, без регистрации.",
+"offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Randly бесплатный?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Да, вы можете общаться с незнакомцами по видео или тексту совершенно бесплатно, без скрытых платежей."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Могу ли я использовать Randly на телефоне?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Конечно! Сайт разработан для плавной работы на всех мобильных устройствах."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Какая лучшая альтернатива Omegle после его закрытия?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Randly — одна из лучших альтернатив Omegle: бесплатный случайный видео- и текстовый чат с незнакомцами без регистрации, с функцией жалоб и временными блокировками нарушителей, а также подбором по интересам."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Безопасно ли использовать Randly?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "В Randly есть мгновенные жалобы, а пользователи, получившие несколько жалоб, автоматически блокируются на время. Мы не храним ваши переписки и не требуем регистрации личных данных. Тем не менее общайтесь осторожно и не делитесь личной информацией с незнакомцами."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Как работает случайный чат на Randly?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Просто нажмите \"Видеочат\" или \"Текстовый чат\", и вы мгновенно подключитесь к случайному человеку, находящемуся сейчас онлайн; вы можете пропустить и перейти к следующему человеку в любой момент одним кликом."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Могу ли я выбрать страну собеседника?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Да, Randly предлагает фильтр для подключения к людям из определённой страны, или можно использовать режим \"Глобально\" для подключения к кому угодно в мире."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Какой минимальный возраст для использования Randly?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Пользователи должны быть не моложе 18 лет для использования Randly в соответствии с Условиями использования сайта."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Переводит ли Randly сообщения автоматически между языками?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Да, вы можете включить мгновенный перевод для сообщений текстового чата и выбрать предпочитаемый язык в меню перевода."
+      }
+    }
+  ]
+}
+</script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3125079750975955" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="landingPage" class="landing-container">
+<header class="app-header">
+<div class="header-left">
+<div class="logo">Randly</div>
+</div>
+<div class="header-right" style="display: flex; align-items: center; gap: 10px;">
+<select id="landingLangSelect" aria-label="اختيار لغة الموقع" class="site-lang-select" onchange="changeGlobalLanguage(this.value)" style="padding: 8px 12px; border-radius: 8px; background: var(--bg-card, #222); color: var(--text-main, #fff); border: 1px solid var(--border-color);">
+<option value="ar">العربية</option>
+<option value="en">English</option>
+<option value="es">Español</option>
+<option value="fr">Français</option>
+<option value="de">Deutsch</option>
+<option value="it">Italiano</option>
+<option value="pt">Português</option>
+<option value="tr">Türkçe</option>
+<option value="ru" selected>Русский</option>
+</select>
+<span class="online-badge-modern">
+<span class="online-dot"></span>
+<span data-i18n="onlineNow">Online Now</span>: <span id="landingOnlineCount">0</span>+
+</span>
+<button class="theme-switch-btn theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode"><span class="switch-knob">🌙</span></button>
+</div>
+</header>
+<div class="landing-card">
+<h1>Randly - Бесплатный Случайный Видеочат с Незнакомцами</h1>
+<p data-i18n="landingSub">Общайтесь со случайными людьми со всего мира безопасно и быстро!</p>
+<div class="interests-box">
+<div id="interestsTagsContainer" class="interests-tags-container" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: var(--bg-card, #222); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); min-height: 48px; cursor: text;" onclick="document.getElementById('interestTagInput').focus()">
+<input type="text" id="interestTagInput" data-i18n-placeholder="interestsPlaceholder" placeholder="Введите свои интересы (напишите и нажмите Enter)..." style="border: none; background: transparent; color: var(--text-main, #fff); outline: none; flex: 1; min-width: 140px; padding: 4px;">
+</div>
+</div>
+<div class="start-buttons">
+<button class="btn btn-primary-lg" onclick="startSession('video')"><i class="fas fa-video"></i> <span data-i18n="videoChatBtn">Видеочат</span></button>
+<button class="btn btn-secondary-lg" onclick="startSession('text')"><i class="fas fa-comment-dots"></i> <span data-i18n="textChatBtn">Текстовый чат</span></button>
+</div>
+</div>
+<main class="vip-seo-section" id="seoSection">
+<div class="features-grid">
+<article class="feature-card">
+<i class="fas fa-user-secret"></i>
+<h3 data-i18n="feat1Title">Анонимно - Без Регистрации</h3>
+<p data-i18n="feat1Desc">Начните общение мгновенно одним кликом, аккаунт не нужен, ваша конфиденциальность защищена.</p>
+</article>
+<article class="feature-card">
+<i class="fas fa-brain"></i>
+<h3 data-i18n="feat2Title">Подбор по Интересам</h3>
+<p data-i18n="feat2Desc">Добавьте темы, которые вам нравятся, и находите людей, разделяющих вашу страсть.</p>
+</article>
+<article class="feature-card">
+<i class="fas fa-globe"></i>
+<h3 data-i18n="feat3Title">Глобальное Сообщество</h3>
+<p data-i18n="feat3Desc">Тысячи пользователей со всего мира онлайн 24/7.</p>
+</article>
+<article class="feature-card">
+<i class="fas fa-shield-alt"></i>
+<h3 data-i18n="feat4Title">Безопасная Среда</h3>
+<p data-i18n="feat4Desc">Мгновенные жалобы и автоматические временные блокировки нарушителей, чтобы общение оставалось уважительным.</p>
+</article>
+</div>
+<section class="faq-section">
+<h2 data-i18n="faqTitle">Часто Задаваемые Вопросы</h2>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq1Q">Randly бесплатный?</h3>
+<div class="faq-answer">
+<p data-i18n="faq1A">Да, вы можете общаться с незнакомцами по видео или тексту совершенно бесплатно, без скрытых платежей.</p>
+</div>
+</div>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq2Q">Могу ли я использовать Randly на телефоне?</h3>
+<div class="faq-answer">
+<p data-i18n="faq2A">Конечно! Сайт разработан для плавной работы на всех мобильных устройствах.</p>
+</div>
+</div>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq3Q">Какая лучшая альтернатива Omegle после его закрытия?</h3>
+<div class="faq-answer">
+<p data-i18n="faq3A">Randly — одна из лучших альтернатив Omegle: бесплатный случайный видео- и текстовый чат с незнакомцами без регистрации, с функцией жалоб и временными блокировками нарушителей, а также подбором по интересам.</p>
+</div>
+</div>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq4Q">Безопасно ли использовать Randly?</h3>
+<div class="faq-answer">
+<p data-i18n="faq4A">В Randly есть мгновенные жалобы, а пользователи, получившие несколько жалоб, автоматически блокируются на время. Мы не храним ваши переписки и не требуем регистрации личных данных. Тем не менее общайтесь осторожно и не делитесь личной информацией с незнакомцами.</p>
+</div>
+</div>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq5Q">Как работает случайный чат на Randly?</h3>
+<div class="faq-answer">
+<p data-i18n="faq5A">Просто нажмите "Видеочат" или "Текстовый чат", и вы мгновенно подключитесь к случайному человеку, находящемуся сейчас онлайн; вы можете пропустить и перейти к следующему человеку в любой момент одним кликом.</p>
+</div>
+</div>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq6Q">Могу ли я выбрать страну собеседника?</h3>
+<div class="faq-answer">
+<p data-i18n="faq6A">Да, Randly предлагает фильтр для подключения к людям из определённой страны, или можно использовать режим "Глобально" для подключения к кому угодно в мире.</p>
+</div>
+</div>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq7Q">Какой минимальный возраст для использования Randly?</h3>
+<div class="faq-answer">
+<p data-i18n="faq7A">Пользователи должны быть не моложе 18 лет для использования Randly в соответствии с Условиями использования сайта.</p>
+</div>
+</div>
+<div class="faq-item">
+<h3 class="faq-question" data-i18n="faq8Q">Переводит ли Randly сообщения автоматически между языками?</h3>
+<div class="faq-answer">
+<p data-i18n="faq8A">Да, вы можете включить мгновенный перевод для сообщений текстового чата и выбрать предпочитаемый язык в меню перевода.</p>
+</div>
+</div>
+</section>
+<footer class="app-footer">
+<p>&copy; 2026 Randly.live - <span data-i18n="rights">Все права защищены.</span></p>
+<div class="footer-links">
+<a href="rules.html" data-i18n="rulesLink">Правила</a>
+<a href="privacy.html" data-i18n="privacyLink">Политика Конфиденциальности</a>
+<a href="terms.html" data-i18n="termsLink">Условия использования</a>
+<a href="about-ru.html">О нас</a>
+<a href="about-ru.html" data-i18n="aboutLink">About</a>
+<a href="/blog-ru.html" id="footerBlogLink">Блог</a>
+<a href="mailto:contact@randly.live" data-i18n="contactLink">Связаться с нами</a>
+</div>
+</footer>
+</main>
+</div>
+<div class="main-container">
+<header class="app-header">
+<div class="header-left">
+<div class="logo">Randly</div>
+</span>
+</div>
+<div class="header-right" style="display: flex; align-items: center; gap: 10px;">
+<label for="siteLang" class="sr-only">Выбрать язык</label>
+<select id="siteLang" aria-label="اختيار لغة الموقع" class="site-lang-select" onchange="changeGlobalLanguage(this.value)">
+<option value="ar">العربية</option>
+<option value="en">English</option>
+<option value="es">Español</option>
+<option value="fr">Français</option>
+<option value="de">Deutsch</option>
+<option value="it">Italiano</option>
+<option value="pt">Português</option>
+<option value="tr">Türkçe</option>
+<option value="ru" selected>Русский</option>
+</select>
+<span class="online-badge-modern">
+<span class="online-dot"></span>
+<span data-i18n="onlineNow">Online Now</span>: <span id="headerOnlineCount">0</span>+
+</span>
+<button class="btn-icon" onclick="requestGame()" aria-label="Играть в крестики-нолики">🎮</button>
+<button class="theme-switch-btn theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode"><span class="switch-knob">🌙</span></button>
+</div>
+</header>
+<div class="top-ad-bar" id="adContainer" style="min-height: 60px;">
+<div id="adContent">
+<script>/* ads-deferred-by-script */
+window.addEventListener('load', function() {
+  var s = document.createElement('script');
+  s.async = true;
+  s.setAttribute('data-cfasync', 'false');
+  s.src = "https://pl30790391.effectivecpmnetwork.com/f66aa4bb4789b5ab486c7c42e435623d/invoke.js";
+  (document.getElementById('adContent') || document.body).appendChild(s);
+});
+</script>
+<div id="container-f66aa4bb4789b5ab486c7c42e435623d"></div>
+</div>
+<button class="toggle-ad-btn" onclick="toggleAd()" aria-label="Свернуть/развернуть рекламу">
+<span id="arrowIcon">▲</span>
+</button>
+</div>
+<div class="content-wrapper">
+<div id="videoSection" class="video-section">
+<div class="video-box remote-box">
+<video id="remoteVideo" autoplay playsinline></video>
+<span class="video-label" style="display: flex; align-items: center; gap: 8px;">
+<span data-i18n="remoteUser">Незнакомец</span>
+<span id="remoteUserFlag" class="country-flag-icon"></span>
+<span id="remoteUserCountryName" style="color: #ffd700; font-weight: bold; font-size: 14px;"></span>
+</span>
+</div>
+<div class="video-box local-box" style="position: relative;">
+<video id="localVideo" autoplay playsinline muted></video>
+<canvas id="maskCanvas" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; z-index: 2; pointer-events: none;"></canvas>
+<span class="video-label" style="z-index: 3;" data-i18n="youUser">Вы</span>
+</div>
+</div>
+<div id="chatSection" class="chat-section">
+<div class="status-bar" id="status" data-i18n="connectedStatus">Подключено!</div>
+<div id="textChatPartnerInfo" style="display: none; text-align: center; padding: 4px 10px; font-size: 13px; color: #ffd700; font-weight: bold;">
+<span id="textFlagIcon"></span> <span id="textCountryName"></span>
+</div>
+<div id="skeletonLoader" style="display: none; text-align: center; padding: 20px; color: #888; font-weight: bold;">
+⏳ <span data-i18n="searchingText">Поиск случайного человека...</span>
+</div>
+<div class="chat-box" id="chatBox">
+<div class="msg msg-sys" data-i18n="welcomeMsg">Добро пожаловать! Нажмите Start, чтобы начать общение.</div>
+</div>
+<div id="typingIndicator" style="display: none; font-size: 12px; color: #888; padding: 0 10px 10px 10px;" data-i18n="typingText">
+Незнакомец печатает...
+</div>
+<div class="filter-controls-row">
+<div class="select-wrapper">
+<label for="countrySelect" class="sr-only">Выбрать страну</label>
+<select id="countrySelect" aria-label="اختيار الدولة" class="filter-select">
+<option value="global" data-i18n="matchGlobal">🌐 Глобально (Умный Подбор)</option>
+<option value="PS">🇵🇸 Palestine</option>
+<option value="EG">🇪🇬 Egypt</option>
+<option value="SA">🇸🇦 Saudi Arabia</option>
+<option value="RU">🇷🇺 Россия</option>
+<option value="US">🇺🇸 United States</option>
+<option value="GB">🇬🇧 United Kingdom</option>
+<option value="FR">🇫🇷 France</option>
+<option value="DE">🇩🇪 Germany</option>
+<option value="IT">🇮🇹 Italy</option>
+<option value="ES">🇪🇸 Spain</option>
+<option value="TR">🇹🇷 Turkey</option>
+<option value="IN">🇮🇳 India</option>
+</select>
+</div>
+<div class="select-wrapper">
+<label for="translationLang" class="sr-only">Язык перевода</label>
+<select id="translationLang" aria-label="لغة الترجمة" class="filter-select">
+<option value="none" data-i18n="noTranslation">Без перевода</option>
+<option value="ar">العربية</option>
+<option value="en">English</option>
+<option value="es">Español</option>
+<option value="fr">Français</option>
+<option value="de">Deutsch</option>
+<option value="it">Italiano</option>
+<option value="pt">Português</option>
+<option value="ru">Русский</option>
+</select>
+</div>
+<div class="quick-actions">
+<button class="btn-action-icon modern-btn video-only-btn" id="micBtn" onclick="toggleMic()" title="Микрофон" aria-label="Включить/выключить микрофон"><i class="fas fa-microphone"></i></button>
+<button class="btn-action-icon modern-btn video-only-btn" id="camBtn" onclick="toggleCam()" title="Камера" aria-label="Включить/выключить камеру"><i class="fas fa-video"></i></button>
+<button class="btn-action-icon modern-btn video-only-btn" id="maskBtn" onclick="toggleMask()" title="Эффекты лица" aria-label="Включить/выключить фильтр лица"><i class="fas fa-masks-theater"></i></button>
+<button class="btn-action-icon modern-btn video-only-btn" id="muteBtn" onclick="toggleSoundMute()" title="Звук" aria-label="Выключить/включить звук уведомлений"><i class="fas fa-volume-up"></i></button>
+<button class="btn-action-icon modern-btn" id="copyLinkBtn" onclick="saveRoomLink()" title="Скопировать ссылку" aria-label="Скопировать ссылку на комнату"><i class="fas fa-link"></i></button>
+<button class="btn-action-icon modern-btn" onclick="reportUser()" title="Пожаловаться" aria-label="Пожаловаться на пользователя"><i class="fas fa-flag"></i></button>
+<button class="btn-action-icon modern-btn btn-close-chat" onclick="leaveSession()" title="Выйти" aria-label="Завершить чат"><i class="fas fa-phone-slash"></i></button>
+</div>
+</div>
+<div class="bottom-action-bar" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; width: 100%;">
+<button class="btn-start-main" id="nextBtn" onclick="handleMainButton()" style="white-space: nowrap; flex-shrink: 0; padding: 10px 14px;">
+<i class="fas fa-forward"></i> <span data-i18n="skipStartBtn">Пропустить / Начать</span>
+</button>
+<div class="input-container chat-input-wrapper" style="display: flex; flex-direction: row; flex: 1; align-items: center; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; min-width: 0;">
+<input type="text" id="msgInput" data-i18n-placeholder="msgPlaceholder" placeholder="Введите сообщение здесь..." onkeydown="if(event.key === 'Enter') sendMsg()" style="flex: 1; direction: auto; text-align: start; padding: 12px; border: none; background: transparent; color: var(--text-main); outline: none; min-width: 0;">
+<button class="btn-send-inside" id="sendBtn" onclick="sendMsg()" style="padding: 10px 14px; border: none; background: transparent; color: var(--accent-purple); cursor: pointer; flex-shrink: 0;" aria-label="Отправить сообщение"><i class="fas fa-paper-plane" style="font-size: 1.2rem;"></i></button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="gameBoardOverlay" class="game-overlay" style="display: none;">
+<div class="game-card">
+<div class="game-header">
+<h3>Игра XO 🎮</h3>
+<button class="close-game" onclick="closeGame()" aria-label="Закрыть игру">✕</button>
+</div>
+<p id="gameStatusText" data-i18n="turnText">Ваш ход</p>
+<div class="xo-grid">
+<div class="xo-cell" onclick="makeMove(0)"></div>
+<div class="xo-cell" onclick="makeMove(1)"></div>
+<div class="xo-cell" onclick="makeMove(2)"></div>
+<div class="xo-cell" onclick="makeMove(3)"></div>
+<div class="xo-cell" onclick="makeMove(4)"></div>
+<div class="xo-cell" onclick="makeMove(5)"></div>
+<div class="xo-cell" onclick="makeMove(6)"></div>
+<div class="xo-cell" onclick="makeMove(7)"></div>
+<div class="xo-cell" onclick="makeMove(8)"></div>
+</div>
+</div>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="script.js"></script>
+<script src="i18n-extra.js"></script>
+<script src="randly-extra.js"></script>
+<script>/* ads-deferred-by-script */
+window.addEventListener('load', function() {
+  var s = document.createElement('script');
+  s.async = true;
+  s.setAttribute('data-cfasync', 'false');
+  s.src = "https://pl30790288.effectivecpmnetwork.com/af/01/4f/af014f7d78a0555fd804897f8175cc44.js";
+  (document.getElementById('adContent') || document.body).appendChild(s);
+});
+</script>
+</body>
+</html>
