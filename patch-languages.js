@@ -1,21 +1,20 @@
 #!/usr/bin/env node
 /**
  * patch-languages.js — سكريبت واحد مستقل (من غير ملفات JSON إضافية).
- * بيعدّل صفحات HTML بكل اللغات (es, fr, de, it, pt, tr, ru, hi, id, zh) بنفس تعديلات العربي والإنجليزي:
- *   - ترتيب الـ head (charset أول عنصر) وحذف الـ favicon المكرر
- *   - الـ H1 ثابت، وFAQ Schema واحد مطابق للنص الظاهر، وإضافة WebApplication schema
- *   - استبدال ادعاءات الأمان (فلترة/حماية تلقائية) بنص صادق مترجم
- *   - صفحات about: عنوان/وصف/H1 مميزين + حذف جملة "Omegle بقى بفلوس"
- *   - صفحات post-omegle-alternative: إصلاح قائمة الأمان وصف الجدول وإجابة الـ FAQ
- *   - إضافة <script src="randly-extra.js"> ورابط الشروط والأحكام في الفوتر
+ * بيعدّل صفحات HTML بكل اللغات بنفس تعديلات العربي والإنجليزي:
+ *   - ترتيب الـ head، الـ H1 ثابت، FAQ Schema واحد، WebApplication schema، manifest وtheme-color
+ *   - استبدال ادعاءات الأمان بنص صادق مترجم (12 لغة)
+ *   - about: عنوان/وصف/H1 مميزين + حذف جملة "Omegle بقى بفلوس"
+ *   - post-omegle-alternative: إصلاح قائمة الأمان وجدول المقارنة وإجابة الـ FAQ
+ *   - عناوين المزايا h2، وإخفاء واجهة الشات عن الزواحف لحد ما الجلسة تبدأ
+ *   - إضافة randly-extra.js ورابط الشروط، وتوجيه روابط القوانين للنسخة الإنجليزية في اللغات غير العربية
  *
  * الاستخدام (من جذر المشروع):
- *   node patch-languages.js --dry     # معاينة بس، من غير ما يكتب أي حاجة
- *   node patch-languages.js           # تطبيق
- *   node patch-languages.js ./public  # مسار مختلف
- *   node patch-languages.js --no-backup   # من غير ملفات .bak
- *
- * آمن للتشغيل أكتر من مرة، ومبيلمسش أي صفحة شكلها مختلف عن القالب (بيكتبها في "مراجعة يدوية").
+ *   node patch-languages.js --dry          # معاينة بس
+ *   node patch-languages.js                # تطبيق
+ *   node patch-languages.js ./public       # مسار مختلف
+ *   node patch-languages.js --no-backup    # من غير ملفات .bak
+ * آمن للتشغيل أكتر من مرة، ومبيلمسش صفحة شكلها مختلف عن القالب (بيكتبها في "مراجعة يدوية").
  */
 const fs = require('fs');
 const path = require('path');
@@ -198,7 +197,7 @@ const NO_BACKUP = process.argv.includes('--no-backup');
 const LANGS = Object.keys(claims);
 console.log('المجلد: ' + dir + (DRY ? '  (معاينة فقط)' : ''));
 if (!fs.existsSync(path.join(dir, 'randly-extra.js'))) {
-  console.log('⚠ تنبيه: randly-extra.js مش موجود في هذا المجلد. لازم تنسخه جنب script.js وإلا الصفحات هتحمّل ملف ناقص.');
+  console.log('⚠ تنبيه: randly-extra.js مش موجود في هذا المجلد. لازم تنسخه جنب script.js.');
 }
 
 const ABOUT = {
@@ -356,6 +355,21 @@ for (const file of files) {
       }) + '\n</head>');
     }
     note('webapp-schema', prev);
+
+    // PWA: manifest + theme-color
+    prev = before();
+    if (!/rel="manifest"/.test(html)) html = html.replace('</head>', '<link rel="manifest" href="/manifest.webmanifest">\n<meta name="theme-color" content="#121214">\n</head>');
+    note('manifest', prev);
+
+    // عناوين المزايا h3 -> h2 (هيكل عناوين أسلم)
+    prev = before();
+    html = html.replace(/<h3(\s[^>]*data-i18n="feat\dTitle"[^>]*)>([\s\S]*?)<\/h3>/g, '<h2$1>$2</h2>');
+    note('feature headings h2', prev);
+
+    // واجهة الشات مخفية عن الزواحف لحد ما الجلسة تبدأ
+    prev = before();
+    html = html.replace(/<div class="main-container">/, '<div class="main-container" hidden>');
+    note('hide chat ui until session', prev);
   }
 
   // 4) صفحات المحتوى
@@ -398,12 +412,19 @@ for (const file of files) {
 
   // 7) رابط الشروط والأحكام في الفوتر
   prev = before();
-  if (/class="footer-links"/.test(html) && !/terms\.html/.test(html)) {
+  if (/class="footer-links"/.test(html) && !/terms(-en)?\.html/.test(html)) {
     const label = (claims[lang] || claims.en).termsLink;
     html = html.replace(/(<a href="(\/?)privacy\.html"[^>]*>[^<]*<\/a>)/, (m, a, slash) =>
       `${a}\n<a href="${slash}terms.html"${isApp ? ' data-i18n="termsLink"' : ''}>${esc(label)}</a>`);
   }
   note('terms link', prev);
+
+  // 8) صفحات القوانين متاحة بالعربي والإنجليزي: أي لغة غير العربية تروح للنسخة الإنجليزية
+  if (lang !== 'ar') {
+    prev = before();
+    html = html.replace(/href="(\/?)(rules|privacy|terms)\.html"/g, 'href="$1$2-en.html"');
+    note('legal links -> en', prev);
+  }
 
   if (html !== original) {
     changed++;

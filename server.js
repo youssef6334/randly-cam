@@ -32,7 +32,7 @@ const LIMITS = {
     MAX_MSG_LEN: 500,
     MAX_INTERESTS: 10,
     MAX_INTEREST_LEN: 30,
-    MAX_CONN_PER_IP: 15,
+    MAX_CONN_PER_IP: Number(process.env.MAX_CONN_PER_IP || 25),
     MAX_SIGNAL_BYTES: 20 * 1024,
     MAX_VIOLATIONS: 8           // بعدها السوكيت يتفصل
 };
@@ -64,6 +64,61 @@ const STATIC_ROOT = fs.existsSync(publicDir) ? publicDir : __dirname;
 if (STATIC_ROOT === __dirname) {
     console.warn('[WARN] مجلد public/ غير موجود — بنخدم من الجذر مع حظر ملفات السيرفر. انقل الملفات العامة لـ public/.');
 }
+
+// ---------------------------------------------------------------- الترجمة الفورية (عبر السيرفر)
+// لو GOOGLE_TRANSLATE_API_KEY موجود نستخدم Cloud Translation الرسمي، وإلا نرجع للـ endpoint غير الرسمي.
+// النص بيتمرر لـ Google ومش بيتخزّن عندنا.
+const TL_LANGS = new Set(['ar', 'en', 'es', 'fr', 'de', 'it', 'pt', 'tr', 'ru', 'hi', 'id', 'zh']);
+const translateRate = new Map();   // ip -> {c, t}
+
+app.use('/api', express.json({ limit: '4kb' }));
+app.post('/api/translate', async (req, res) => {
+    try {
+        const origin = req.headers.origin;
+        if (origin && !ALLOWED_ORIGINS.includes(origin)) return res.status(403).json({ error: 'origin' });
+
+        const ip = ipFromHeaders(req.headers, req.socket && req.socket.remoteAddress);
+        const now = Date.now();
+        const r = translateRate.get(ip) || { c: 0, t: now };
+        if (now - r.t > 60000) { r.c = 0; r.t = now; }
+        r.c++; translateRate.set(ip, r);
+        if (r.c > 40) return res.status(429).json({ error: 'rate' });
+
+        const body = req.body || {};
+        const text = typeof body.text === 'string' ? body.text.trim().slice(0, LIMITS.MAX_MSG_LEN) : '';
+        const target = typeof body.target === 'string' ? body.target : '';
+        if (!text || !TL_LANGS.has(target)) return res.status(400).json({ error: 'bad_request' });
+        if (typeof fetch !== 'function') return res.status(501).json({ error: 'no_fetch' });
+
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 5000);
+        let out = '';
+        try {
+            if (process.env.GOOGLE_TRANSLATE_API_KEY) {
+                const resp = await fetch('https://translation.googleapis.com/language/translate/v2?key=' + encodeURIComponent(process.env.GOOGLE_TRANSLATE_API_KEY), {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctrl.signal,
+                    body: JSON.stringify({ q: text, target, format: 'text' })
+                });
+                if (!resp.ok) throw new Error('upstream ' + resp.status);
+                const data = await resp.json();
+                out = data && data.data && data.data.translations && data.data.translations[0] && data.data.translations[0].translatedText || '';
+            } else {
+                const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&dt=t&tl=' + encodeURIComponent(target) + '&q=' + encodeURIComponent(text);
+                const resp = await fetch(url, { signal: ctrl.signal });
+                if (!resp.ok) throw new Error('upstream ' + resp.status);
+                const data = await resp.json();
+                out = Array.isArray(data && data[0]) ? data[0].map(x => x && x[0] || '').join('') : '';
+            }
+        } finally { clearTimeout(timer); }
+        if (!out) return res.status(502).json({ error: 'empty' });
+        res.setHeader('Cache-Control', 'no-store');
+        res.json({ text: out });
+    } catch (err) {
+        console.error('[ERR] translate', err && err.message);
+        res.status(502).json({ error: 'upstream' });
+    }
+});
+setInterval(() => { const n = Date.now(); for (const [k, v] of translateRate) if (n - v.t > 120000) translateRate.delete(k); }, 120000).unref();
 
 // STUN + TURN (من متغيرات البيئة: TURN_URLS="turn:host:3478,turns:host:5349" TURN_USERNAME TURN_CREDENTIAL)
 app.get('/api/ice', (req, res) => {
@@ -150,8 +205,7 @@ function normalizeIp(raw) {
     return withPort ? withPort[1] : ip;
 }
 
-function getClientIp(socket) {
-    const h = socket.handshake.headers;
+function ipFromHeaders(h, address) {
     if (BEHIND_CLOUDFLARE && h['cf-connecting-ip']) return normalizeIp(h['cf-connecting-ip']) || 'unknown';
     if (!BEHIND_CLOUDFLARE && h['cf-connecting-ip'] && !warnedCf) {
         warnedCf = true;
@@ -162,7 +216,11 @@ function getClientIp(socket) {
         const parts = String(xff).split(',').map(normalizeIp).filter(Boolean);
         if (parts.length) return parts[Math.max(0, parts.length - TRUSTED_HOPS)];
     }
-    return normalizeIp(h['x-real-ip'] || socket.handshake.address) || 'unknown';
+    return normalizeIp(h['x-real-ip'] || address) || 'unknown';
+}
+
+function getClientIp(socket) {
+    return ipFromHeaders(socket.handshake.headers, socket.handshake.address);
 }
 
 function hashIp(ip) {

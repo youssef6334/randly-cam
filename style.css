@@ -589,7 +589,8 @@ body.app-shell {
         font-size: 2rem;
         margin-bottom: 10px;
     }
-    .feature-card h3 {
+    .feature-card h2,
+.feature-card h3 {
         font-size: 1.05rem;
     }
     .feature-card p {
@@ -616,6 +617,7 @@ body.app-shell {
     margin-bottom: 15px;
 }
 
+.feature-card h2,
 .feature-card h3 {
     margin-bottom: 10px;
     font-size: 1.2rem;
@@ -986,3 +988,6 @@ html[data-theme="light"] .theme-switch-btn .switch-knob {
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* واجهة الشات مخفية لحد ما الجلسة تبدأ (الزواحف والـ screen readers مش بتشوفها) */
+.main-container[hidden] { display: none; }

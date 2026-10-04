@@ -211,8 +211,8 @@ function renderInterestTags() {
 }
 
 // --- إعدادات الأصوات ---
-const matchSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-const msgSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
+const matchSound = new Audio('/sounds/match.wav');
+const msgSound = new Audio('/sounds/msg.wav');
 let isSoundMuted = localStorage.getItem('randly_sound_muted') === 'true';
 
 socket.on('online-count', (count) => {
@@ -376,6 +376,8 @@ async function startSession(mode, specificRoomId = null) {
     buttonState = 'skip';          // كان بيفضل 'start' فالضغطة الأولى كانت بتفتح الكاميرا مرتين
     setNextBtn('skip');
     if (landingPage) landingPage.style.display = 'none';
+    const mainBox = document.querySelector('.main-container');
+    if (mainBox) mainBox.hidden = false;      // واجهة الشات مخفية عن الزواحف لحد ما الجلسة تبدأ
     const videoOnlyBtns = document.querySelectorAll('.video-only-btn');
     const localBox = document.querySelector('.video-box.local-box');
 
@@ -483,6 +485,8 @@ function leaveSession() {
         localStream = null;
     }
     if (landingPage) landingPage.style.display = 'flex';
+    const mainBoxLeave = document.querySelector('.main-container');
+    if (mainBoxLeave) mainBoxLeave.hidden = true;
     if (videoSection) videoSection.style.setProperty('display', 'none', 'important');
     const localBox = document.querySelector('.video-box.local-box');
     if (localBox) localBox.style.setProperty('display', 'none', 'important');
@@ -748,12 +752,15 @@ socket.on('receive-message', async (data) => {
 
     if (targetLang !== 'none' && data.text) {
         try {
-            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(data.text)}`;
-            const response = await fetch(url);
+            // الترجمة عبر السيرفر (بيحدّ المعدل ويدعم API رسمي)
+            const response = await fetch('/api/translate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: data.text, target: targetLang })
+            });
+            if (!response.ok) throw new Error('translate ' + response.status);
             const result = await response.json();
-            if (result && result[0] && result[0][0]) {
-                translatedText = result[0].map(item => item[0]).join('');
-            }
+            if (result && typeof result.text === 'string') translatedText = result.text;
         } catch (error) {
             console.error("خطأ في الترجمة الفورية:", error);
             translatedText = tr('translateFailed');
