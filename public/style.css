@@ -2405,6 +2405,135 @@ html[data-theme="light"] {
 }
 
 @media (max-width: 899.98px) {
+    .rl-responsive-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 10px;
+        min-height: 92px;
+        height: auto;
+        padding: 8px 16px;
+        position: relative;
+    }
+
+    .rl-responsive-header > .rl-brand {
+        order: 1;
+        margin-inline-end: auto;
+        min-width: 0;
+        position: static;
+        transform: none;
+    }
+
+    .rl-responsive-header > .rl-top-actions {
+        order: 2;
+        display: flex !important;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px 10px;
+        min-width: 0;
+        margin: 0;
+        position: static;
+        transform: none;
+    }
+
+    .rl-responsive-header > .rl-top-actions > .btn-icon,
+    .rl-responsive-header > .rl-top-actions > .theme-switch-btn {
+        order: 1;
+        position: static !important;
+        inset: auto !important;
+        transform: none !important;
+        margin: 0 !important;
+        flex: none;
+    }
+
+    .rl-responsive-header > .rl-top-actions > .rl-top-row2 {
+        order: 2;
+        flex: 1 0 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+        width: 100%;
+        margin: 0;
+        justify-content: flex-start;
+    }
+
+    .rl-responsive-header .rl-lang-wrap {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .rl-responsive-header .rl-lang {
+        display: block;
+        width: 100%;
+        min-width: 0;
+        max-width: 170px;
+    }
+
+    .rl-responsive-header .rl-pill {
+        flex: none;
+        max-width: none;
+        overflow: visible;
+        white-space: nowrap;
+        text-overflow: clip;
+    }
+
+    .rl-responsive-header .brand-logo,
+    .rl-responsive-header .rl-brand img,
+    .rl-responsive-header .logo img {
+        display: block;
+        flex: none;
+        width: 28px;
+        height: 28px;
+        max-width: 28px;
+        opacity: 1;
+        visibility: visible;
+        background: none;
+        border: 0;
+        padding: 0;
+        border-radius: 0;
+    }
+
+    .landing-container {
+        padding-top: 0;
+    }
+
+    .landing-container > .rl-responsive-header {
+        flex: none;
+    }
+
+    .landing-container .landing-card {
+        margin-top: 8px;
+    }
+
+    .rl-settings-card {
+        max-height: 85dvh;
+    }
+}
+
+@media (max-width: 359.98px) {
+    .rl-responsive-header .rl-online-text {
+        display: none;
+    }
+}
+
+@media (min-width: 900px) {
+    .rl-responsive-header .brand-logo,
+    .rl-responsive-header .rl-brand img,
+    .rl-responsive-header .logo img {
+        display: block;
+        flex: none;
+        width: 28px;
+        height: 28px;
+        background: none;
+        border: 0;
+        padding: 0;
+        border-radius: 0;
+    }
+}
+
+@media (max-width: 899.98px) {
     .rl-top {
         height: 92px;
         min-height: 92px;
@@ -2643,6 +2772,11 @@ html[dir="rtl"] .rl-send .rl-ico {
     width: 100%;
 }
 
+.rl-settings-card .filter-controls-row > .select-wrapper {
+    display: block;
+    flex: 1 1 100%;
+}
+
 .rl-settings-card .filter-select {
     min-height: 44px;
     font-family: var(--rl-font);
@@ -2790,5 +2924,32 @@ html[dir="rtl"] .rl-send .rl-ico {
     .rl-app:has(.rl-video-mode) > #adContainer {
         min-height: 16px !important;
         max-height: 16px;
+    }
+}
+
+@media (max-width: 899.98px) {
+    .rl-responsive-header > .rl-top-actions {
+        display: flex !important;
+        position: static !important;
+        inset: auto !important;
+        transform: none !important;
+    }
+
+    .rl-responsive-header > .rl-top-actions > .btn-icon,
+    .rl-responsive-header > .rl-top-actions > .theme-switch-btn {
+        position: static !important;
+        inset: auto !important;
+        top: auto !important;
+        right: auto !important;
+        left: auto !important;
+        transform: none !important;
+    }
+
+    .rl-responsive-header > .rl-top-actions > .rl-top-row2 {
+        display: flex !important;
+        position: static !important;
+        flex: 1 0 100%;
+        width: 100%;
+        margin: 0;
     }
 }

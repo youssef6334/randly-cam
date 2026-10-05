@@ -186,33 +186,45 @@ function updateControlLabels() {
     });
     const settingsPanel = document.getElementById('settingsPanel');
     if (settingsPanel) {
-        const settingsText = {
-            ar: ['الإعدادات', 'المطابقة الذكية وترجمة الشات', 'إغلاق الإعدادات'],
-            en: ['Settings', 'Smart Match and chat translation', 'Close settings']
-        }[document.documentElement.lang] || ['Settings', 'Smart Match and chat translation', 'Close settings'];
+        const settingsText = getSettingsText();
         settingsPanel.querySelector('[data-settings-title]').textContent = settingsText[0];
         settingsPanel.querySelector('[data-settings-hint]').textContent = settingsText[1];
         settingsPanel.querySelector('.rl-settings-close').setAttribute('aria-label', settingsText[2]);
     }
 }
 
-function setupReferenceLayout() {
-    const app = document.querySelector('.main-container');
-    const header = app?.querySelector(':scope > .app-header');
-    const content = app?.querySelector(':scope > .content-wrapper');
-    const video = document.getElementById('videoSection');
-    const chat = document.getElementById('chatSection');
-    if (!app || !header || !content || !video || !chat) return;
+function getSettingsText() {
+    const labels = {
+        ar: ['الإعدادات', 'المطابقة الذكية وترجمة الشات', 'إغلاق الإعدادات'],
+        en: ['Settings', 'Smart Match and chat translation', 'Close settings'],
+        es: ['Ajustes', 'Coincidencia inteligente y traducción del chat', 'Cerrar ajustes'],
+        fr: ['Paramètres', 'Correspondance intelligente et traduction du chat', 'Fermer les paramètres'],
+        de: ['Einstellungen', 'Smart Match und Chat-Übersetzung', 'Einstellungen schließen'],
+        it: ['Impostazioni', 'Smart Match e traduzione della chat', 'Chiudi impostazioni'],
+        pt: ['Configurações', 'Smart Match e tradução do chat', 'Fechar configurações'],
+        tr: ['Ayarlar', 'Smart Match ve sohbet çevirisi', 'Ayarları kapat'],
+        ru: ['Настройки', 'Smart Match и перевод чата', 'Закрыть настройки'],
+        hi: ['सेटिंग्स', 'स्मार्ट मैच और चैट अनुवाद', 'सेटिंग्स बंद करें'],
+        id: ['Pengaturan', 'Smart Match dan terjemahan chat', 'Tutup pengaturan'],
+        zh: ['设置', '智能匹配和聊天翻译', '关闭设置']
+    };
+    return labels[document.documentElement.lang] || labels.en;
+}
 
-    app.classList.add('rl-app');
-    header.classList.add('rl-top');
+function setupResponsiveHeader(header) {
+    if (!header || header.dataset.rlHeaderReady === 'true') return;
     const brand = header.querySelector('.header-left');
     const actions = header.querySelector('.header-right');
-    brand?.classList.add('rl-brand');
-    actions?.classList.add('rl-top-actions');
+    if (!brand || !actions) return;
 
-    if (actions && !actions.querySelector('.rl-top-row2')) {
-        const row2 = document.createElement('div');
+    header.dataset.rlHeaderReady = 'true';
+    header.classList.add('rl-responsive-header');
+    brand.classList.add('rl-brand');
+    actions.classList.add('rl-top-actions');
+
+    let row2 = actions.querySelector(':scope > .rl-top-row2');
+    if (!row2) {
+        row2 = document.createElement('div');
         row2.className = 'rl-top-row2';
         const language = actions.querySelector('.site-lang-select')?.closest('label, .select-wrapper') || actions.querySelector('.site-lang-select');
         const online = actions.querySelector('.online-badge-modern');
@@ -228,6 +240,19 @@ function setupReferenceLayout() {
         actions.appendChild(row2);
     }
     actions.querySelector('.site-lang-select')?.classList.add('rl-lang');
+}
+
+function setupReferenceLayout() {
+    const app = document.querySelector('.main-container');
+    const header = app?.querySelector(':scope > .app-header');
+    const content = app?.querySelector(':scope > .content-wrapper');
+    const video = document.getElementById('videoSection');
+    const chat = document.getElementById('chatSection');
+    if (!app || !header || !content || !video || !chat) return;
+
+    app.classList.add('rl-app');
+    header.classList.add('rl-top');
+    setupResponsiveHeader(header);
 
     const media = chat.querySelector('.rl-media');
     const dock = chat.querySelector('.rl-dock');
@@ -281,14 +306,12 @@ function setupReferenceLayout() {
             document.body.appendChild(panel);
         }
         const card = panel.querySelector('.rl-settings-card');
-        const settingsText = {
-            ar: ['الإعدادات', 'المطابقة الذكية وترجمة الشات', 'إغلاق الإعدادات'],
-            en: ['Settings', 'Smart Match and chat translation', 'Close settings']
-        }[document.documentElement.lang] || ['Settings', 'Smart Match and chat translation', 'Close settings'];
+        const settingsText = getSettingsText();
         card.querySelector('[data-settings-title]').textContent = settingsText[0];
         card.querySelector('[data-settings-hint]').textContent = settingsText[1];
         card.querySelector('.rl-settings-close').setAttribute('aria-label', settingsText[2]);
         if (filterRow.parentElement !== card) card.appendChild(filterRow);
+        restoreSettingsValues();
     }
     const settingsButton = document.getElementById('btn-settings') || document.getElementById('filtersBtn');
     if (settingsButton) {
@@ -377,6 +400,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     populateLanguageSelects();
     populateCountrySelects();
+    document.querySelectorAll('.app-header').forEach(setupResponsiveHeader);
+    restoreSettingsValues();
+});
+
+function restoreSettingsValues() {
+    const country = document.getElementById('countrySelect');
+    const translation = document.getElementById('translationLang');
+    if (country) {
+        const savedCountry = localStorage.getItem('randly_match_country');
+        if (savedCountry && Array.from(country.options).some(option => option.value === savedCountry)) {
+            country.value = savedCountry;
+        }
+    }
+    if (translation) {
+        const savedTranslation = localStorage.getItem('randly_translation_lang');
+        if (savedTranslation && Array.from(translation.options).some(option => option.value === savedTranslation)) {
+            translation.value = savedTranslation;
+        }
+    }
+}
+
+document.addEventListener('change', (event) => {
+    const target = event.target;
+    if (target?.id === 'countrySelect') {
+        localStorage.setItem('randly_match_country', target.value);
+    } else if (target?.id === 'translationLang') {
+        localStorage.setItem('randly_translation_lang', target.value);
+    }
 });
 
 function interestLabel(v) {
