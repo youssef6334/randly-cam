@@ -53,17 +53,17 @@
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {"@type":"Question","name":"Is Randly really a good Omegle alternative?","acceptedAnswer":{"@type":"Answer","text":"Yes â€” Randly offers the same random video/text chat idea with strangers, completely free and with no sign-up, plus a built-in report feature with temporary bans for violators."}},
+    {"@type":"Question","name":"Is Randly really a good Omegle alternative?","acceptedAnswer":{"@type":"Answer","text":"Yes — Randly offers the same random video/text chat idea with strangers, completely free and with no sign-up, plus a built-in report feature with temporary bans for violators."}},
     {"@type":"Question","name":"Why did Omegle shut down?","acceptedAnswer":{"@type":"Answer","text":"Omegle's founder announced its permanent closure in November 2023 after mounting legal and public pressure over platform misuse, pushing millions to look for safer alternatives."}},
     {"@type":"Question","name":"Can I choose which country I chat with?","acceptedAnswer":{"@type":"Answer","text":"Yes, you can pick a specific country through a dedicated filter, or use the global Smart Match mode to get matched with anyone around the world."}}
   ]
 }
 </script>
 <style>
-/* Ø¥ØµÙ„Ø§Ø­ Ù…Ø´ÙƒÙ„Ø© Ø¹Ø¯Ù… Ø§Ù„Ù‚Ø¯Ø±Ø© Ø¹Ù„Ù‰ Ø¹Ù…Ù„ Ø³ÙƒØ±ÙˆÙ„ (style.css Ø§Ù„Ø£Ø³Ø§Ø³ÙŠ Ø¨ÙŠÙ…Ù†Ø¹ Ø§Ù„Ø³ÙƒØ±ÙˆÙ„ Ø¹Ø´Ø§Ù† ØªØ·Ø¨ÙŠÙ‚ Ø§Ù„Ø´Ø§Øª) */
+/* إصلاح مشكلة عدم القدرة على عمل سكرول (style.css الأساسي بيمنع السكرول عشان تطبيق الشات) */
 html, body { overflow: auto !important; height: auto !important; min-height: 100%; }
 
-/* ØªÙ†Ø³ÙŠÙ‚Ø§Øª Ø®Ø§ØµØ© Ø¨Ù…Ø­ØªÙˆÙ‰ Ø§Ù„Ù…Ù‚Ø§Ù„ Ø¨Ø³ (Ø§Ù„Ù‡ÙŠØ¯Ø± Ø¨Ù‚Ù‰ Ø¨ÙŠØ³ØªØ®Ø¯Ù… ÙƒÙ„Ø§Ø³Ø§Øª Ø§Ù„Ù…ÙˆÙ‚Ø¹ Ø§Ù„Ø£Ø³Ø§Ø³ÙŠØ©) */
+/* تنسيقات خاصة بمحتوى المقال بس (الهيدر بقى بيستخدم كلاسات الموقع الأساسية) */
 .blog-article{max-width:760px;margin:0 auto;padding:30px 20px 10px;line-height:1.8;color:var(--text-main,#eee)}
 .blog-article h1{font-size:1.8rem;margin-bottom:6px}
 .blog-article .updated{opacity:.6;font-size:.85rem;margin-bottom:20px}
@@ -78,7 +78,7 @@ html, body { overflow: auto !important; height: auto !important; min-height: 100
 </head>
 <body>
 
-<!-- Ù‡ÙŠØ¯Ø± Ù…ÙˆØ­Ù‘Ø¯ Ø¨Ù†ÙØ³ ØªØµÙ…ÙŠÙ… Ø¨Ø§Ù‚ÙŠ Ø§Ù„Ù…ÙˆÙ‚Ø¹ -->
+<!-- هيدر موحّد بنفس تصميم باقي الموقع -->
 <header class="app-header" style="justify-content: space-between;">
     <div class="header-left">
         <a href="en.html" class="logo" style="text-decoration: none;">Randly</a>
@@ -90,24 +90,24 @@ html, body { overflow: auto !important; height: auto !important; min-height: 100
             <a href="blog-en.html" style="color: var(--accent-purple); text-decoration: none; font-size: .9rem; font-weight: bold;">Blog</a>
         </nav>
         <select class="site-lang-select" onchange="window.location.href=this.value">
-            <option value="post-omegle-alternative-ar.html">Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©</option>
+            <option value="post-omegle-alternative-ar.html">العربية</option>
             <option value="post-omegle-alternative-en.html" selected>English</option>
-            <option value="post-omegle-alternative-es.html">EspaÃ±ol</option>
-            <option value="post-omegle-alternative-fr.html">FranÃ§ais</option>
+            <option value="post-omegle-alternative-es.html">Español</option>
+            <option value="post-omegle-alternative-fr.html">Français</option>
             <option value="post-omegle-alternative-de.html">Deutsch</option>
             <option value="post-omegle-alternative-it.html">Italiano</option>
-            <option value="post-omegle-alternative-pt.html">PortuguÃªs</option>
-            <option value="post-omegle-alternative-tr.html">TÃ¼rkÃ§e</option>
-            <option value="post-omegle-alternative-ru.html">Ð ÑƒÑÑÐºÐ¸Ð¹</option>
-            <option value="post-omegle-alternative-hi.html">à¤¹à¤¿à¤¨à¥à¤¦à¥€</option>
+            <option value="post-omegle-alternative-pt.html">Português</option>
+            <option value="post-omegle-alternative-tr.html">Türkçe</option>
+            <option value="post-omegle-alternative-ru.html">Русский</option>
+            <option value="post-omegle-alternative-hi.html">हिन्दी</option>
             <option value="post-omegle-alternative-id.html">Bahasa Indonesia</option>
-            <option value="post-omegle-alternative-zh.html">ä¸­æ–‡</option>
+            <option value="post-omegle-alternative-zh.html">中文</option>
         </select>
     </div>
 </header>
 
 <div class="blog-article">
-<a class="blog-back" href="blog-en.html">â† Back to blog</a>
+<a class="blog-back" href="blog-en.html">← Back to blog</a>
 <h1>Best Omegle Alternative in 2026: The Complete Guide</h1>
 <p class="updated">Last updated: October 2026</p>
 
@@ -127,27 +127,27 @@ html, body { overflow: auto !important; height: auto !important; min-height: 100
 
 <h2>Why is Randly one of the best Omegle alternatives in 2026?</h2>
 <ul>
-<li><strong>Full video & text chat, completely free</strong> â€” Start a video or text chat with a random stranger instantly â€” no fees, no subscriptions.</li>
-<li><strong>Smart Match based on interests</strong> â€” Add your interests instead of pure random matching, and Randly connects you with people who share your passions.</li>
-<li><strong>Choose your chat partner's country</strong> â€” Pick a specific country to chat with, or keep Smart Match global to match with anyone, anywhere.</li>
-<li><strong>Instant message translation</strong> â€” Turn on real-time translation for text chat and pick your preferred language â€” breaking the language barrier completely.</li>
-<li><strong>Full privacy, no account needed</strong> â€” No sign-up, no stored chats, an instant report feature and temporary bans for violators help keep the community respectful.</li>
+<li><strong>Full video & text chat, completely free</strong> — Start a video or text chat with a random stranger instantly — no fees, no subscriptions.</li>
+<li><strong>Smart Match based on interests</strong> — Add your interests instead of pure random matching, and Randly connects you with people who share your passions.</li>
+<li><strong>Choose your chat partner's country</strong> — Pick a specific country to chat with, or keep Smart Match global to match with anyone, anywhere.</li>
+<li><strong>Instant message translation</strong> — Turn on real-time translation for text chat and pick your preferred language — breaking the language barrier completely.</li>
+<li><strong>Full privacy, no account needed</strong> — No sign-up, no stored chats, an instant report feature and temporary bans for violators help keep the community respectful.</li>
 </ul>
 
 <h2>Quick comparison: Omegle (formerly) vs Randly</h2>
 <table>
 <tr><th>Feature</th><th>Omegle (formerly)</th><th>Randly</th></tr>
-<tr><td>Video & text chat</td><td>âœ”</td><td>âœ”</td></tr>
-<tr><td>No sign-up</td><td>âœ”</td><td>âœ”</td></tr>
-<tr><td>Reporting &amp; temporary bans</td><td>Limited</td><td>âœ”</td></tr>
-<tr><td>Country selection</td><td>âœ˜</td><td>âœ”</td></tr>
-<tr><td>Instant translation</td><td>âœ˜</td><td>âœ”</td></tr>
-<tr><td>Interest matching</td><td>âœ˜</td><td>âœ”</td></tr>
+<tr><td>Video & text chat</td><td>✔</td><td>✔</td></tr>
+<tr><td>No sign-up</td><td>✔</td><td>✔</td></tr>
+<tr><td>Reporting &amp; temporary bans</td><td>Limited</td><td>✔</td></tr>
+<tr><td>Country selection</td><td>✘</td><td>✔</td></tr>
+<tr><td>Instant translation</td><td>✘</td><td>✔</td></tr>
+<tr><td>Interest matching</td><td>✘</td><td>✔</td></tr>
 <tr><td>Current status</td><td>Permanently closed</td><td>Active</td></tr>
 </table>
 
 <h2>Randly vs other popular random chat sites (Chatroulette, OmeTV, CooMeet, Chathub, Emerald Chat, Shagle)</h2>
-<p>After Omegle shut down, many platforms tried to fill the gap â€” Chatroulette, OmeTV, CooMeet, Chathub, Emerald Chat, Shagle, OpenTalk and Umingle among them. They all offer the basic random-chat idea, but the real difference shows in the details: country filters are often locked behind a paid VIP plan, instant translation is rare and usually a paid add-on, and some platforms (like CooMeet) depend on payment for basic interaction. On Randly, country selection and instant translation are free for every user, with no subscription required.</p>
+<p>After Omegle shut down, many platforms tried to fill the gap — Chatroulette, OmeTV, CooMeet, Chathub, Emerald Chat, Shagle, OpenTalk and Umingle among them. They all offer the basic random-chat idea, but the real difference shows in the details: country filters are often locked behind a paid VIP plan, instant translation is rare and usually a paid add-on, and some platforms (like CooMeet) depend on payment for basic interaction. On Randly, country selection and instant translation are free for every user, with no subscription required.</p>
 
 <h2>Tips for staying safe on any random chat site</h2>
 <ul>
@@ -158,7 +158,7 @@ html, body { overflow: auto !important; height: auto !important; min-height: 100
 </ul>
 
 <h2>Frequently Asked Questions</h2>
-<p><strong>Is Randly really a good Omegle alternative?</strong><br>Yes â€” Randly offers the same random video/text chat idea with strangers, completely free and with no sign-up, plus a built-in report feature with temporary bans for violators.</p>
+<p><strong>Is Randly really a good Omegle alternative?</strong><br>Yes — Randly offers the same random video/text chat idea with strangers, completely free and with no sign-up, plus a built-in report feature with temporary bans for violators.</p>
 <p><strong>Why did Omegle shut down?</strong><br>Omegle's founder announced its permanent closure in November 2023 after mounting legal and public pressure over platform misuse, pushing millions to look for safer alternatives.</p>
 <p><strong>Can I choose which country I chat with?</strong><br>Yes, you can pick a specific country through a dedicated filter, or use the global Smart Match mode to get matched with anyone around the world.</p>
 

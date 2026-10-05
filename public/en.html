@@ -158,20 +158,20 @@
 <div class="logo">Randly</div>
 </div>
 <div class="header-right" style="display: flex; align-items: center; gap: 10px;">
-<select id="landingLangSelect" aria-label="Ø§Ø®ØªÙŠØ§Ø± Ù„ØºØ© Ø§Ù„Ù…ÙˆÙ‚Ø¹" class="site-lang-select" onchange="changeGlobalLanguage(this.value)" style="padding: 8px 12px; border-radius: 8px; background: var(--bg-card, #222); color: var(--text-main, #fff); border: 1px solid var(--border-color);">
-<option value="ar">Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©</option>
+<select id="landingLangSelect" aria-label="اختيار لغة الموقع" class="site-lang-select" onchange="changeGlobalLanguage(this.value)" style="padding: 8px 12px; border-radius: 8px; background: var(--bg-card, #222); color: var(--text-main, #fff); border: 1px solid var(--border-color);">
+<option value="ar">العربية</option>
 <option value="en" selected>English</option>
-<option value="es">EspaÃ±ol</option>
-<option value="fr">FranÃ§ais</option>
+<option value="es">Español</option>
+<option value="fr">Français</option>
 <option value="de">Deutsch</option>
 <option value="it">Italiano</option>
-<option value="pt">PortuguÃªs</option>
+<option value="pt">Português</option>
 </select>
 <span class="online-badge-modern">
 <span class="online-dot"></span>
 <span data-i18n="onlineNow">Online Now</span>: <span id="landingOnlineCount">0</span>+
 </span>
-<button class="theme-switch-btn theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode"><span class="switch-knob">ðŸŒ™</span></button>
+<button class="theme-switch-btn theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode"><span class="switch-knob">🌙</span></button>
 </div>
 </header>
 <div class="landing-card">
@@ -284,21 +284,21 @@
 </div>
 <div class="header-right" style="display: flex; align-items: center; gap: 10px;">
 <label for="siteLang" class="sr-only">Choose language</label>
-<select id="siteLang" aria-label="Ø§Ø®ØªÙŠØ§Ø± Ù„ØºØ© Ø§Ù„Ù…ÙˆÙ‚Ø¹" class="site-lang-select" onchange="changeGlobalLanguage(this.value)">
-<option value="ar">Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©</option>
+<select id="siteLang" aria-label="اختيار لغة الموقع" class="site-lang-select" onchange="changeGlobalLanguage(this.value)">
+<option value="ar">العربية</option>
 <option value="en" selected>English</option>
-<option value="es">EspaÃ±ol</option>
-<option value="fr">FranÃ§ais</option>
+<option value="es">Español</option>
+<option value="fr">Français</option>
 <option value="de">Deutsch</option>
 <option value="it">Italiano</option>
-<option value="pt">PortuguÃªs</option>
+<option value="pt">Português</option>
 </select>
 <span class="online-badge-modern">
 <span class="online-dot"></span>
 <span data-i18n="onlineNow">Online Now</span>: <span id="headerOnlineCount">0</span>+
 </span>
-<button class="btn-icon" onclick="requestGame()" aria-label="Play XO game">ðŸŽ®</button>
-<button class="theme-switch-btn theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode"><span class="switch-knob">ðŸŒ™</span></button>
+<button class="btn-icon" onclick="requestGame()" aria-label="Play XO game">🎮</button>
+<button class="theme-switch-btn theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode"><span class="switch-knob">🌙</span></button>
 </div>
 </header>
 <div class="top-ad-bar" id="adContainer" style="min-height: 60px;">
@@ -315,7 +315,7 @@ window.addEventListener('load', function() {
 <div id="container-f66aa4bb4789b5ab486c7c42e435623d"></div>
 </div>
 <button class="toggle-ad-btn" onclick="toggleAd()" aria-label="Collapse/expand ad">
-<span id="arrowIcon">â–²</span>
+<span id="arrowIcon">▲</span>
 </button>
 </div>
 <div class="content-wrapper">
@@ -345,7 +345,7 @@ window.addEventListener('load', function() {
 <span id="textFlagIcon"></span> <span id="textCountryName"></span>
 </div>
 <div id="skeletonLoader" style="display: none; text-align: center; padding: 20px; color: #888; font-weight: bold;">
-â³ <span data-i18n="searchingText">Searching for a random person...</span>
+⏳ <span data-i18n="searchingText">Searching for a random person...</span>
 </div>
 <div class="chat-box" id="chatBox">
 <div class="msg msg-sys" data-i18n="welcomeMsg">Welcome! Click Start to begin chatting.</div>
@@ -356,43 +356,43 @@ Stranger is typing...
 <div class="filter-controls-row">
 <div class="select-wrapper">
 <label for="countrySelect" class="sr-only">Choose country</label>
-<select id="countrySelect" aria-label="Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ø¯ÙˆÙ„Ø©" class="filter-select">
-<option value="global" data-i18n="matchGlobal">ðŸŒ Global (Smart Match)</option>
-<option value="PS">ðŸ‡µðŸ‡¸ Palestine</option>
-<option value="EG">ðŸ‡ªðŸ‡¬ Egypt</option>
-<option value="SA">ðŸ‡¸ðŸ‡¦ Saudi Arabia</option>
-<option value="AE">ðŸ‡¦ðŸ‡ª UAE</option>
-<option value="MA">ðŸ‡²ðŸ‡¦ Morocco</option>
-<option value="DZ">ðŸ‡©ðŸ‡¿ Algeria</option>
-<option value="KW">ðŸ‡°ðŸ‡¼ Kuwait</option>
-<option value="QA">ðŸ‡¶ðŸ‡¦ Qatar</option>
-<option value="BH">ðŸ‡§ðŸ‡­ Bahrain</option>
-<option value="OM">ðŸ‡´ðŸ‡² Oman</option>
-<option value="JO">ðŸ‡¯ðŸ‡´ Jordan</option>
-<option value="LB">ðŸ‡±ðŸ‡§ Lebanon</option>
-<option value="IQ">ðŸ‡®ðŸ‡¶ Iraq</option>
-<option value="SY">ðŸ‡¸ðŸ‡¾ Syria</option>
-<option value="US">ðŸ‡ºðŸ‡¸ United States</option>
-<option value="GB">ðŸ‡¬ðŸ‡§ United Kingdom</option>
-<option value="FR">ðŸ‡«ðŸ‡· France</option>
-<option value="DE">ðŸ‡©ðŸ‡ª Germany</option>
-<option value="IT">ðŸ‡®ðŸ‡¹ Italy</option>
-<option value="ES">ðŸ‡ªðŸ‡¸ Spain</option>
-<option value="TR">ðŸ‡¹ðŸ‡· Turkey</option>
-<option value="IN">ðŸ‡®ðŸ‡³ India</option>
+<select id="countrySelect" aria-label="اختيار الدولة" class="filter-select">
+<option value="global" data-i18n="matchGlobal">🌐 Global (Smart Match)</option>
+<option value="PS">🇵🇸 Palestine</option>
+<option value="EG">🇪🇬 Egypt</option>
+<option value="SA">🇸🇦 Saudi Arabia</option>
+<option value="AE">🇦🇪 UAE</option>
+<option value="MA">🇲🇦 Morocco</option>
+<option value="DZ">🇩🇿 Algeria</option>
+<option value="KW">🇰🇼 Kuwait</option>
+<option value="QA">🇶🇦 Qatar</option>
+<option value="BH">🇧🇭 Bahrain</option>
+<option value="OM">🇴🇲 Oman</option>
+<option value="JO">🇯🇴 Jordan</option>
+<option value="LB">🇱🇧 Lebanon</option>
+<option value="IQ">🇮🇶 Iraq</option>
+<option value="SY">🇸🇾 Syria</option>
+<option value="US">🇺🇸 United States</option>
+<option value="GB">🇬🇧 United Kingdom</option>
+<option value="FR">🇫🇷 France</option>
+<option value="DE">🇩🇪 Germany</option>
+<option value="IT">🇮🇹 Italy</option>
+<option value="ES">🇪🇸 Spain</option>
+<option value="TR">🇹🇷 Turkey</option>
+<option value="IN">🇮🇳 India</option>
 </select>
 </div>
 <div class="select-wrapper">
 <label for="translationLang" class="sr-only">Translation language</label>
-<select id="translationLang" aria-label="Ù„ØºØ© Ø§Ù„ØªØ±Ø¬Ù…Ø©" class="filter-select">
+<select id="translationLang" aria-label="لغة الترجمة" class="filter-select">
 <option value="none" data-i18n="noTranslation">No translation</option>
-<option value="ar">Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©</option>
+<option value="ar">العربية</option>
 <option value="en">English</option>
-<option value="es">EspaÃ±ol</option>
-<option value="fr">FranÃ§ais</option>
+<option value="es">Español</option>
+<option value="fr">Français</option>
 <option value="de">Deutsch</option>
 <option value="it">Italiano</option>
-<option value="pt">PortuguÃªs</option>
+<option value="pt">Português</option>
 </select>
 </div>
 <div class="quick-actions">
@@ -437,8 +437,8 @@ Stranger is typing...
 <div id="gameBoardOverlay" class="game-overlay" style="display: none;">
 <div class="game-card">
 <div class="game-header">
-<h3>XO Game ðŸŽ®</h3>
-<button class="close-game" onclick="closeGame()" aria-label="Close game">âœ•</button>
+<h3>XO Game 🎮</h3>
+<button class="close-game" onclick="closeGame()" aria-label="Close game">✕</button>
 </div>
 <p id="gameStatusText" data-i18n="turnText">Your turn</p>
 <div class="xo-grid">
