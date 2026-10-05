@@ -13,6 +13,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="siteTitle">Randly - Video Chat Aleatorio Gratis con Extraños</title>
 <meta name="description" content="Chatea con extraños al azar de todo el mundo de forma segura y rápida en Randly. Chat de video y texto gratis, sin registro.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="author" content="Randly">
 <!-- Canonical & hreflang -->
 <link rel="canonical" href="https://randly.live/es.html">
 <link rel="alternate" hreflang="ar" href="https://randly.live/">
@@ -35,11 +37,30 @@
 <meta property="og:url" content="https://randly.live/es.html">
 <meta property="og:locale" content="es_ES">
 <meta property="og:image" content="https://randly.live/og-image.jpg">
+<meta property="og:site_name" content="Randly">
+<meta property="og:image:alt" content="Randly - Video Chat Aleatorio Gratis con Extraños">
+<meta name="twitter:title" content="Randly - Video Chat Aleatorio Gratis con Extraños">
+<meta name="twitter:description" content="Chatea con extraños al azar de todo el mundo de forma segura y rápida en Randly. Chat de video y texto gratis, sin registro.">
+<meta name="twitter:image" content="https://randly.live/og-image.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=20261005-green">
 <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
 
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Randly",
+  "url": "https://randly.live/",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Randly",
+    "url": "https://randly.live/"
+  }
+}
+</script>
 <script type="application/ld+json">
 {
 "@context": "https://schema.org",
@@ -298,6 +319,11 @@ window.addEventListener('load', function() {
 <div id="videoSection" class="video-section">
 <div class="video-box remote-box">
 <video id="remoteVideo" autoplay playsinline></video>
+                    <div id="cameraGateMessage" class="camera-gate-message" role="status" aria-live="polite">
+                        <span class="camera-gate-emoji">??</span>
+                        <span data-i18n="showFaceMessage">Muestra tu cara para encontrar una persona y empezar a chatear</span>
+                    </div>
+
 <span class="video-label" style="display: flex; align-items: center; gap: 8px;">
 <span data-i18n="remoteUser">Extraño</span>
 <span id="remoteUserFlag" class="country-flag-icon"></span>

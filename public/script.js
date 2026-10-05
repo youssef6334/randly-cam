@@ -37,6 +37,31 @@ const countrySelect = document.getElementById('countrySelect');
 const videoSection = document.getElementById('videoSection');
 const skeletonLoader = document.getElementById('skeletonLoader');
 const typingIndicator = document.getElementById('typingIndicator');
+const cameraGateMessage = document.getElementById('cameraGateMessage');
+
+function setCameraGate(visible) {
+    if (cameraGateMessage) cameraGateMessage.classList.toggle('is-hidden', !visible);
+}
+
+function waitForCameraPreview() {
+    if (!localVideo || localVideo.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+        setCameraGate(false);
+        return Promise.resolve(true);
+    }
+
+    return new Promise(resolve => {
+        const timeout = setTimeout(() => {
+            localVideo.removeEventListener('loadeddata', onReady);
+            resolve(false);
+        }, 3000);
+        function onReady() {
+            clearTimeout(timeout);
+            setCameraGate(false);
+            resolve(true);
+        }
+        localVideo.addEventListener('loadeddata', onReady, { once: true });
+    });
+}
 
 // --- نظام اهتمامات الـ Tags (مثل Omegle) ---
 let interestsArray = [];
@@ -159,6 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (videoSection) videoSection.style.setProperty('display', 'none', 'important');
     const localBox = document.querySelector('.video-box.local-box');
     if (localBox) localBox.style.setProperty('display', 'none', 'important');
+    setCameraGate(true);
 
     // تفاعل حقل الـ Tags
     const interestTagInput = document.getElementById('interestTagInput');
@@ -368,6 +394,7 @@ function toggleCam() {
             camBtn.style.color = isCamOff ? 'var(--accent-red)' : 'var(--text-main)';
             camBtn.innerHTML = isCamOff ? '<i class="fas fa-video-slash"></i>' : '<i class="fas fa-video"></i>';
         }
+        setCameraGate(isCamOff);
     }
 }
 
@@ -387,9 +414,19 @@ async function startSession(mode, specificRoomId = null) {
         videoOnlyBtns.forEach(btn => btn.classList.remove('d-none'));
         try {
             if (!localStream) localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            if (localVideo) localVideo.srcObject = localStream;
+            if (localVideo) {
+                localVideo.srcObject = localStream;
+            }
+            if (!await waitForCameraPreview()) {
+                appendSystemMessage(tr('cameraRequired'));
+                if (statusDiv) statusDiv.textContent = tr('cameraRequired');
+                return;
+            }
         } catch (err) {
             appendSystemMessage(tr('cameraError'));
+            setCameraGate(true);
+            if (statusDiv) statusDiv.textContent = tr('cameraRequired');
+            return;
         }
     } else {
         if (videoSection) videoSection.style.setProperty('display', 'none', 'important');
@@ -402,6 +439,7 @@ async function startSession(mode, specificRoomId = null) {
         if (localVideo) {
             localVideo.srcObject = null;
         }
+        setCameraGate(true);
     }
 
     if (specificRoomId) {
@@ -859,7 +897,9 @@ const translations = {
         msgPlaceholder: "اكتب رسالتك هنا...",
         skipStartBtn: "تخطي / Start",
         turnText: "دورك الآن",
-        noCountryMatchMsg: "مفيش حد من دولتك متصل دلوقتي، هنوصلك بأي شخص تاني حول العالم."
+        noCountryMatchMsg: "مفيش حد من دولتك متصل دلوقتي، هنوصلك بأي شخص تاني حول العالم.",
+        showFaceMessage: "اظهر وجهك أمام الكاميرا للعثور على شخص والتواصل معه",
+        cameraRequired: "لازم تسمح بالكاميرا وتظهر وجهك قبل بدء المحادثة."
     },
     en: {
         siteTitle: "Randly - Random Video & Text Chat with Strangers",
@@ -911,7 +951,9 @@ const translations = {
         msgPlaceholder: "Type your message here...",
         skipStartBtn: "Skip / Start",
         turnText: "Your turn",
-        noCountryMatchMsg: "No one from your selected country is online right now — connecting you with someone from anywhere."
+        noCountryMatchMsg: "No one from your selected country is online right now — connecting you with someone from anywhere.",
+        showFaceMessage: "Show your face to find a match and start chatting",
+        cameraRequired: "Allow camera access and show your face before starting."
     },
     es: {
         siteTitle: "Randly - Chat aleatorio de video y texto",

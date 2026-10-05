@@ -14,14 +14,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="siteTitle">Randly - شات فيديو ورسائل عشوائي مع الغرباء</title>
     <meta name="description" content="تحدث مع أناس عشوائيين حول العالم بكل أمان وسرعة عبر Randly. دردشة فيديو ونصية مجانية بدون تسجيل.">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="author" content="Randly">
     <link rel="canonical" href="https://randly.live/">
 <meta property="og:title" content="Randly - شات فيديو ورسائل عشوائي مع الغرباء">
 <meta property="og:description" content="تحدث مع أناس عشوائيين حول العالم بكل أمان وسرعة عبر Randly.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://randly.live/">
+<meta property="og:site_name" content="Randly">
 <meta property="og:locale" content="ar_AR">
 <meta property="og:image" content="https://randly.live/og-image.jpg">
+<meta property="og:image:alt" content="Randly - شات فيديو ونصي عشوائي">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Randly - شات فيديو ورسائل عشوائي مع الغرباء">
+<meta name="twitter:description" content="دردشة فيديو ونصية مجانية مع أشخاص عشوائيين حول العالم بدون تسجيل.">
+<meta name="twitter:image" content="https://randly.live/og-image.jpg">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3125079750975955"
      crossorigin="anonymous"></script>
 <link rel="alternate" hreflang="ar" href="https://randly.live/">
@@ -38,7 +45,7 @@
 <link rel="alternate" hreflang="zh" href="https://randly.live/zh.html">
 <link rel="alternate" hreflang="x-default" href="https://randly.live/">
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=20261005-green">
 
     <!-- مكتبة الأيقونات الحديثة (FontAwesome) -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -50,7 +57,21 @@
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "FAQPage",
+      "@type": "WebSite",
+      "name": "Randly",
+      "url": "https://randly.live/",
+      "inLanguage": ["ar", "en", "es", "fr", "de", "it", "pt", "tr", "ru", "hi", "id", "zh"],
+      "publisher": {
+        "@type": "Organization",
+        "name": "Randly",
+        "url": "https://randly.live/"
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
   "mainEntity": [
     {
       "@type": "Question",
@@ -339,6 +360,10 @@ window.addEventListener('load', function() {
             <div id="videoSection" class="video-section">
                 <div class="video-box remote-box">
                     <video id="remoteVideo" autoplay playsinline></video>
+                    <div id="cameraGateMessage" class="camera-gate-message" role="status" aria-live="polite">
+                        <span class="camera-gate-emoji">😊</span>
+                        <span data-i18n="showFaceMessage">اظهر وجهك أمام الكاميرا للعثور على شخص والتواصل معه</span>
+                    </div>
                     <!-- عرض اسم وعلم دولة الطرف الآخر -->
                     <span class="video-label" style="display: flex; align-items: center; gap: 8px;">
                         <span data-i18n="remoteUser">الطرف الآخر</span>

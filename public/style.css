@@ -1,10 +1,10 @@
 /* Core Variables & Themes */
 :root {
-    --bg-primary: #121214;
-    --bg-secondary: #1e1e24;
-    --bg-card: #282830;
+    --bg-primary: #000000;
+    --bg-secondary: #0b0b0d;
+    --bg-card: #161619;
     --text-main: #ffffff;
-    --text-muted: #a0a0ab;
+    --text-muted: #a7a7ad;
     --accent: #00b894;
     --accent-strong: #00805f;
     --accent-strong-hover: #006b50;
@@ -12,16 +12,16 @@
     --accent-purple-hover: var(--accent-strong-hover);
     --accent-green: #00b894;
     --accent-red: #ff7675;
-    --border-color: #2d2d38;
-    --input-bg: #151518;
+    --border-color: #2a2a2f;
+    --input-bg: #09090b;
 }
 
 [data-theme="light"] {
-    --bg-primary: #f5f6fa;
+    --bg-primary: #ffffff;
     --bg-secondary: #ffffff;
-    --bg-card: #f0f2f5;
-    --text-main: #2d3436;
-    --text-muted: #636e72;
+    --bg-card: #f4f4f6;
+    --text-main: #111114;
+    --text-muted: #626269;
     --accent: #00805f;
     --accent-strong: #00805f;
     --accent-strong-hover: #006b50;
@@ -29,8 +29,8 @@
     --accent-purple-hover: var(--accent-strong-hover);
     --accent-green: #00805f;
     --accent-red: #d63031;
-    --border-color: #e1e8ef;
-    --input-bg: #f0f2f5;
+    --border-color: #dedee3;
+    --input-bg: #f7f7f8;
 }
 
 * {
@@ -45,10 +45,16 @@ html, body {
     height: 100%;
     background-color: var(--bg-primary);
     color: var(--text-main);
+    transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 body.app-shell {
     overflow: hidden;
+    background-image: radial-gradient(circle at 50% -20%, rgba(255, 255, 255, 0.06), transparent 42%);
+}
+
+html[data-theme="light"] body.app-shell {
+    background-image: radial-gradient(circle at 50% -20%, rgba(0, 0, 0, 0.035), transparent 42%);
 }
 
 /* Main Container Layout */
@@ -210,6 +216,36 @@ body.app-shell {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.camera-gate-message {
+    position: absolute;
+    z-index: 4;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(78%, 520px);
+    padding: 20px 24px;
+    border: 1px solid color-mix(in srgb, var(--accent-purple) 70%, transparent);
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--bg-primary) 88%, transparent);
+    color: var(--text-main);
+    text-align: center;
+    font-size: clamp(1rem, 2vw, 1.35rem);
+    font-weight: 700;
+    line-height: 1.5;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(8px);
+}
+
+.camera-gate-emoji {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 1.7em;
+}
+
+.camera-gate-message.is-hidden {
+    display: none;
 }
 
 .video-box.local-box {
@@ -779,14 +815,30 @@ body.app-shell {
 
     .video-section {
         width: 100%;
-        height: 45vh; 
+        height: 40vh;
         flex-shrink: 0;
     }
 
     .chat-section {
         width: 100%;
         flex: 1;
+        min-height: 0;
         height: auto;
+    }
+
+    .chat-box {
+        min-height: 150px;
+        padding: 16px 12px;
+    }
+
+    .bottom-action-bar {
+        padding: 12px;
+        min-height: 68px;
+    }
+
+    .input-container,
+    .input-container input {
+        height: 52px;
     }
 
     .video-box.local-box {
@@ -796,6 +848,12 @@ body.app-shell {
         right: 10px !important;
         left: auto !important;
         top: auto !important;
+    }
+
+    .camera-gate-message {
+        width: min(88%, 420px);
+        padding: 16px;
+        font-size: 1rem;
     }
 }
 
@@ -850,36 +908,50 @@ body.app-shell {
 /* ===== Modern theme toggle switch ===== */
 .theme-switch-btn {
     position: relative;
-    width: 46px;
-    height: 24px;
+    width: 52px;
+    height: 30px;
     border-radius: 999px;
-    background: #2a2a35;
+    background: #242428;
     border: 1px solid var(--border-color);
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     padding: 2px;
     flex-shrink: 0;
-    transition: background 0.3s ease;
+    direction: ltr;
+    transition: background 0.25s ease, border-color 0.25s ease;
 }
 .theme-switch-btn .switch-knob {
-    width: 18px;
-    height: 18px;
+    position: relative;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     background: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 10px;
-    transition: transform 0.3s ease;
+    font-size: 0;
+    transition: transform 0.25s ease, background 0.25s ease;
     transform: translateX(0);
     box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
+.theme-switch-btn .switch-knob::before {
+    content: "☾";
+    color: #111114;
+    font-size: 16px;
+    line-height: 1;
+}
 html[data-theme="light"] .theme-switch-btn {
-    background: #d8dce3;
+    background: #e7e7eb;
+    border-color: #cfcfd5;
 }
 html[data-theme="light"] .theme-switch-btn .switch-knob {
     transform: translateX(22px);
+    background: #111114;
+}
+html[data-theme="light"] .theme-switch-btn .switch-knob::before {
+    content: "☀";
+    color: #ffffff;
 }
 
 /* ===== Modern online badge with glowing dot ===== */

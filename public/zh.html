@@ -13,6 +13,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="siteTitle">Randly - 与陌生人免费随机视频聊天</title>
 <meta name="description" content="在 Randly 上安全快速地与来自世界各地的陌生人聊天。免费视频和文字聊天，无需注册。">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="author" content="Randly">
 <link rel="canonical" href="https://randly.live/zh.html">
 <link rel="alternate" hreflang="ar" href="https://randly.live/">
 <link rel="alternate" hreflang="en" href="https://randly.live/en.html">
@@ -33,11 +35,30 @@
 <meta property="og:url" content="https://randly.live/zh.html">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://randly.live/og-image.jpg">
+<meta property="og:site_name" content="Randly">
+<meta property="og:image:alt" content="Randly - 与陌生人免费随机视频聊天">
+<meta name="twitter:title" content="Randly - 与陌生人免费随机视频聊天">
+<meta name="twitter:description" content="在 Randly 上安全快速地与来自世界各地的陌生人聊天。免费视频和文字聊天，无需注册。">
+<meta name="twitter:image" content="https://randly.live/og-image.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=20261005-green">
 <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
 
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Randly",
+  "url": "https://randly.live/",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Randly",
+    "url": "https://randly.live/"
+  }
+}
+</script>
 <script type="application/ld+json">
 {
 "@context": "https://schema.org",
@@ -306,6 +327,11 @@ window.addEventListener('load', function() {
 <div id="videoSection" class="video-section">
 <div class="video-box remote-box">
 <video id="remoteVideo" autoplay playsinline></video>
+                    <div id="cameraGateMessage" class="camera-gate-message" role="status" aria-live="polite">
+                        <span class="camera-gate-emoji">??</span>
+                        <span data-i18n="showFaceMessage">?????????????????</span>
+                    </div>
+
 <span class="video-label" style="display: flex; align-items: center; gap: 8px;">
 <span data-i18n="remoteUser">陌生人</span>
 <span id="remoteUserFlag" class="country-flag-icon"></span>

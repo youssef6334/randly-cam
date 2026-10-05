@@ -138,6 +138,27 @@ const BLOG_LABELS = {
   tr: 'Blog', ru: 'Блог', hi: 'ब्लॉग', id: 'Blog', zh: '博客'
 };
 
+const CAMERA_MESSAGES = {
+  ar: ['اظهر وجهك أمام الكاميرا للعثور على شخص والتواصل معه', 'لازم تسمح بالكاميرا وتظهر وجهك قبل بدء المحادثة.'],
+  en: ['Show your face to find a match and start chatting', 'Allow camera access and show your face before starting.'],
+  es: ['Muestra tu cara para encontrar una persona y empezar a chatear', 'Permite el acceso a la cámara y muestra tu cara antes de empezar.'],
+  fr: ['Montrez votre visage pour trouver quelqu’un et commencer à discuter', 'Autorisez l’accès à la caméra et montrez votre visage avant de commencer.'],
+  de: ['Zeige dein Gesicht, um eine Verbindung zu finden und zu chatten', 'Erlaube den Kamerazugriff und zeige dein Gesicht, bevor du beginnst.'],
+  it: ['Mostra il tuo volto per trovare una persona e iniziare a chattare', 'Consenti l’accesso alla fotocamera e mostra il tuo volto prima di iniziare.'],
+  pt: ['Mostre seu rosto para encontrar alguém e começar a conversar', 'Permita o acesso à câmera e mostre seu rosto antes de começar.'],
+  tr: ['Eşleşmek ve sohbete başlamak için yüzünü göster', 'Başlamadan önce kamera erişimine izin ver ve yüzünü göster.'],
+  ru: ['Покажите лицо, чтобы найти собеседника и начать общение', 'Разрешите доступ к камере и покажите лицо перед началом.'],
+  hi: ['मैच खोजने और चैट शुरू करने के लिए अपना चेहरा दिखाएँ', 'शुरू करने से पहले कैमरा एक्सेस की अनुमति दें और अपना चेहरा दिखाएँ।'],
+  id: ['Tampilkan wajah Anda untuk menemukan pasangan dan mulai mengobrol', 'Izinkan akses kamera dan tampilkan wajah Anda sebelum memulai.'],
+  zh: ['展示你的脸部即可寻找匹配并开始聊天', '开始前请允许摄像头访问并展示你的脸部。']
+};
+Object.entries(CAMERA_MESSAGES).forEach(([lang, [showFaceMessage, cameraRequired]]) => {
+  if (typeof translations !== 'undefined' && translations[lang]) {
+    translations[lang].showFaceMessage = showFaceMessage;
+    translations[lang].cameraRequired = cameraRequired;
+  }
+});
+
 // ترجمة أي رسالة ديناميكية حسب لغة الصفحة الحالية
 function tr(key) {
   const l = document.documentElement.lang || 'ar';
