@@ -56,6 +56,5 @@ jobs:
         with:
           app-name: 'randly'
           slot-name: 'Production'
-          package: deploy
+          package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0160C497C71D4DFCAB3160E16F683F4E }}
-          app-settings: -SCM_DO_BUILD_DURING_DEPLOYMENT false
