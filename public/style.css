@@ -1232,7 +1232,7 @@ html[data-theme="light"] .theme-switch-btn .switch-knob::before {
 }
 
 .bottom-action-bar .btn-start-main {
-    flex: 0 0 220px;
+    flex: 0 0 min(220px, 42vw);
     min-height: 114px;
     padding: 0 24px !important;
     border-radius: 24px;
@@ -1279,11 +1279,14 @@ html[data-theme="light"] .bottom-action-bar .chat-input-wrapper {
 
 @media (max-width: 600px) {
     .filter-controls-row {
-        padding: 14px 12px;
+        padding: 16px;
     }
 
     .quick-actions {
-        gap: 10px;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+        padding: 0;
     }
 
     .quick-actions .modern-btn,
@@ -1291,45 +1294,112 @@ html[data-theme="light"] .bottom-action-bar .chat-input-wrapper {
     .quick-actions #copyLinkBtn,
     .quick-actions button[onclick="reportUser()"],
     .quick-actions .btn-close-chat {
-        height: 76px;
-        border-radius: 20px;
-        padding: 0 10px;
+        height: 44px;
+        border-radius: 10px;
+        padding: 0;
+        min-width: 0;
+        font-size: 1rem;
     }
 
     .quick-actions .modern-btn i {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
     }
 
     .quick-actions .control-label {
-        font-size: 1.05rem;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .quick-actions .video-only-btn {
+        grid-column: span 4;
+        height: 44px;
+        border-radius: 10px;
+    }
+
+    .quick-actions #filtersBtn,
+    .quick-actions #copyLinkBtn,
+    .quick-actions button[onclick="reportUser()"],
+    .quick-actions .btn-close-chat {
+        grid-column: span 1;
+        height: 44px;
+        border-radius: 10px;
+    }
+
+    .quick-actions #filtersBtn {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .quick-actions #copyLinkBtn {
+        grid-column: 2;
+        grid-row: 2;
+    }
+
+    .quick-actions button[onclick="reportUser()"] {
+        grid-column: 3;
+        grid-row: 2;
+    }
+
+    .quick-actions .btn-close-chat {
+        grid-column: 4;
+        grid-row: 2;
+    }
+
+    .quick-actions #micBtn {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .quick-actions #camBtn {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .quick-actions #muteBtn {
+        grid-column: 3 / 5;
+        grid-row: 1;
+    }
+
+    .quick-actions .btn-close-chat,
+    .quick-actions .btn-close-chat .control-label {
+        background: #35191d;
+        color: #ff7070;
+    }
+
+    .quick-actions .btn-close-chat {
+        border-color: transparent;
     }
 
     .bottom-action-bar {
         gap: 10px !important;
-        padding: 0 12px 14px !important;
+        padding: 16px 16px 12px !important;
     }
 
     .bottom-action-bar .btn-start-main {
-        flex: 0 0 34%;
-        min-height: 84px;
-        padding: 0 8px !important;
-        border-radius: 20px;
-        font-size: 1.15rem;
+        flex: 0 0 220px;
+        min-height: 52px;
+        padding: 0 20px !important;
+        border-radius: 14px;
+        font-size: 1.1rem;
+        font-weight: 600;
     }
 
     .bottom-action-bar .chat-input-wrapper {
-        min-height: 84px;
-        border-radius: 20px;
+        min-height: 52px;
+        border-radius: 14px;
+        padding: 0 8px !important;
     }
 
     .bottom-action-bar .chat-input-wrapper input {
         font-size: 1rem;
+        padding: 0 16px !important;
+        font-weight: 600;
     }
 
     .bottom-action-bar .btn-send-inside {
-        width: 58px;
-        height: 58px;
-        border-radius: 16px;
-        font-size: 1.45rem;
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        font-size: 1.15rem;
     }
 }
