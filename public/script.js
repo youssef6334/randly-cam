@@ -226,29 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        function updateControlLabels() {
-            const lang = document.documentElement.lang || 'en';
-            const labels = {
-                ar: { share: 'مشاركة', report: 'إبلاغ', end: 'إنهاء' },
-                en: { share: 'Share', report: 'Report', end: 'End' },
-                es: { share: 'Compartir', report: 'Reportar', end: 'Finalizar' },
-                fr: { share: 'Partager', report: 'Signaler', end: 'Quitter' },
-                de: { share: 'Teilen', report: 'Melden', end: 'Beenden' },
-                it: { share: 'Condividi', report: 'Segnala', end: 'Fine' },
-                pt: { share: 'Partilhar', report: 'Denunciar', end: 'Terminar' },
-                tr: { share: 'Paylaş', report: 'Bildir', end: 'Bitir' },
-                ru: { share: 'Поделиться', report: 'Пожаловаться', end: 'Завершить' },
-                hi: { share: 'शेयर', report: 'रिपोर्ट', end: 'समाप्त' },
-                id: { share: 'Bagikan', report: 'Laporkan', end: 'Akhiri' },
-                zh: { share: '分享', report: '举报', end: '结束' }
-            };
-            const current = labels[lang] || labels.en;
-            document.querySelectorAll('[data-control-label]').forEach(el => {
-                el.textContent = current[el.dataset.controlLabel] || '';
-            });
-        }
     }
-
     populateLanguageSelects();
     populateCountrySelects();
 });
