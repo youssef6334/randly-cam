@@ -180,6 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (muteBtn) {
         muteBtn.innerHTML = isSoundMuted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
     }
+    updateControlLabels();
 
     if (videoSection) videoSection.style.setProperty('display', 'none', 'important');
     const localBox = document.querySelector('.video-box.local-box');
@@ -203,6 +204,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderInterestTags();
             }
         });
+
+        function updateControlLabels() {
+            const lang = document.documentElement.lang || 'en';
+            const labels = {
+                ar: { share: 'مشاركة', report: 'إبلاغ', end: 'إنهاء' },
+                en: { share: 'Share', report: 'Report', end: 'End' },
+                es: { share: 'Compartir', report: 'Reportar', end: 'Finalizar' },
+                fr: { share: 'Partager', report: 'Signaler', end: 'Quitter' },
+                de: { share: 'Teilen', report: 'Melden', end: 'Beenden' },
+                it: { share: 'Condividi', report: 'Segnala', end: 'Fine' },
+                pt: { share: 'Partilhar', report: 'Denunciar', end: 'Terminar' },
+                tr: { share: 'Paylaş', report: 'Bildir', end: 'Bitir' },
+                ru: { share: 'Поделиться', report: 'Пожаловаться', end: 'Завершить' },
+                hi: { share: 'शेयर', report: 'रिपोर्ट', end: 'समाप्त' },
+                id: { share: 'Bagikan', report: 'Laporkan', end: 'Akhiri' },
+                zh: { share: '分享', report: '举报', end: '结束' }
+            };
+            const current = labels[lang] || labels.en;
+            document.querySelectorAll('[data-control-label]').forEach(el => {
+                el.textContent = current[el.dataset.controlLabel] || '';
+            });
+        }
     }
 
     populateLanguageSelects();
@@ -269,6 +292,7 @@ socket.on('no-country-match', () => {
 function toggleSoundMute() {
     isSoundMuted = !isSoundMuted;
     localStorage.setItem('randly_sound_muted', isSoundMuted);
+    if (remoteVideo) remoteVideo.muted = isSoundMuted;
     const muteBtn = document.getElementById('muteBtn');
     if (muteBtn) {
         muteBtn.innerHTML = isSoundMuted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
@@ -536,57 +560,6 @@ function leaveSession() {
     socket.emit('leave-room');
 }
 
-let isMaskOn = false;
-let maskAnimationId;
-function toggleMask() {
-    if (!localStream) return;
-    isMaskOn = !isMaskOn;
-    const maskBtn = document.getElementById('maskBtn');
-    const maskCanvas = document.getElementById('maskCanvas');
-    if(!maskCanvas) return;
-    const ctx = maskCanvas.getContext('2d');
-
-    if (maskBtn) {
-        maskBtn.style.opacity = isMaskOn ? '1' : '0.5';
-        maskBtn.style.color = isMaskOn ? 'var(--accent-purple)' : 'var(--text-main)';
-    }
-
-    if (isMaskOn) {
-        maskCanvas.style.display = 'block';
-        maskCanvas.width = localVideo.videoWidth || 640;
-        maskCanvas.height = localVideo.videoHeight || 480;
-
-        function drawEffect() {
-            if (!isMaskOn) return;
-            ctx.drawImage(localVideo, 0, 0, maskCanvas.width, maskCanvas.height);
-            ctx.fillStyle = "rgba(138, 43, 226, 0.2)";
-            ctx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
-            ctx.font = "bold 24px Arial";
-            ctx.fillStyle = "#fff";
-            ctx.shadowColor = "rgba(0,0,0,0.5)";
-            ctx.shadowBlur = 4;
-            ctx.fillText("✨ Randly Filter", 20, 40);
-            maskAnimationId = requestAnimationFrame(drawEffect);
-        }
-        drawEffect();
-
-        if (peerConnection) {
-            const canvasStream = maskCanvas.captureStream(30);
-            const canvasTrack = canvasStream.getVideoTracks()[0];
-            const sender = peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
-            if (sender) sender.replaceTrack(canvasTrack);
-        }
-    } else {
-        maskCanvas.style.display = 'none';
-        cancelAnimationFrame(maskAnimationId);
-        if (peerConnection && localStream) {
-            const videoTrack = localStream.getVideoTracks()[0];
-            const sender = peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
-            if (sender) sender.replaceTrack(videoTrack);
-        }
-    }
-}
-
 function reportUser() {
     socket.emit('submit-report', { reason: 'Inappropriate behavior' });
     alert(tr('reported'));
@@ -638,16 +611,6 @@ socket.on('xo-receive-move', (data) => {
 function createPeerConnection() {
     peerConnection = new RTCPeerConnection(rtcConfig);
     let streamToSend = localStream;
-
-    if (isMaskOn) {
-        const maskCanvas = document.getElementById('maskCanvas');
-        if(maskCanvas) {
-            streamToSend = maskCanvas.captureStream(30);
-            if (localStream && localStream.getAudioTracks().length > 0) {
-                streamToSend.addTrack(localStream.getAudioTracks()[0]);
-            }
-        }
-    }
 
     if (streamToSend && currentMode === 'video') {
         streamToSend.getTracks().forEach(track => {

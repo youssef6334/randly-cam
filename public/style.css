@@ -395,12 +395,13 @@ html[data-theme="light"] body.app-shell {
     align-items: center;
     flex-wrap: wrap;
     justify-content: center;
+    width: 100%;
 }
 
 .modern-btn {
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 50%;
+    border-radius: 18px;
     width: 42px;
     height: 42px;
     padding: 0;
@@ -411,6 +412,8 @@ html[data-theme="light"] body.app-shell {
     transition: all 0.3s ease;
     color: var(--text-main);
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    gap: 9px;
+    min-width: 48px;
 }
 
 .modern-btn i {
@@ -424,10 +427,46 @@ html[data-theme="light"] body.app-shell {
     transform: scale(1.1);
 }
 
+.control-label {
+    display: inline;
+    font-size: 0.92rem;
+    font-weight: 700;
+}
+
+.quick-actions .video-only-btn {
+    border-radius: 18px;
+}
+
+.quick-actions .video-only-btn:nth-child(1),
+.quick-actions .video-only-btn:nth-child(2),
+.quick-actions .video-only-btn:nth-child(3) {
+    width: 58px;
+    height: 52px;
+}
+
+#copyLinkBtn,
+.quick-actions .btn-close-chat,
+.quick-actions button[onclick="reportUser()"] {
+    min-width: 120px;
+    height: 52px;
+    padding: 0 18px;
+}
+
 .btn-close-chat.modern-btn {
     background-color: rgba(255, 118, 117, 0.15);
     color: var(--accent-red);
     border-color: transparent;
+}
+
+.btn-close-chat.modern-btn .control-label {
+    color: var(--accent-red);
+}
+
+html[data-theme="light"] .app-footer,
+html[data-theme="light"] .blog-card,
+html[data-theme="light"] .faq-item,
+html[data-theme="light"] .app-header {
+    color: var(--text-main);
 }
 
 .btn-close-chat.modern-btn:hover {
@@ -458,7 +497,7 @@ html[data-theme="light"] body.app-shell {
     border: none;
     padding: 0 20px;
     height: 45px;
-    border-radius: 25px;
+    border-radius: 18px;
     font-weight: 700;
     font-size: 0.95rem;
     cursor: pointer;

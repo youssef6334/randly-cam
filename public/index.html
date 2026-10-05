@@ -159,6 +159,7 @@
 </script>
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#121214">
+<script>(function(){try{var t=localStorage.getItem("randly_theme");if(t==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
 </head>
 <body class="app-shell">
 
@@ -373,8 +374,6 @@ window.addEventListener('load', function() {
                 </div>
                 <div class="video-box local-box" style="position: relative;">
                     <video id="localVideo" autoplay playsinline muted></video>
-                    <!-- Canvas مخفي لرسم تأثيرات الوجه قبل الإرسال -->
-                    <canvas id="maskCanvas" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; z-index: 2; pointer-events: none;"></canvas>
                     <span class="video-label" style="z-index: 3;" data-i18n="youUser">أنت</span>
                 </div>
             </div>
@@ -461,20 +460,17 @@ window.addEventListener('load', function() {
                         <button class="btn-action-icon modern-btn video-only-btn" id="camBtn" onclick="toggleCam()" title="الكاميرا" aria-label="تشغيل/إيقاف الكاميرا">
                             <i class="fas fa-video"></i>
                         </button>
-                        <button class="btn-action-icon modern-btn video-only-btn" id="maskBtn" onclick="toggleMask()" title="تأثيرات الوجه" aria-label="تشغيل/إيقاف فلتر الوجه">
-                            <i class="fas fa-masks-theater"></i>
-                        </button>
                         <button class="btn-action-icon modern-btn video-only-btn" id="muteBtn" onclick="toggleSoundMute()" title="الصوت" aria-label="كتم/تشغيل صوت الإشعارات">
                             <i class="fas fa-volume-up"></i>
                         </button>
                         <button class="btn-action-icon modern-btn" id="copyLinkBtn" onclick="saveRoomLink()" title="نسخ رابط الغرفة" aria-label="نسخ رابط الغرفة">
-                            <i class="fas fa-link"></i>
+                            <i class="fas fa-link"></i><span class="control-label" data-control-label="share">Share</span><span class="control-label" data-control-label="share">مشاركة</span>
                         </button>
                         <button class="btn-action-icon modern-btn" onclick="reportUser()" title="إبلاغ" aria-label="الإبلاغ عن المستخدم">
-                            <i class="fas fa-flag"></i>
+                            <i class="fas fa-flag"></i><span class="control-label" data-control-label="report">Report</span><span class="control-label" data-control-label="report">إبلاغ</span>
                         </button>
                         <button class="btn-action-icon modern-btn btn-close-chat" onclick="leaveSession()" title="خروج" aria-label="إنهاء المحادثة">
-                            <i class="fas fa-phone-slash"></i>
+                            <i class="fas fa-phone-slash"></i><span class="control-label" data-control-label="end">End</span><span class="control-label" data-control-label="end">إنهاء</span>
                         </button>
                     </div>
                 </div>
@@ -484,7 +480,7 @@ window.addEventListener('load', function() {
 
                     <!-- زر التخطي (ثابت على اليسار) -->
                     <button class="btn-start-main" id="nextBtn" onclick="handleMainButton()" style="direction: ltr !important; white-space: nowrap; flex-shrink: 0; padding: 10px 14px;">
-                        <i class="fas fa-forward"></i> <span data-i18n="skipStartBtn">تخطي / Start</span>
+                        <i class="fas fa-forward"></i> <span data-i18n="skipStartBtn">Next / Start</span>
                     </button>
 
                     <!-- حاوية الإدخال وزر الإرسال (زر الطيارة ظاهر دائماً يمين وبحجم مناسب) -->

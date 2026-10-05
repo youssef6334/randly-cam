@@ -146,6 +146,7 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3125079750975955" crossorigin="anonymous"></script>
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#121214">
+<script>(function(){try{var t=localStorage.getItem("randly_theme");if(t==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
 </head>
 <body>
 <div id="landingPage" class="landing-container">
@@ -336,7 +337,6 @@ window.addEventListener('load', function() {
 </div>
 <div class="video-box local-box" style="position: relative;">
 <video id="localVideo" autoplay playsinline muted></video>
-<canvas id="maskCanvas" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; z-index: 2; pointer-events: none;"></canvas>
 <span class="video-label" style="z-index: 3;" data-i18n="youUser">आप</span>
 </div>
 </div>
@@ -390,16 +390,15 @@ window.addEventListener('load', function() {
 <div class="quick-actions">
 <button class="btn-action-icon modern-btn video-only-btn" id="micBtn" onclick="toggleMic()" title="माइक्रोफोन" aria-label="माइक्रोफोन चालू/बंद करें"><i class="fas fa-microphone"></i></button>
 <button class="btn-action-icon modern-btn video-only-btn" id="camBtn" onclick="toggleCam()" title="कैमरा" aria-label="कैमरा चालू/बंद करें"><i class="fas fa-video"></i></button>
-<button class="btn-action-icon modern-btn video-only-btn" id="maskBtn" onclick="toggleMask()" title="चेहरे के प्रभाव" aria-label="फेस फ़िल्टर चालू/बंद करें"><i class="fas fa-masks-theater"></i></button>
 <button class="btn-action-icon modern-btn video-only-btn" id="muteBtn" onclick="toggleSoundMute()" title="ध्वनि" aria-label="नोटिफिकेशन ध्वनि म्यूट/चालू करें"><i class="fas fa-volume-up"></i></button>
-<button class="btn-action-icon modern-btn" id="copyLinkBtn" onclick="saveRoomLink()" title="रूम लिंक कॉपी करें" aria-label="रूम लिंक कॉपी करें"><i class="fas fa-link"></i></button>
-<button class="btn-action-icon modern-btn" onclick="reportUser()" title="रिपोर्ट करें" aria-label="इस उपयोगकर्ता की रिपोर्ट करें"><i class="fas fa-flag"></i></button>
-<button class="btn-action-icon modern-btn btn-close-chat" onclick="leaveSession()" title="छोड़ें" aria-label="चैट समाप्त करें"><i class="fas fa-phone-slash"></i></button>
+<button class="btn-action-icon modern-btn" id="copyLinkBtn" onclick="saveRoomLink()" title="रूम लिंक कॉपी करें" aria-label="रूम लिंक कॉपी करें"><i class="fas fa-link"></i><span class="control-label" data-control-label="share">Share</span></button>
+<button class="btn-action-icon modern-btn" onclick="reportUser()" title="रिपोर्ट करें" aria-label="इस उपयोगकर्ता की रिपोर्ट करें"><i class="fas fa-flag"></i><span class="control-label" data-control-label="report">Report</span></button>
+<button class="btn-action-icon modern-btn btn-close-chat" onclick="leaveSession()" title="छोड़ें" aria-label="चैट समाप्त करें"><i class="fas fa-phone-slash"></i><span class="control-label" data-control-label="end">End</span></button>
 </div>
 </div>
 <div class="bottom-action-bar" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; width: 100%;">
 <button class="btn-start-main" id="nextBtn" onclick="handleMainButton()" style="white-space: nowrap; flex-shrink: 0; padding: 10px 14px;">
-<i class="fas fa-forward"></i> <span data-i18n="skipStartBtn">स्किप / शुरू करें</span>
+<i class="fas fa-forward"></i> <span data-i18n="skipStartBtn">Next / Start</span>
 </button>
 <div class="input-container chat-input-wrapper" style="display: flex; flex-direction: row; flex: 1; align-items: center; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; min-width: 0;">
 <input type="text" id="msgInput" data-i18n-placeholder="msgPlaceholder" placeholder="अपना मैसेज यहाँ लिखें..." onkeydown="if(event.key === 'Enter') sendMsg()" style="flex: 1; direction: auto; text-align: start; padding: 12px; border: none; background: transparent; color: var(--text-main); outline: none; min-width: 0;">

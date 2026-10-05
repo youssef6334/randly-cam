@@ -197,10 +197,11 @@ function applyLanguage(lang, initial) {
   });
 
   // تلميحات الأزرار
-  const tips = { micBtn: 'tipMic', camBtn: 'tipCam', maskBtn: 'tipFx', muteBtn: 'tipSound', copyLinkBtn: 'tipLink' };
+  const tips = { micBtn: 'tipMic', camBtn: 'tipCam', muteBtn: 'tipSound', copyLinkBtn: 'tipLink' };
   Object.keys(tips).forEach(id => { const el = document.getElementById(id); if (el) el.title = t[tips[id]]; });
   const rep = document.querySelector('[onclick="reportUser()"]'); if (rep) rep.title = t.tipReport;
   const lv = document.querySelector('.btn-close-chat'); if (lv) lv.title = t.tipLeave;
+  if (typeof updateControlLabels === 'function') updateControlLabels();
 
   // رابط "المدونة/Blog" في الفوتر: يتحدث نصه ورابطه مع تغيير اللغة
   const blogLink = document.getElementById('footerBlogLink');
