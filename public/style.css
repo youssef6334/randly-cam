@@ -1134,3 +1134,202 @@ html[data-theme="light"] .theme-switch-btn .switch-knob::before {
 
 /* واجهة الشات مخفية لحد ما الجلسة تبدأ (الزواحف والـ screen readers مش بتشوفها) */
 .main-container[hidden] { display: none; }
+
+/* Chat/video controls: match the large two-row reference layout. */
+.filter-controls-row {
+    display: block;
+    padding: 20px;
+    background: #0b0b0e;
+    border-top: 1px solid #24252c;
+}
+
+.filter-controls-row > .select-wrapper {
+    display: none;
+}
+
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 20px;
+    width: 100%;
+    padding: 0;
+    align-items: stretch;
+    direction: ltr;
+}
+
+.quick-actions .modern-btn {
+    width: auto;
+    min-width: 0;
+    height: 98px;
+    border-radius: 24px;
+    background: #191a20;
+    border: 1px solid #303139;
+    color: #f1f1f3;
+    box-shadow: none;
+    font-size: 1.55rem;
+}
+
+.quick-actions .modern-btn i {
+    font-size: 2rem;
+}
+
+.quick-actions .video-only-btn {
+    grid-column: span 4;
+    width: auto;
+    height: 98px;
+    border-radius: 24px;
+}
+
+.quick-actions #copyLinkBtn,
+.quick-actions button[onclick="reportUser()"],
+.quick-actions .btn-close-chat {
+    grid-column: span 3;
+    width: auto;
+    min-width: 0;
+    height: 98px;
+    padding: 0 24px;
+    border-radius: 24px;
+    justify-content: center;
+}
+
+.quick-actions #filtersBtn {
+    grid-column: span 3;
+}
+
+.quick-actions:has(.video-only-btn:not(.d-none)) #copyLinkBtn,
+.quick-actions:has(.video-only-btn:not(.d-none)) button[onclick="reportUser()"],
+.quick-actions:has(.video-only-btn:not(.d-none)) .btn-close-chat {
+    grid-column: span 3;
+}
+
+.quick-actions .control-label {
+    font-size: clamp(1.25rem, 2.5vw, 2rem);
+    font-weight: 600;
+}
+
+.quick-actions .btn-close-chat,
+.quick-actions .btn-close-chat .control-label {
+    background: #35191d;
+    color: #ff6d78;
+}
+
+.quick-actions .btn-close-chat {
+    border-color: #35191d;
+}
+
+.quick-actions #muteBtn:has(.fa-volume-mute) {
+    background: #35191d;
+    color: #ff6d78;
+}
+
+.bottom-action-bar {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 20px !important;
+    padding: 0 20px 20px !important;
+    background: #0b0b0e;
+    align-items: stretch !important;
+}
+
+.bottom-action-bar .btn-start-main {
+    flex: 0 0 220px;
+    min-height: 114px;
+    padding: 0 24px !important;
+    border-radius: 24px;
+    background: #13bd91;
+    color: #061b16;
+    font-size: 1.75rem;
+    justify-content: center;
+}
+
+.bottom-action-bar .chat-input-wrapper {
+    height: auto !important;
+    min-height: 114px;
+    padding: 0 14px !important;
+    border-radius: 24px;
+    background: #191a20 !important;
+    border: 1px solid #303139 !important;
+}
+
+.bottom-action-bar .chat-input-wrapper input {
+    font-size: 1.45rem;
+    color: #f1f1f3 !important;
+}
+
+.bottom-action-bar .btn-send-inside {
+    width: 84px;
+    height: 84px;
+    border-radius: 20px;
+    background: #103c35 !important;
+    color: #13d0a0 !important;
+    font-size: 2rem;
+}
+
+html[data-theme="light"] .filter-controls-row,
+html[data-theme="light"] .bottom-action-bar {
+    background: #f4f4f6;
+}
+
+html[data-theme="light"] .quick-actions .modern-btn,
+html[data-theme="light"] .bottom-action-bar .chat-input-wrapper {
+    background: #ffffff !important;
+    border-color: #d9d9df;
+    color: #202126;
+}
+
+@media (max-width: 600px) {
+    .filter-controls-row {
+        padding: 14px 12px;
+    }
+
+    .quick-actions {
+        gap: 10px;
+    }
+
+    .quick-actions .modern-btn,
+    .quick-actions .video-only-btn,
+    .quick-actions #copyLinkBtn,
+    .quick-actions button[onclick="reportUser()"],
+    .quick-actions .btn-close-chat {
+        height: 76px;
+        border-radius: 20px;
+        padding: 0 10px;
+    }
+
+    .quick-actions .modern-btn i {
+        font-size: 1.5rem;
+    }
+
+    .quick-actions .control-label {
+        font-size: 1.05rem;
+    }
+
+    .bottom-action-bar {
+        gap: 10px !important;
+        padding: 0 12px 14px !important;
+    }
+
+    .bottom-action-bar .btn-start-main {
+        flex: 0 0 34%;
+        min-height: 84px;
+        padding: 0 8px !important;
+        border-radius: 20px;
+        font-size: 1.15rem;
+    }
+
+    .bottom-action-bar .chat-input-wrapper {
+        min-height: 84px;
+        border-radius: 20px;
+    }
+
+    .bottom-action-bar .chat-input-wrapper input {
+        font-size: 1rem;
+    }
+
+    .bottom-action-bar .btn-send-inside {
+        width: 58px;
+        height: 58px;
+        border-radius: 16px;
+        font-size: 1.45rem;
+    }
+}
