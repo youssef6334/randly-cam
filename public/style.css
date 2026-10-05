@@ -43,6 +43,8 @@
 html, body {
     width: 100%;
     height: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
     background-color: var(--bg-primary);
     color: var(--text-main);
     transition: background-color 0.25s ease, color 0.25s ease;
@@ -63,7 +65,7 @@ html[data-theme="light"] body.app-shell {
     flex-direction: column;
     height: 100vh;
     height: 100dvh;
-    width: 100vw;
+    width: 100%;
 }
 
 /* Header */
@@ -76,12 +78,15 @@ html[data-theme="light"] body.app-shell {
     justify-content: space-between;
     padding: 0 16px;
     flex-shrink: 0;
+    width: 100%;
+    min-width: 0;
 }
 
 .header-left {
     display: flex;
     align-items: center;
     gap: 12px;
+    min-width: 0;
 }
 
 .logo {
@@ -99,6 +104,8 @@ html[data-theme="light"] body.app-shell {
     display: flex;
     align-items: center;
     gap: 10px;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .site-lang-select {
@@ -515,10 +522,11 @@ html[data-theme="light"] body.app-shell {
     z-index: 999;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     justify-content: flex-start;
     padding: 40px 20px;
     overflow-y: auto; 
+    overflow-x: hidden;
 }
 
 .landing-card {
@@ -888,9 +896,21 @@ html[data-theme="light"] body.app-shell {
     .app-header {
         padding: 0 10px;
         gap: 6px;
+        flex-wrap: wrap;
+        min-height: 55px;
+        height: auto;
+    }
+    .landing-container .app-header {
+        align-items: center;
+    }
+    .header-left {
+        flex: 0 0 auto;
     }
     .header-right {
         gap: 6px;
+        flex: 1 1 auto;
+        justify-content: flex-end;
+        overflow-x: visible;
     }
     .logo {
         font-size: 1.05rem;
@@ -902,6 +922,18 @@ html[data-theme="light"] body.app-shell {
     .btn-icon {
         font-size: 0.95rem;
         padding: 4px;
+    }
+    .online-badge-modern {
+        max-width: 170px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 5px 9px;
+        font-size: 0.72rem;
+    }
+    .footer-links {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
     }
 }
 
