@@ -2,13 +2,15 @@
 <html lang="ru" dir="ltr" id="htmlRoot">
 <head>
 <meta charset="UTF-8">
-<!-- perf-optimized -->
-<link rel="icon" type="image/x-icon" href="/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="/randly-logo.svg">
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+<meta name="theme-color" content="#12b886">
+<!-- perf-optimized -->
+
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="siteTitle">Randly - Бесплатный Случайный Видеочат с Незнакомцами</title>
@@ -41,7 +43,7 @@
 <meta name="twitter:description" content="Общайтесь со случайными незнакомцами со всего мира безопасно и быстро на Randly. Бесплатный видео и текстовый чат, без регистрации.">
 <meta name="twitter:image" content="https://randly.live/og-image.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="style.css?v=20261005-layout-fix-1">
+<link rel="stylesheet" href="style.css?v=20261005-reference-layout-10">
 <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
 
@@ -145,14 +147,27 @@
 </script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3125079750975955" crossorigin="anonymous"></script>
 <link rel="manifest" href="/manifest.webmanifest">
-<meta name="theme-color" content="#121214">
 <script>(function(){try{var t=localStorage.getItem("randly_theme");if(t==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-adjust" viewBox="0 0 24 24"><circle cx="14" cy="6" r="2"/><path d="M4 6h8"/><path d="M16 6h4"/><circle cx="8" cy="12" r="2"/><path d="M4 12h2"/><path d="M10 12h10"/><circle cx="17" cy="18" r="2"/><path d="M4 18h11"/><path d="M19 18h1"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M9 15l6 -6"/><path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"/><path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 14h14l-4.5 -4.5l4.5 -4.5h-14v16"/></symbol>
+  <symbol id="i-phone-off" viewBox="0 0 24 24"><path d="M3 21l18 -18"/><path d="M5.831 14.161a15.946 15.946 0 0 1 -2.831 -8.161a2 2 0 0 1 2 -2h4l2 5l-2.5 1.5c.108 .22 .223 .435 .345 .645m1.751 2.277c.843 .84 1.822 1.544 2.904 2.078l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a15.963 15.963 0 0 1 -10.344 -4.657"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M3 5v14l8 -7z"/><path d="M14 5v14l8 -7z"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M10 14l11 -11"/><path d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M8 21h8"/><path d="M12 17v4"/></symbol>
+  <symbol id="i-mic-off" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M9 5a3 3 0 0 1 6 0v5a3 3 0 0 1 -.13 .874m-2 2a3 3 0 0 1 -3.87 -2.874v-5"/><path d="M5 10a7 7 0 0 0 10.846 5.85m2 -2a6.967 6.967 0 0 0 1.152 -3.85"/><path d="M8 21h8"/><path d="M12 17v4"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z"/><rect x="3" y="6" width="12" height="12" rx="2"/></symbol>
+  <symbol id="i-video-off" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M15 11v-1l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -.675 .946"/><path d="M10 6h3a2 2 0 0 1 2 2v3m0 4v1a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2h1"/></symbol>
+  <symbol id="i-volume" viewBox="0 0 24 24"><path d="M15 8a5 5 0 0 1 0 8"/><path d="M17.7 5a9 9 0 0 1 0 14"/><path d="M6 15h-2a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h2l3.5 -4.5a.8 .8 0 0 1 1.5 .5v14a.8 .8 0 0 1 -1.5 .5l-3.5 -4.5"/></symbol>
+  <symbol id="i-volume-off" viewBox="0 0 24 24"><path d="M15 8a5 5 0 0 1 1.912 4.934m-1.377 2.602a5 5 0 0 1 -.535 .464"/><path d="M17.7 5a9 9 0 0 1 2.362 11.086m-1.676 2.299a9 9 0 0 1 -.686 .615"/><path d="M9.069 5.054l.431 -.554a.8 .8 0 0 1 1.5 .5v2m0 4v8a.8 .8 0 0 1 -1.5 .5l-3.5 -4.5h-2a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h2l1.294 -1.664"/><path d="M3 3l18 18"/></symbol>
+</svg>
 <div id="landingPage" class="landing-container">
 <header class="app-header">
 <div class="header-left">
-<div class="logo">Randly</div>
+<div class="logo"><img class="brand-logo" src="/randly-logo.svg" alt="" aria-hidden="true"><span>Randly</span></div>
 </div>
 <div class="header-right" style="display: flex; align-items: center; gap: 10px;">
 <select id="landingLangSelect" aria-label="اختيار لغة الموقع" class="site-lang-select" onchange="changeGlobalLanguage(this.value)" style="padding: 8px 12px; border-radius: 8px; background: var(--bg-card, #222); color: var(--text-main, #fff); border: 1px solid var(--border-color);">
@@ -277,7 +292,7 @@
 <div class="main-container" hidden>
 <header class="app-header">
 <div class="header-left">
-<div class="logo">Randly</div>
+<div class="logo"><img class="brand-logo" src="/randly-logo.svg" alt="" aria-hidden="true"><span>Randly</span></div>
 </span>
 </div>
 <div class="header-right" style="display: flex; align-items: center; gap: 10px;">
@@ -385,28 +400,29 @@ window.addEventListener('load', function() {
 <option value="ru">Русский</option>
 </select>
 </div>
-<div class="quick-actions">
-<button class="btn-action-icon modern-btn video-only-btn" id="micBtn" onclick="toggleMic()" title="Микрофон" aria-label="Включить/выключить микрофон"><i class="fas fa-microphone"></i></button>
-<button class="btn-action-icon modern-btn video-only-btn" id="camBtn" onclick="toggleCam()" title="Камера" aria-label="Включить/выключить камеру"><i class="fas fa-video"></i></button>
-<button class="btn-action-icon modern-btn video-only-btn" id="muteBtn" onclick="toggleSoundMute()" title="Звук" aria-label="Выключить/включить звук уведомлений"><i class="fas fa-volume-up"></i></button>
-<button class="btn-action-icon modern-btn" id="copyLinkBtn" onclick="saveRoomLink()" title="Скопировать ссылку" aria-label="Скопировать ссылку на комнату"><i class="fas fa-link"></i><span class="control-label" data-control-label="share">Share</span></button>
-<button class="btn-action-icon modern-btn" onclick="reportUser()" title="Пожаловаться" aria-label="Пожаловаться на пользователя"><i class="fas fa-flag"></i><span class="control-label" data-control-label="report">Report</span></button>
-<button class="btn-action-icon modern-btn btn-close-chat" onclick="leaveSession()" title="Выйти" aria-label="Завершить чат"><i class="fas fa-phone-slash"></i><span class="control-label" data-control-label="end">End</span></button>
-</div>
-</div>
-<div class="bottom-action-bar" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; width: 100%;">
-<button class="btn-start-main" id="nextBtn" onclick="handleMainButton()" style="white-space: nowrap; flex-shrink: 0; padding: 10px 14px;">
-<i class="fas fa-forward"></i> <span data-i18n="skipStartBtn">Next / Start</span>
-</button>
-<div class="input-container chat-input-wrapper" style="display: flex; flex-direction: row; flex: 1; align-items: center; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; min-width: 0;">
-<input type="text" id="msgInput" data-i18n-placeholder="msgPlaceholder" placeholder="Введите сообщение здесь..." onkeydown="if(event.key === 'Enter') sendMsg()" style="flex: 1; direction: auto; text-align: start; padding: 12px; border: none; background: transparent; color: var(--text-main); outline: none; min-width: 0;">
-<button class="btn-send-inside" id="sendBtn" onclick="sendMsg()" style="padding: 10px 14px; border: none; background: transparent; color: var(--accent-purple); cursor: pointer; flex-shrink: 0;" aria-label="Отправить сообщение"><i class="fas fa-paper-plane" style="font-size: 1.2rem;"></i></button>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div id="gameBoardOverlay" class="game-overlay" style="display: none;">
+                    <div class="rl-dock">
+                        <div class="rl-media">
+                            <button class="video-only-btn" id="micBtn" onclick="toggleMic()" aria-label="Mute microphone"><svg class="rl-ico" aria-hidden="true"><use href="#i-mic"/></svg></button>
+                            <button class="video-only-btn" id="camBtn" onclick="toggleCam()" aria-label="Turn off camera"><svg class="rl-ico" aria-hidden="true"><use href="#i-video"/></svg></button>
+                            <button class="video-only-btn" id="muteBtn" onclick="toggleSoundMute()" aria-label="Mute speaker"><svg class="rl-ico" aria-hidden="true"><use href="#i-volume"/></svg></button>
+                        </div>
+                        <div class="rl-controls quick-actions">
+                            <button class="rl-chip rl-chip--icon" id="filtersBtn" type="button" aria-label="Settings"><svg class="rl-ico" aria-hidden="true"><use href="#i-adjust"/></svg></button>
+                            <button class="rl-chip" id="copyLinkBtn" onclick="saveRoomLink()" aria-label="Share"><svg class="rl-ico" aria-hidden="true"><use href="#i-link"/></svg><span class="rl-label control-label" data-control-label="share"></span></button>
+                            <button class="rl-chip" onclick="reportUser()" aria-label="Report"><svg class="rl-ico" aria-hidden="true"><use href="#i-flag"/></svg><span class="rl-label control-label" data-control-label="report"></span></button>
+                            <button class="rl-chip rl-chip--end btn-close-chat" onclick="leaveSession()" aria-label="End"><svg class="rl-ico" aria-hidden="true"><use href="#i-phone-off"/></svg><span class="rl-label control-label" data-control-label="end"></span></button>
+                        </div>
+                        <div class="rl-composer bottom-action-bar">
+                            <button class="rl-next btn-start-main" id="nextBtn" onclick="handleMainButton()"><svg class="rl-ico" aria-hidden="true"><use href="#i-next"/></svg><span class="rl-label" data-i18n="skipStartBtn">Next / Start</span></button>
+                            <div class="rl-input chat-input-wrapper">
+                                <input type="text" id="msgInput" data-i18n-placeholder="msgPlaceholder" placeholder="Type your message here" onkeydown="if(event.key === 'Enter') sendMsg()" autocomplete="off">
+                                <button class="rl-send btn-send-inside" id="sendBtn" onclick="sendMsg()" aria-label="Send"><svg class="rl-ico" aria-hidden="true"><use href="#i-send"/></svg></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><div id="gameBoardOverlay" class="game-overlay" style="display: none;">
 <div class="game-card">
 <div class="game-header">
 <h3>Игра XO 🎮</h3>
@@ -427,7 +443,7 @@ window.addEventListener('load', function() {
 </div>
 </div>
 <script src="/socket.io/socket.io.js"></script>
-<script src="script.js?v=20261005-controls"></script>
+<script src="script.js?v=20261005-reference-layout-4"></script>
 <script src="i18n-extra.js?v=20261005-controls"></script>
 <script src="randly-extra.js"></script>
 <script>/* ads-deferred-by-script */

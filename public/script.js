@@ -172,11 +172,11 @@ function updateControlLabels() {
         es: { share: 'Compartir', report: 'Reportar', end: 'Finalizar' },
         fr: { share: 'Partager', report: 'Signaler', end: 'Quitter' },
         de: { share: 'Teilen', report: 'Melden', end: 'Beenden' },
-        it: { share: 'Condividi', report: 'Segnala', end: 'Fine' },
-        pt: { share: 'Partilhar', report: 'Denunciar', end: 'Terminar' },
+        it: { share: 'Condividi', report: 'Segnala', end: 'Termina' },
+        pt: { share: 'Compartilhar', report: 'Denunciar', end: 'Encerrar' },
         tr: { share: 'Paylaş', report: 'Bildir', end: 'Bitir' },
         ru: { share: 'Поделиться', report: 'Пожаловаться', end: 'Завершить' },
-        hi: { share: 'शेयर', report: 'रिपोर्ट', end: 'समाप्त' },
+        hi: { share: 'साझा करें', report: 'रिपोर्ट', end: 'समाप्त करें' },
         id: { share: 'Bagikan', report: 'Laporkan', end: 'Akhiri' },
         zh: { share: '分享', report: '举报', end: '结束' }
     };
@@ -198,9 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const muteBtn = document.getElementById('muteBtn');
-    if (muteBtn) {
-        muteBtn.innerHTML = isSoundMuted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
-    }
+    if (muteBtn) setControlIcon('muteBtn', isSoundMuted, '#i-volume', '#i-volume-off', 'Mute speaker', 'Unmute speaker');
     updateControlLabels();
 
     if (videoSection) videoSection.style.setProperty('display', 'none', 'important');
@@ -263,6 +261,15 @@ const matchSound = new Audio('/sounds/match.wav');
 const msgSound = new Audio('/sounds/msg.wav');
 let isSoundMuted = localStorage.getItem('randly_sound_muted') === 'true';
 
+function setControlIcon(id, off, onIcon, offIcon, onLabel, offLabel) {
+    const button = document.getElementById(id);
+    if (!button) return;
+    const icon = button.querySelector('use');
+    button.classList.toggle('is-off', off);
+    if (icon) icon.setAttribute('href', off ? offIcon : onIcon);
+    button.setAttribute('aria-label', off ? offLabel : onLabel);
+}
+
 socket.on('online-count', (count) => {
     const landingCount = document.getElementById('landingOnlineCount');
     const headerCount = document.getElementById('headerOnlineCount');
@@ -292,10 +299,7 @@ function toggleSoundMute() {
     isSoundMuted = !isSoundMuted;
     localStorage.setItem('randly_sound_muted', isSoundMuted);
     if (remoteVideo) remoteVideo.muted = isSoundMuted;
-    const muteBtn = document.getElementById('muteBtn');
-    if (muteBtn) {
-        muteBtn.innerHTML = isSoundMuted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
-    }
+    setControlIcon('muteBtn', isSoundMuted, '#i-volume', '#i-volume-off', 'Mute speaker', 'Unmute speaker');
 }
 
 function toggleTheme() {
@@ -398,9 +402,7 @@ function toggleMic() {
         audioTrack.enabled = !isMicMuted;
         const micBtn = document.getElementById('micBtn');
         if (micBtn) {
-            micBtn.style.opacity = isMicMuted ? '0.5' : '1';
-            micBtn.style.color = isMicMuted ? 'var(--accent-red)' : 'var(--text-main)';
-            micBtn.innerHTML = isMicMuted ? '<i class="fas fa-microphone-slash"></i>' : '<i class="fas fa-microphone"></i>';
+            setControlIcon('micBtn', isMicMuted, '#i-mic', '#i-mic-off', 'Mute microphone', 'Unmute microphone');
         }
     }
 }
@@ -413,9 +415,7 @@ function toggleCam() {
         videoTrack.enabled = !isCamOff;
         const camBtn = document.getElementById('camBtn');
         if (camBtn) {
-            camBtn.style.opacity = isCamOff ? '0.5' : '1';
-            camBtn.style.color = isCamOff ? 'var(--accent-red)' : 'var(--text-main)';
-            camBtn.innerHTML = isCamOff ? '<i class="fas fa-video-slash"></i>' : '<i class="fas fa-video"></i>';
+            setControlIcon('camBtn', isCamOff, '#i-video', '#i-video-off', 'Turn off camera', 'Turn on camera');
         }
         setCameraGate(isCamOff);
     }
@@ -477,13 +477,16 @@ function setNextBtn(state) {
     if (!btn) return;
     const key = state === 'really' ? 'really' : (state === 'start' ? 'startBtn' : 'nextBtn');
     btn.textContent = '';
-    const icon = document.createElement('i');
-    icon.className = state === 'really' ? 'fas fa-question-circle' : 'fas fa-forward';
+    const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    icon.setAttribute('class', 'rl-ico');
+    icon.setAttribute('aria-hidden', 'true');
+    const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    use.setAttribute('href', '#i-next');
+    icon.appendChild(use);
     const span = document.createElement('span');
     span.setAttribute('data-i18n', key);
     span.textContent = tr(key);
     btn.appendChild(icon);
-    btn.appendChild(document.createTextNode(' '));
     btn.appendChild(span);
 }
 
