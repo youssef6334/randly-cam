@@ -196,7 +196,7 @@
 
   function buildFiltersButton() {
     var qa = document.querySelector('.quick-actions');
-    if (!qa || document.getElementById('filtersBtn')) return;
+    if (!qa || document.getElementById('btn-settings') || document.getElementById('filtersBtn')) return;
     var b = el('button', 'btn-action-icon modern-btn'); b.id = 'filtersBtn'; b.type = 'button';
     b.innerHTML = '<i class="fas fa-sliders"></i>'; b.title = tr('tipFilters'); b.setAttribute('aria-label', tr('tipFilters'));
     b.onclick = function () { var row = document.querySelector('.filter-controls-row'); if (row) row.classList.toggle('show-filters'); };
@@ -218,7 +218,7 @@
   }
 
   function refreshExtras() {
-    var fb = document.getElementById('filtersBtn');
+    var fb = document.getElementById('btn-settings') || document.getElementById('filtersBtn');
     if (fb) { fb.title = tr('tipFilters'); fb.setAttribute('aria-label', tr('tipFilters')); }
     renderChips();
     renderInterestTags();

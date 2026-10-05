@@ -184,6 +184,16 @@ function updateControlLabels() {
     document.querySelectorAll('[data-control-label]').forEach(el => {
         el.textContent = current[el.dataset.controlLabel] || '';
     });
+    const settingsPanel = document.getElementById('settingsPanel');
+    if (settingsPanel) {
+        const settingsText = {
+            ar: ['الإعدادات', 'المطابقة الذكية وترجمة الشات', 'إغلاق الإعدادات'],
+            en: ['Settings', 'Smart Match and chat translation', 'Close settings']
+        }[document.documentElement.lang] || ['Settings', 'Smart Match and chat translation', 'Close settings'];
+        settingsPanel.querySelector('[data-settings-title]').textContent = settingsText[0];
+        settingsPanel.querySelector('[data-settings-hint]').textContent = settingsText[1];
+        settingsPanel.querySelector('.rl-settings-close').setAttribute('aria-label', settingsText[2]);
+    }
 }
 
 function setupReferenceLayout() {
@@ -247,13 +257,61 @@ function setupReferenceLayout() {
             child !== dock && !child.classList.contains('filter-controls-row')
         );
         movable.forEach(child => messages.appendChild(child));
-        const filterRow = chat.querySelector(':scope > .filter-controls-row');
-        if (filterRow) messages.appendChild(filterRow);
         chat.insertBefore(messages, chat.firstChild);
     }
     if (dock.parentElement !== chat) chat.appendChild(dock);
+    const filterRow = chat.querySelector(':scope > .filter-controls-row') || messages.querySelector('.filter-controls-row');
+    if (filterRow) {
+        let panel = document.getElementById('settingsPanel');
+        if (!panel) {
+            panel = document.createElement('section');
+            panel.id = 'settingsPanel';
+            panel.className = 'rl-settings-panel';
+            panel.hidden = true;
+            panel.setAttribute('role', 'dialog');
+            panel.setAttribute('aria-modal', 'true');
+            panel.innerHTML = `
+                <div class="rl-settings-card">
+                    <div class="rl-settings-head">
+                        <h2 data-settings-title>Settings</h2>
+                        <button type="button" class="rl-settings-close" aria-label="Close settings">×</button>
+                    </div>
+                    <p class="rl-settings-hint" data-settings-hint>Smart Match and chat translation</p>
+                </div>`;
+            document.body.appendChild(panel);
+        }
+        const card = panel.querySelector('.rl-settings-card');
+        const settingsText = {
+            ar: ['الإعدادات', 'المطابقة الذكية وترجمة الشات', 'إغلاق الإعدادات'],
+            en: ['Settings', 'Smart Match and chat translation', 'Close settings']
+        }[document.documentElement.lang] || ['Settings', 'Smart Match and chat translation', 'Close settings'];
+        card.querySelector('[data-settings-title]').textContent = settingsText[0];
+        card.querySelector('[data-settings-hint]').textContent = settingsText[1];
+        card.querySelector('.rl-settings-close').setAttribute('aria-label', settingsText[2]);
+        if (filterRow.parentElement !== card) card.appendChild(filterRow);
+    }
+    const settingsButton = document.getElementById('btn-settings') || document.getElementById('filtersBtn');
+    if (settingsButton) {
+        settingsButton.id = 'btn-settings';
+        settingsButton.setAttribute('aria-label', 'Settings');
+        settingsButton.setAttribute('title', 'Settings');
+    }
     dock.querySelectorAll('[data-control-label]').forEach(label => label.classList.add('rl-label'));
     setReferenceMode(currentMode);
+}
+
+function closeSettingsPanel() {
+    const panel = document.getElementById('settingsPanel');
+    if (!panel) return;
+    panel.hidden = true;
+    document.getElementById('btn-settings')?.focus();
+}
+
+function openSettingsPanel() {
+    const panel = document.getElementById('settingsPanel');
+    if (!panel) return;
+    panel.hidden = false;
+    panel.querySelector('.rl-settings-close')?.focus();
 }
 
 function setReferenceMode(mode) {
@@ -265,6 +323,20 @@ function setReferenceMode(mode) {
 
 document.addEventListener('DOMContentLoaded', () => {
     setupReferenceLayout();
+    document.addEventListener('click', event => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        if (target.closest('#btn-settings')) {
+            openSettingsPanel();
+        } else if (target.closest('.rl-settings-close')) {
+            closeSettingsPanel();
+        } else if (target.id === 'settingsPanel') {
+            closeSettingsPanel();
+        }
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') closeSettingsPanel();
+    });
     const savedTheme = localStorage.getItem('randly_theme');
     if (savedTheme === 'light') {
         document.documentElement.setAttribute('data-theme', 'light');
@@ -939,7 +1011,7 @@ const translations = {
         typingText: "الطرف الآخر يكتب الآن...",
         matchGlobal: "🌐 عالمي (Smart Match)",
         noTranslation: "بدون ترجمة",
-        msgPlaceholder: "اكتب رسالتك هنا...",
+        msgPlaceholder: "اكتب رسالتك",
         skipStartBtn: "تخطي / Start",
         turnText: "دورك الآن",
         noCountryMatchMsg: "مفيش حد من دولتك متصل دلوقتي، هنوصلك بأي شخص تاني حول العالم.",
@@ -993,7 +1065,7 @@ const translations = {
         typingText: "Stranger is typing...",
         matchGlobal: "🌐 Global (Smart Match)",
         noTranslation: "No Translation",
-        msgPlaceholder: "Type your message here...",
+        msgPlaceholder: "Type a message",
         skipStartBtn: "Skip / Start",
         turnText: "Your turn",
         noCountryMatchMsg: "No one from your selected country is online right now — connecting you with someone from anywhere.",
@@ -1047,7 +1119,7 @@ const translations = {
         typingText: "Escribiendo...",
         matchGlobal: "🌐 Mundial (Smart Match)",
         noTranslation: "Sin Traducción",
-        msgPlaceholder: "Escribe tu mensaje...",
+        msgPlaceholder: "Escribe un mensaje",
         skipStartBtn: "Saltar / Start",
         turnText: "Tu turno",
         noCountryMatchMsg: "No hay nadie de tu país conectado ahora mismo — te conectaremos con alguien de cualquier parte del mundo."
@@ -1099,7 +1171,7 @@ const translations = {
         typingText: "Écrit...",
         matchGlobal: "🌐 Mondial (Smart Match)",
         noTranslation: "Sans Traduction",
-        msgPlaceholder: "Écrivez votre message...",
+        msgPlaceholder: "Écrivez un message",
         skipStartBtn: "Passer / Start",
         turnText: "À vous",
         noCountryMatchMsg: "Personne de votre pays n'est connecté en ce moment — nous vous connectons avec quelqu'un du monde entier."
@@ -1151,7 +1223,7 @@ const translations = {
         typingText: "Schreibt...",
         matchGlobal: "🌐 Weltweit (Smart Match)",
         noTranslation: "Keine Übersetzung",
-        msgPlaceholder: "Nachricht schreiben...",
+        msgPlaceholder: "Nachricht",
         skipStartBtn: "Weiter / Start",
         turnText: "Du bist dran",
         noCountryMatchMsg: "Gerade ist niemand aus deinem Land online — wir verbinden dich mit jemandem von überall."
@@ -1203,7 +1275,7 @@ const translations = {
         typingText: "Sta scrivendo...",
         matchGlobal: "🌐 Globale (Smart Match)",
         noTranslation: "Senza Traduzione",
-        msgPlaceholder: "Scrivi un messaggio...",
+        msgPlaceholder: "Scrivi un messaggio",
         skipStartBtn: "Salta / Start",
         turnText: "Tuo turno",
         noCountryMatchMsg: "Nessuno dal tuo paese è online in questo momento — ti connetteremo con qualcuno da qualsiasi parte del mondo."
@@ -1255,7 +1327,7 @@ const translations = {
         typingText: "Digitando...",
         matchGlobal: "🌐 Global (Smart Match)",
         noTranslation: "Sem Tradução",
-        msgPlaceholder: "Digite sua mensagem...",
+        msgPlaceholder: "Digite uma mensagem",
         skipStartBtn: "Pular / Start",
         turnText: "Sua vez",
         noCountryMatchMsg: "Ninguém do seu país está online agora — vamos te conectar com alguém de qualquer lugar do mundo."
@@ -1307,7 +1379,7 @@ const translations = {
         typingText: "Yabancı yazıyor...",
         matchGlobal: "🌐 Küresel (Akıllı Eşleştirme)",
         noTranslation: "Çeviri yok",
-        msgPlaceholder: "Mesajınızı buraya yazın...",
+        msgPlaceholder: "Mesaj yazın",
         skipStartBtn: "Geç / Başlat",
         turnText: "Sıra sende",
         noCountryMatchMsg: "Şu anda ülkenizden kimse çevrimiçi değil — sizi dünyanın herhangi bir yerinden biriyle bağlıyoruz."
@@ -1359,7 +1431,7 @@ const translations = {
         typingText: "Незнакомец печатает...",
         matchGlobal: "🌐 Глобально (Умный Подбор)",
         noTranslation: "Без перевода",
-        msgPlaceholder: "Введите сообщение здесь...",
+        msgPlaceholder: "Введите сообщение",
         skipStartBtn: "Пропустить / Начать",
         turnText: "Ваш ход",
         noCountryMatchMsg: "Сейчас никого из вашей страны нет онлайн — мы подключим вас с кем-то из любой точки мира."
@@ -1411,7 +1483,7 @@ const translations = {
         typingText: "अजनबी टाइप कर रहा है...",
         matchGlobal: "🌐 वैश्विक (स्मार्ट मिलान)",
         noTranslation: "कोई अनुवाद नहीं",
-        msgPlaceholder: "अपना मैसेज यहाँ लिखें...",
+        msgPlaceholder: "मैसेज लिखें",
         skipStartBtn: "स्किप / शुरू करें",
         turnText: "आपकी बारी",
         noCountryMatchMsg: "अभी आपके देश से कोई ऑनलाइन नहीं है — हम आपको दुनिया में कहीं से भी किसी से जोड़ रहे हैं।"
@@ -1463,7 +1535,7 @@ const translations = {
         typingText: "Orang asing sedang mengetik...",
         matchGlobal: "🌐 Global (Pencocokan Cerdas)",
         noTranslation: "Tanpa terjemahan",
-        msgPlaceholder: "Ketik pesan Anda di sini...",
+        msgPlaceholder: "Ketik pesan",
         skipStartBtn: "Lewati / Mulai",
         turnText: "Giliran Anda",
         noCountryMatchMsg: "Belum ada orang dari negara Anda yang online sekarang — kami akan menghubungkan Anda dengan seseorang dari mana saja."
@@ -1515,7 +1587,7 @@ const translations = {
         typingText: "陌生人正在输入...",
         matchGlobal: "🌐 全球（智能匹配）",
         noTranslation: "不翻译",
-        msgPlaceholder: "在此输入您的消息...",
+        msgPlaceholder: "输入消息",
         skipStartBtn: "跳过 / 开始",
         turnText: "轮到你了",
         noCountryMatchMsg: "目前没有来自您所在国家的在线用户 — 我们将为您匹配世界各地的任何人。"

@@ -45,7 +45,7 @@
 <meta name="twitter:description" content="Chatea con extraños al azar de todo el mundo de forma segura y rápida en Randly. Chat de video y texto gratis, sin registro.">
 <meta name="twitter:image" content="https://randly.live/randly-logo-512.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="style.css?v=20261005-reference-layout-20">
+<link rel="stylesheet" href="style.css?v=20261005-reference-layout-22">
 <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
 
@@ -170,7 +170,7 @@
 <div id="landingPage" class="landing-container">
 <header class="app-header">
 <div class="header-left">
-<div class="logo"><img class="brand-logo" src="/randly-logo-192.png" alt="" aria-hidden="true"><span>Randly</span></div>
+<div class="logo"><img class="brand-logo" src="/randly-logo.svg" width="28" height="28" alt="" aria-hidden="true"><span>Randly</span></div>
 </div>
 <div class="header-right" style="display: flex; align-items: center; gap: 10px;">
 <select id="landingLangSelect" aria-label="اختيار لغة الموقع" class="site-lang-select" onchange="changeGlobalLanguage(this.value)" style="padding: 8px 12px; border-radius: 8px; background: var(--bg-card, #222); color: var(--text-main, #fff); border: 1px solid var(--border-color);">
@@ -293,7 +293,7 @@
 <div class="main-container" hidden>
 <header class="app-header">
 <div class="header-left">
-<div class="logo"><img class="brand-logo" src="/randly-logo-192.png" alt="" aria-hidden="true"><span>Randly</span></div>
+<div class="logo"><img class="brand-logo" src="/randly-logo.svg" width="28" height="28" alt="" aria-hidden="true"><span>Randly</span></div>
 </span>
 </div>
 <div class="header-right" style="display: flex; align-items: center; gap: 10px;">
@@ -415,7 +415,7 @@ El extraño está escribiendo...
                             <button class="video-only-btn" id="muteBtn" onclick="toggleSoundMute()" aria-label="Mute speaker"><svg class="rl-ico" aria-hidden="true"><use href="#i-volume"/></svg></button>
                         </div>
                         <div class="rl-controls quick-actions">
-                            <button class="rl-chip rl-chip--icon" id="filtersBtn" type="button" aria-label="Settings"><svg class="rl-ico" aria-hidden="true"><use href="#i-adjust"/></svg></button>
+                            <button class="rl-chip rl-chip--icon" id="btn-settings" type="button" aria-label="Settings"><svg class="rl-ico" aria-hidden="true"><use href="#i-adjust"/></svg></button>
                             <button class="rl-chip" id="copyLinkBtn" onclick="saveRoomLink()" aria-label="Share"><svg class="rl-ico" aria-hidden="true"><use href="#i-link"/></svg><span class="rl-label control-label" data-control-label="share"></span></button>
                             <button class="rl-chip" onclick="reportUser()" aria-label="Report"><svg class="rl-ico" aria-hidden="true"><use href="#i-flag"/></svg><span class="rl-label control-label" data-control-label="report"></span></button>
                             <button class="rl-chip rl-chip--end btn-close-chat" onclick="leaveSession()" aria-label="End"><svg class="rl-ico" aria-hidden="true"><use href="#i-phone-off"/></svg><span class="rl-label control-label" data-control-label="end"></span></button>
@@ -451,9 +451,9 @@ El extraño está escribiendo...
 </div>
 </div>
 <script src="/socket.io/socket.io.js"></script>
-<script src="script.js?v=20261005-reference-layout-20"></script>
+<script src="script.js?v=20261005-reference-layout-22"></script>
 <script src="i18n-extra.js?v=20261005-controls"></script>
-<script src="randly-extra.js"></script>
+<script src="randly-extra.js?v=20261005-v31-2"></script>
 <script>/* ads-deferred-by-script */
 window.addEventListener('load', function() {
   var s = document.createElement('script');
