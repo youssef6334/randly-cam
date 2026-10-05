@@ -1,1 +1,6 @@
 backups/
+
+node_modules/
+backups/
+*.bak
+.env

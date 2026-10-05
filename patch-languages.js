@@ -10,6 +10,7 @@
  *   - إضافة randly-extra.js ورابط الشروط، وتوجيه روابط القوانين للنسخة الإنجليزية في اللغات غير العربية
  *
  * الاستخدام (من جذر المشروع):
+ *   node patch-languages.js --check        # فحص: هل كل الصفحات متعدّلة فعلاً؟ (من غير كتابة)
  *   node patch-languages.js --dry          # معاينة بس
  *   node patch-languages.js                # تطبيق
  *   node patch-languages.js ./public       # مسار مختلف
@@ -192,7 +193,8 @@ const CONTENT = {
 const argDir = process.argv.slice(2).find(a => !a.startsWith('--'));
 const candidates = argDir ? [argDir] : [path.join(process.cwd(), 'public'), process.cwd(), path.join(__dirname, 'public'), __dirname];
 const dir = path.resolve(candidates.find(d => { try { return fs.readdirSync(d).some(f => f.endsWith('.html')); } catch (e) { return false; } }) || candidates[0]);
-const DRY = process.argv.includes('--dry');
+const CHECK = process.argv.includes('--check');
+const DRY = CHECK || process.argv.includes('--dry');   // --check = فحص الحالة من غير أي كتابة
 const NO_BACKUP = process.argv.includes('--no-backup');
 const LANGS = Object.keys(claims);
 console.log('المجلد: ' + dir + (DRY ? '  (معاينة فقط)' : ''));
@@ -448,3 +450,40 @@ for (const f of files) {
   if (m) { risky++; console.log(`🔎 ${f}: لسه فيها "${m[0]}"`); }
 }
 if (!risky) console.log('\n✔ مفيش ادعاءات أمان/Omegle مرفوضة باقية (في اللي اتفحص)');
+
+// ============ تقرير الحالة (بيتطبع في كل تشغيل، ويقرا الملفات من القرص) ============
+(function report() {
+  const problems = [];
+  let apps = 0, contents = 0;
+  for (const f of files) {
+    if (/^google[0-9a-f]+\.html$/i.test(f)) continue;          // ملف تحقق جوجل: مبنلمسوش
+    const t = fs.readFileSync(path.join(dir, f), 'utf8').replace(/\r\n/g, '\n');
+    const lang = (t.match(/<html[^>]*\blang="([^"]+)"/) || [])[1] || 'en';
+    const miss = [];
+    if (/<script src="script\.js"/.test(t)) {
+      apps++;
+      if (!t.includes('randly-extra.js')) miss.push('randly-extra.js (بوابة العمر والميزات الجديدة)');
+      if (!/rel="manifest"/.test(t)) miss.push('manifest');
+      if (!/<div class="main-container" hidden>/.test(t)) miss.push('إخفاء واجهة الشات');
+      if (/itemscope/.test(t)) miss.push('Microdata مكرر');
+      const q = (t.match(/class="faq-question"/g) || []).length;
+      if (q) {
+        let n = -1;
+        for (const m of t.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+          try { const j = JSON.parse(m[1]); if (j['@type'] === 'FAQPage') n = j.mainEntity.length; } catch (e) {}
+        }
+        if (n !== q) miss.push(`FAQ Schema (${n} في JSON-LD مقابل ${q} ظاهر)`);
+      }
+    } else contents++;
+    if (lang !== 'ar' && /href="\/?(rules|privacy|terms)\.html"/.test(t)) miss.push('روابط القوانين لسه للعربي');
+    if (RISKY.test(t)) miss.push('ادعاء أمان/Omegle قديم');
+    if (miss.length) problems.push([f, miss]);
+  }
+  console.log(`\n=== تقرير الحالة: ${apps} صفحة تطبيق + ${contents} صفحة محتوى ===`);
+  if (!problems.length) console.log('✔ كل الصفحات سليمة');
+  else {
+    problems.forEach(([f, m]) => console.log(`✗ ${f}: ${m.join(' | ')}`));
+    console.log(`\n${problems.length} صفحة فيها نواقص${CHECK ? '. شغّل السكريبت من غير --check لإصلاح اللي ينفع.' : ' (اللي فوق محتاج مراجعة يدوية أو شكله مختلف عن القالب).'}`);
+  }
+  if (CHECK && problems.length) process.exitCode = 1;
+})();
