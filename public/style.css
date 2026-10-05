@@ -1170,7 +1170,9 @@ html[data-theme="light"] .theme-switch-btn .switch-knob::before {
 }
 
 .quick-actions .modern-btn i {
-    font-size: 2rem;
+    font-size: 1.8rem;
+    line-height: 1;
+    font-weight: 900;
 }
 
 .quick-actions .video-only-btn {
@@ -1205,6 +1207,24 @@ html[data-theme="light"] .theme-switch-btn .switch-knob::before {
 .quick-actions .control-label {
     font-size: clamp(1.25rem, 2.5vw, 2rem);
     font-weight: 600;
+}
+
+.quick-actions #copyLinkBtn i,
+.quick-actions button[onclick="reportUser()"] i,
+.quick-actions .btn-close-chat i {
+    font-size: 1.65rem;
+}
+
+.quick-actions #copyLinkBtn i {
+    transform: rotate(-12deg);
+}
+
+.quick-actions button[onclick="reportUser()"] i {
+    font-size: 1.75rem;
+}
+
+.quick-actions .btn-close-chat i {
+    font-size: 1.7rem;
 }
 
 .quick-actions .btn-close-chat,
@@ -1308,12 +1328,18 @@ html[data-theme="light"] .bottom-action-bar .chat-input-wrapper {
     }
 
     .quick-actions .modern-btn i {
-        font-size: 1.3rem;
+        font-size: 1.15rem;
     }
 
     .quick-actions .control-label {
         font-size: 1rem;
         font-weight: 600;
+    }
+
+    .quick-actions #copyLinkBtn i,
+    .quick-actions button[onclick="reportUser()"] i,
+    .quick-actions .btn-close-chat i {
+        font-size: 1.15rem;
     }
 
     .quick-actions .video-only-btn {
