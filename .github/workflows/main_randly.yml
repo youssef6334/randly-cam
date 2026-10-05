@@ -25,19 +25,20 @@ jobs:
 
       - name: npm install, build, and test
         run: |
-          npm ci --omit=dev
+          npm ci
           npm run build --if-present
           npm run test --if-present
+          npm prune --omit=dev
           node -e "const fs=require('fs'); const path=require('path'); const engine=path.dirname(require.resolve('engine.io')); const file=path.join(engine,'contrib','base64id.js'); if (!fs.existsSync(file)) throw new Error('Missing '+file); require('socket.io');"
+          mkdir deploy
+          rsync -a --exclude='.git' --exclude='node_modules' --exclude='*.tgz' --exclude='backups' ./ deploy/
+          cp -R node_modules deploy/node_modules
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: |
-            .
-            !node_modules/**
-            !**/*.tgz
+          path: deploy
 
   deploy:
     runs-on: ubuntu-latest
@@ -55,6 +56,6 @@ jobs:
         with:
           app-name: 'randly'
           slot-name: 'Production'
-          package: .
+          package: deploy
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0160C497C71D4DFCAB3160E16F683F4E }}
-          app-settings: -SCM_DO_BUILD_DURING_DEPLOYMENT true
+          app-settings: -SCM_DO_BUILD_DURING_DEPLOYMENT false
