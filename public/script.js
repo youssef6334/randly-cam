@@ -169,15 +169,15 @@ function updateControlLabels() {
     const labels = {
         ar: { share: 'مشاركة', report: 'إبلاغ', end: 'إنهاء' },
         en: { share: 'Share', report: 'Report', end: 'End' },
-        es: { share: 'Compartir', report: 'Reportar', end: 'Finalizar' },
-        fr: { share: 'Partager', report: 'Signaler', end: 'Quitter' },
-        de: { share: 'Teilen', report: 'Melden', end: 'Beenden' },
-        it: { share: 'Condividi', report: 'Segnala', end: 'Termina' },
-        pt: { share: 'Compartilhar', report: 'Denunciar', end: 'Encerrar' },
+        es: { share: 'Enlace', report: 'Reportar', end: 'Salir' },
+        fr: { share: 'Lien', report: 'Signaler', end: 'Quitter' },
+        de: { share: 'Teilen', report: 'Melden', end: 'Ende' },
+        it: { share: 'Link', report: 'Segnala', end: 'Esci' },
+        pt: { share: 'Link', report: 'Denunciar', end: 'Sair' },
         tr: { share: 'Paylaş', report: 'Bildir', end: 'Bitir' },
-        ru: { share: 'Поделиться', report: 'Пожаловаться', end: 'Завершить' },
-        hi: { share: 'साझा करें', report: 'रिपोर्ट', end: 'समाप्त करें' },
-        id: { share: 'Bagikan', report: 'Laporkan', end: 'Akhiri' },
+        ru: { share: 'Ссылка', report: 'Жалоба', end: 'Выйти' },
+        hi: { share: 'साझा', report: 'रिपोर्ट', end: 'बंद' },
+        id: { share: 'Bagikan', report: 'Lapor', end: 'Akhiri' },
         zh: { share: '分享', report: '举报', end: '结束' }
     };
     const current = labels[document.documentElement.lang] || labels.en;
@@ -186,7 +186,85 @@ function updateControlLabels() {
     });
 }
 
+function setupReferenceLayout() {
+    const app = document.querySelector('.main-container');
+    const header = app?.querySelector(':scope > .app-header');
+    const content = app?.querySelector(':scope > .content-wrapper');
+    const video = document.getElementById('videoSection');
+    const chat = document.getElementById('chatSection');
+    if (!app || !header || !content || !video || !chat) return;
+
+    app.classList.add('rl-app');
+    header.classList.add('rl-top');
+    const brand = header.querySelector('.header-left');
+    const actions = header.querySelector('.header-right');
+    brand?.classList.add('rl-brand');
+    actions?.classList.add('rl-top-actions');
+
+    if (actions && !actions.querySelector('.rl-top-row2')) {
+        const row2 = document.createElement('div');
+        row2.className = 'rl-top-row2';
+        const language = actions.querySelector('.site-lang-select')?.closest('label, .select-wrapper') || actions.querySelector('.site-lang-select');
+        const online = actions.querySelector('.online-badge-modern');
+        if (language) {
+            language.classList.add('rl-lang-wrap');
+            row2.appendChild(language);
+        }
+        if (online) {
+            online.classList.add('rl-pill');
+            online.querySelector('[data-i18n="onlineNow"]')?.classList.add('rl-online-text');
+            row2.appendChild(online);
+        }
+        actions.appendChild(row2);
+    }
+    actions.querySelector('.site-lang-select')?.classList.add('rl-lang');
+
+    const media = chat.querySelector('.rl-media');
+    const dock = chat.querySelector('.rl-dock');
+    const remoteBox = video.querySelector('.remote-box');
+    const localBox = video.querySelector('.local-box');
+    if (!dock || !remoteBox || !localBox) return;
+
+    content.classList.add('rl-vid-wrap');
+    video.classList.add('rl-stage-col');
+    chat.classList.add('rl-side');
+
+    let stage = video.querySelector('.rl-stage');
+    if (!stage) {
+        stage = document.createElement('div');
+        stage.className = 'rl-stage';
+        video.insertBefore(stage, video.firstChild);
+        stage.append(remoteBox, localBox);
+    }
+    if (media && media.parentElement !== video) video.appendChild(media);
+    media?.classList.add('rl-media--center');
+
+    let messages = chat.querySelector(':scope > .rl-msgs');
+    if (!messages) {
+        messages = document.createElement('div');
+        messages.className = 'rl-msgs';
+        const movable = Array.from(chat.children).filter(child =>
+            child !== dock && !child.classList.contains('filter-controls-row')
+        );
+        movable.forEach(child => messages.appendChild(child));
+        const filterRow = chat.querySelector(':scope > .filter-controls-row');
+        if (filterRow) messages.appendChild(filterRow);
+        chat.insertBefore(messages, chat.firstChild);
+    }
+    if (dock.parentElement !== chat) chat.appendChild(dock);
+    dock.querySelectorAll('[data-control-label]').forEach(label => label.classList.add('rl-label'));
+    setReferenceMode(currentMode);
+}
+
+function setReferenceMode(mode) {
+    const content = document.querySelector('.content-wrapper');
+    if (!content) return;
+    content.classList.toggle('rl-text-mode', mode === 'text');
+    content.classList.toggle('rl-video-mode', mode === 'video');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    setupReferenceLayout();
     const savedTheme = localStorage.getItem('randly_theme');
     if (savedTheme === 'light') {
         document.documentElement.setAttribute('data-theme', 'light');
@@ -423,6 +501,8 @@ function toggleCam() {
 
 async function startSession(mode, specificRoomId = null) {
     currentMode = mode;
+    setupReferenceLayout();
+    setReferenceMode(mode);
     buttonState = 'skip';          // كان بيفضل 'start' فالضغطة الأولى كانت بتفتح الكاميرا مرتين
     setNextBtn('skip');
     if (landingPage) landingPage.style.display = 'none';
