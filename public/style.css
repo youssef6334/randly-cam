@@ -3133,18 +3133,55 @@ html[dir="rtl"] .rl-send .rl-ico {
   }
 }
 
-/* ===== RANDLY INPUT TEXT COLOR FIX (light mode) =====
-   A legacy rule (.bottom-action-bar .chat-input-wrapper input {color:#f1f1f3 !important})
-   made typed text white in light mode. Light mode now gets dark text and a dark caret;
-   dark mode is not touched. */
-html[data-theme="light"] .rl-input input,
-html[data-theme="light"] .bottom-action-bar .chat-input-wrapper input {
-  color: #1c1d20 !important;
-  -webkit-text-fill-color: #1c1d20;
-  caret-color: #1c1d20;
+/* =====================================================================
+   RANDLY STATIC PAGES FIX — about / blog / post pages only
+   (does not touch the chat app or the landing page)
+   ===================================================================== */
+
+/* 1) Post pages: hard-coded dark background made light mode unreadable */
+html[data-theme="light"]:has(.blog-article),
+html[data-theme="light"] body:has(.blog-article) {
+  background-color: var(--bg-primary);
+  color: var(--text-main);
 }
-html[data-theme="light"] .rl-input input::placeholder {
-  color: #6b7078;
-  -webkit-text-fill-color: #6b7078;
-  opacity: 1;
+html[data-theme="light"] .blog-article th,
+html[data-theme="light"] .blog-article td {
+  border-color: var(--border-color);
+}
+
+/* 2) Green button text was swallowed by ".blog-article a" (green on green) */
+.blog-article a.blog-cta {
+  color: #fff;
+  text-decoration: none;
+}
+
+/* 3) Phones: header logo overlapped the nav links on static pages */
+@media (max-width: 899.98px) {
+  body > header.app-header:not(.rl-responsive-header) {
+    position: relative;
+    height: auto;
+    min-height: 55px;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    gap: 8px 12px;
+  }
+  body > header.app-header:not(.rl-responsive-header) > .header-left,
+  body > header.app-header:not(.rl-responsive-header) > .header-right {
+    position: static;
+    transform: none;
+    left: auto;
+    right: auto;
+    top: auto;
+  }
+  body > header.app-header:not(.rl-responsive-header) > .header-right {
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px 12px !important;
+    overflow: visible;
+  }
+  body > header.app-header:not(.rl-responsive-header) > .header-right > nav {
+    flex-wrap: wrap;
+    gap: 6px 12px !important;
+  }
 }
