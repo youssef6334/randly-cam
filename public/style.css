@@ -3302,3 +3302,14 @@ select.site-lang-select:focus-visible {
     align-items: center;
     justify-content: center;
 }
+
+/* تثبيت حاويات الصفحة لمنع أي Layout Shift نهائياً */
+#landingPage, .landing-container {
+    contain: layout style;
+}
+
+#seoSection, .vip-seo-section {
+    contain: layout;
+    content-visibility: auto;
+    contain-intrinsic-size: 500px;
+}

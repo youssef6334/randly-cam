@@ -530,7 +530,21 @@ window.addEventListener('load', function() {
     </div>
 
 <!-- 1. تشغيل ملفات الموقع مع defer حتى لا تعطل رسم الشاشة -->
-    <script src="/socket.io/socket.io.js" defer></script>
+    <script>
+  function loadSocketLib() {
+    if (window.socketLibLoaded) return;
+    window.socketLibLoaded = true;
+    var s = document.createElement('script');
+    s.src = '/socket.io/socket.io.js';
+    s.defer = true;
+    document.body.appendChild(s);
+  }
+
+  ['touchstart', 'mousedown', 'scroll', 'keydown'].forEach(function(evt) {
+    window.addEventListener(evt, loadSocketLib, { once: true, passive: true });
+  });
+  setTimeout(loadSocketLib, 1500);
+</script>
     <script src="script.js?v=20261005-v32-header-settings-2" defer></script>
     <script src="i18n-extra.js?v=20261005-controls" defer></script>
     <script src="randly-extra.js?v=20261005-v31-2" defer></script>
