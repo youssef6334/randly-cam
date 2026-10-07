@@ -3272,3 +3272,14 @@ select.site-lang-select:focus-visible {
 @media (max-width: 899.98px) {
   #landingPage header.app-header { min-height: 93px; }
 }
+
+/* RANDLY LAYOUT-SHIFT FIX 2 (phones) - landing card */
+@media (max-width: 899.98px) {
+  #landingPage header.app-header:not(.rl-responsive-header) { margin-bottom: 8px; }
+  #landingPage .interests-box:not(:has(#interestChips))::after { content: ""; display: block; height: 78px; }
+  #landingPage .start-buttons:not(:has(#inviteFriendBtn))::after { content: ""; display: block; height: 50px; }
+  #landingPage .landing-card:not(:has(.trust-line))::after { content: ""; display: block; height: 23px; }
+}
+@media (min-width: 441px) and (max-width: 899.98px) {
+  #landingPage .interests-box:not(:has(#interestChips))::after { height: 40px; }
+}
