@@ -3283,3 +3283,8 @@ select.site-lang-select:focus-visible {
 @media (min-width: 441px) and (max-width: 899.98px) {
   #landingPage .interests-box:not(:has(#interestChips))::after { height: 40px; }
 }
+
+/* RANDLY FOOTER LANGUAGE LINKS */
+.footer-langs { margin-top: 14px; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; font-size: 0.85rem; }
+.footer-langs a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+.footer-langs a:hover, .footer-langs a[aria-current="page"] { color: var(--accent-purple); }
