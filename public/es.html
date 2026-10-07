@@ -45,7 +45,8 @@
 <meta name="twitter:description" content="Chatea con extraños al azar de todo el mundo de forma segura y rápida en Randly. Chat de video y texto gratis, sin registro.">
 <meta name="twitter:image" content="https://randly.live/randly-logo-512.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="style.css?v=20261007-0645">
+<link rel="preload" href="style.css?v=20261007-0645" as="style">
+    <link rel="stylesheet" href="style.css?v=20261007-0645">
 <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
 
@@ -148,7 +149,7 @@
   ]
 }
 </script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3125079750975955" crossorigin="anonymous"></script>
+    
 <link rel="manifest" href="/manifest.webmanifest">
 <script>(function(){try{var t=localStorage.getItem("randly_theme");if(t==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
 </head>
@@ -449,18 +450,37 @@ El extraño está escribiendo...
 </div>
 </div>
 </div>
-<script src="/socket.io/socket.io.js"></script>
-<script src="script.js?v=20261005-v32-header-settings-2-2"></script>
-<script src="i18n-extra.js?v=20261005-controls"></script>
-<script src="randly-extra.js?v=20261005-v31-2"></script>
-<script>/* ads-deferred-by-script */
-window.addEventListener('load', function() {
-  var s = document.createElement('script');
-  s.async = true;
-  s.setAttribute('data-cfasync', 'false');
-  s.src = "https://pl30790288.effectivecpmnetwork.com/af/01/4f/af014f7d78a0555fd804897f8175cc44.js";
-  (document.getElementById('adContent') || document.body).appendChild(s);
-});
-</script>
+    <!-- سكربتات الموقع الأساسية مع خاصية defer -->
+    <script src="/socket.io/socket.io.js" defer></script>
+    <script src="script.js?v=20261005-v32-header-settings-2" defer></script>
+    <script src="i18n-extra.js?v=20261005-controls" defer></script>
+    <script src="randly-extra.js?v=20261005-v31-2" defer></script>
+
+    <!-- تحميل إعلانات AdSense و Adsterra بعد اكتمال الصفحة والتفاعل -->
+    <script>
+      function loadDelayedAds() {
+        if (window.adsLoaded) return;
+        window.adsLoaded = true;
+
+        var adsense = document.createElement('script');
+        adsense.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3125079750975955";
+        adsense.crossOrigin = "anonymous";
+        adsense.async = true;
+        document.head.appendChild(adsense);
+
+        var adsterra = document.createElement('script');
+        adsterra.async = true;
+        adsterra.setAttribute('data-cfasync', 'false');
+        adsterra.src = "https://pl30790288.effectivecpmnetwork.com/af/01/4f/af014f7d78a0555fd804897f8175cc44.js";
+        (document.getElementById('adContent') || document.body).appendChild(adsterra);
+      }
+
+      ['touchstart', 'scroll', 'mousemove', 'keydown'].forEach(function(e) {
+        window.addEventListener(e, loadDelayedAds, { once: true, passive: true });
+      });
+      window.addEventListener('load', function() {
+        setTimeout(loadDelayedAds, 3500);
+      });
+    </script>
 </body>
 </html>
