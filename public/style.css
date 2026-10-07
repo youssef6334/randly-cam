@@ -3185,3 +3185,86 @@ html[data-theme="light"] .blog-article td {
     gap: 6px 12px !important;
   }
 }
+
+/* ===== RANDLY INPUT TEXT COLOR FIX (light mode) =====
+   A legacy rule (.bottom-action-bar .chat-input-wrapper input {color:#f1f1f3 !important})
+   made typed text white in light mode. Light mode now gets dark text and a dark caret;
+   dark mode is not touched. */
+html[data-theme="light"] .rl-input input,
+html[data-theme="light"] .bottom-action-bar .chat-input-wrapper input {
+  color: #1c1d20 !important;
+  -webkit-text-fill-color: #1c1d20;
+  caret-color: #1c1d20;
+}
+html[data-theme="light"] .rl-input input::placeholder {
+  color: #6b7078;
+  -webkit-text-fill-color: #6b7078;
+  opacity: 1;
+}
+
+/* =====================================================================
+   RANDLY LANGUAGE SELECT — style "P" (capsule + globe icon)
+   Pure CSS (no images, no JS). Same look on desktop and phone.
+   ===================================================================== */
+select.site-lang-select {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  direction: ltr;
+  text-align: left;
+  height: 36px;
+  padding: 0 30px 0 34px !important;
+  border-radius: 999px !important;
+  border: 1px solid var(--border-color) !important;
+  background-color: var(--bg-card) !important;
+  background-repeat: no-repeat !important;
+  background-position: 12px 50%, right 11px center !important;
+  background-size: 16px 16px, 14px 14px !important;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300b894' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a7a7ad' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") !important;
+  color: var(--text-main) !important;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  text-overflow: ellipsis;
+  transition: border-color .15s ease;
+}
+html[data-theme="light"] select.site-lang-select {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300805f' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23626269' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") !important;
+}
+select.site-lang-select:hover {
+  border-color: var(--accent) !important;
+}
+select.site-lang-select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Desktop: slightly smaller so it lines up with the "Online now" pill */
+@media (min-width: 900px) {
+  select.site-lang-select {
+    height: 30px;
+    font-size: 13px;
+    padding: 0 28px 0 32px !important;
+    background-position: 11px 50%, right 10px center !important;
+    background-size: 15px 15px, 13px 13px !important;
+  }
+}
+
+/* Phones: keep the select under the logo, slightly wider so long names fit */
+@media (max-width: 899.98px) {
+  header.app-header.rl-responsive-header .rl-top-row2 select.site-lang-select {
+    height: 36px;
+    max-width: 180px;
+    padding: 0 26px 0 32px !important;
+    font-size: 13px;
+    background-position: 10px 50%, right 9px center !important;
+  }
+  /* Chat (video + text): hide the language box on phones only; the language
+     chosen on the home page stays active */
+  header.app-header.rl-top select.site-lang-select {
+    display: none !important;
+  }
+}
