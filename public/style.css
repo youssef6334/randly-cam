@@ -3283,3 +3283,22 @@ select.site-lang-select:focus-visible {
     height: 16px;
     display: inline-block;
 }
+
+/* تثبيت مساحات كروت الهبوط والمميزات لمنع الاهتزاز والقفز نهائياً */
+.landing-card {
+    contain-intrinsic-size: 380px !important;
+    content-visibility: auto !important;
+}
+
+.feature-card {
+    min-height: 160px !important;
+    contain: layout !important;
+}
+
+.feature-card i {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
