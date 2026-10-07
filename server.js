@@ -15,9 +15,8 @@ const fs = require('fs');
 const crypto = require('crypto');
 const { Server } = require('socket.io');
 const geoip = require('geoip-lite');
-const compression = require('compression');
+
 const app = express();
-app.use(compression());
 const server = http.createServer(app);
 
 // ---------------------------------------------------------------- الإعدادات

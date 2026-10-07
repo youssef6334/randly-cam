@@ -31,6 +31,8 @@
 <meta name="twitter:title" content="Randly - شات فيديو ورسائل عشوائي مع الغرباء">
 <meta name="twitter:description" content="دردشة فيديو ونصية مجانية مع أشخاص عشوائيين حول العالم بدون تسجيل.">
 <meta name="twitter:image" content="https://randly.live/randly-logo-512.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3125079750975955"
+     crossorigin="anonymous"></script>
 <link rel="alternate" hreflang="ar" href="https://randly.live/">
 <link rel="alternate" hreflang="en" href="https://randly.live/en.html">
 <link rel="alternate" hreflang="es" href="https://randly.live/es.html">
@@ -44,25 +46,13 @@
 <link rel="alternate" hreflang="id" href="https://randly.live/id.html">
 <link rel="alternate" hreflang="zh" href="https://randly.live/zh.html">
 <link rel="alternate" hreflang="x-default" href="https://randly.live/">
-<!-- تحميل الخط والأيقونات مسبقاً لمنع القفزة (CLS) -->
-<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="style.css?v=20261007-0645">
-<!-- ستايل مبدئي (Inline) يظهر النص فوراً بدون انتظار ملف الستايل الكبير -->
-    <style>
-        /* استبدل هذه الأسطر بالتنسيقات الرئيسية للكارت والخلفية والزر لديك */
-        body { background-color: #0b0b0d; color: #fff; margin: 0; font-family: sans-serif; }
-        .landing-card { background-color: #161619; padding: 20px; text-align: center; border-radius: 12px; margin: 20px; }
-        .btn-primary-lg { background-color: #00b894; color: white; padding: 15px; width: 100%; border: none; border-radius: 8px; font-weight: bold;}
-    </style>
 
-<!-- تحميل ملف الستايل الأساسي دون حجب الشاشة -->
-    <link rel="stylesheet" href="style.css?v=20261007-0645">
     <link rel="stylesheet" href="style.css?v=20261007-0645">
 
-<!-- تحميل ملف CSS للأيقونات -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'">
+    <!-- مكتبة الأيقونات الحديثة (FontAwesome) -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
+
     
 
     <!-- FAQ Structured Data (JSON-LD) -->
@@ -523,54 +513,18 @@ window.addEventListener('load', function() {
         </div>
     </div>
 
-<!-- 1. تشغيل ملفات الموقع مع defer حتى لا تعطل رسم الشاشة -->
-    <script>
-  function loadSocketLib() {
-    if (window.socketLibLoaded) return;
-    window.socketLibLoaded = true;
-    var s = document.createElement('script');
-    s.src = '/socket.io/socket.io.js';
-    s.defer = true;
-    document.body.appendChild(s);
-  }
-
-  ['touchstart', 'mousedown', 'scroll', 'keydown'].forEach(function(evt) {
-    window.addEventListener(evt, loadSocketLib, { once: true, passive: true });
-  });
-  setTimeout(loadSocketLib, 1500);
+    <script src="/socket.io/socket.io.js"></script>
+<script src="script.js?v=20261005-v32-header-settings-2"></script>
+<script src="i18n-extra.js?v=20261005-controls"></script>
+<script src="randly-extra.js?v=20261005-v31-2"></script>
+    <script>/* ads-deferred-by-script */
+window.addEventListener('load', function() {
+  var s = document.createElement('script');
+  s.async = true;
+  s.setAttribute('data-cfasync', 'false');
+  s.src = "https://pl30790288.effectivecpmnetwork.com/af/01/4f/af014f7d78a0555fd804897f8175cc44.js";
+  (document.getElementById('adContent') || document.body).appendChild(s);
+});
 </script>
-    <script src="script.js?v=20261005-v32-header-settings-2" defer></script>
-    <script src="i18n-extra.js?v=20261005-controls" defer></script>
-    <script src="randly-extra.js?v=20261005-v31-2" defer></script>
-
-    <!-- 2. تشغيل الإعلانات فقط بعد أن تظهر الشاشة للمستخدم -->
-    <script>
-      function loadDelayedAds() {
-        if (window.adsLoaded) return;
-        window.adsLoaded = true;
-
-        // إعلان جوجل AdSense
-        var adsense = document.createElement('script');
-        adsense.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3125079750975955";
-        adsense.crossOrigin = "anonymous";
-        adsense.async = true;
-        document.head.appendChild(adsense);
-
-        // إعلان Adsterra
-        var adsterra = document.createElement('script');
-        adsterra.async = true;
-        adsterra.setAttribute('data-cfasync', 'false');
-        adsterra.src = "https://pl30790288.effectivecpmnetwork.com/af/01/4f/af014f7d78a0555fd804897f8175cc44.js";
-        (document.getElementById('adContent') || document.body).appendChild(adsterra);
-      }
-
-      // تحميل الإعلانات عند أول لمسة شاشة أو بعد ثوانٍ من فتح الموقع
-      ['touchstart', 'scroll', 'mousemove', 'keydown'].forEach(function(e) {
-        window.addEventListener(e, loadDelayedAds, { once: true, passive: true });
-      });
-      window.addEventListener('load', function() {
-        setTimeout(loadDelayedAds, 3500);
-      });
-    </script>
 </body>
 </html>

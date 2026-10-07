@@ -590,6 +590,7 @@ html[data-theme="light"] .app-header {
     overflow-y: auto; 
     overflow-x: hidden;
 }
+
 .landing-card {
     background-color: var(--bg-secondary);
     border: 1px solid var(--border-color);
@@ -605,10 +606,7 @@ html[data-theme="light"] .app-header {
     margin-bottom: 40px; 
     flex-shrink: 0;
     align-self: center;
-    min-height: 380px;
-    contain: layout style;
 }
-
 
 .landing-card h1 {
     font-size: 2.2rem;
@@ -3269,47 +3267,4 @@ select.site-lang-select:focus-visible {
   header.app-header.rl-top select.site-lang-select {
     display: none !important;
   }
-}
-
-/* تثبيت أبعاد الأزرار لمنع اهتزاز الصفحة عند تحميل الأيقونات */
-.btn-primary-lg, 
-.btn-secondary-lg {
-    min-height: 48px !important;
-}
-
-.btn-primary-lg i, 
-.btn-secondary-lg i {
-    width: 16px;
-    height: 16px;
-    display: inline-block;
-}
-
-/* تثبيت مساحات كروت الهبوط والمميزات لمنع الاهتزاز والقفز نهائياً */
-.landing-card {
-    contain-intrinsic-size: 380px !important;
-    content-visibility: auto !important;
-}
-
-.feature-card {
-    min-height: 160px !important;
-    contain: layout !important;
-}
-
-.feature-card i {
-    width: 40px;
-    height: 40px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* تثبيت حاويات الصفحة لمنع أي Layout Shift نهائياً */
-#landingPage, .landing-container {
-    contain: layout style;
-}
-
-#seoSection, .vip-seo-section {
-    contain: layout;
-    content-visibility: auto;
-    contain-intrinsic-size: 500px;
 }
