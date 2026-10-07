@@ -590,7 +590,6 @@ html[data-theme="light"] .app-header {
     overflow-y: auto; 
     overflow-x: hidden;
 }
-
 .landing-card {
     background-color: var(--bg-secondary);
     border: 1px solid var(--border-color);
@@ -606,7 +605,10 @@ html[data-theme="light"] .app-header {
     margin-bottom: 40px; 
     flex-shrink: 0;
     align-self: center;
+    min-height: 380px;
+    contain: layout style;
 }
+
 
 .landing-card h1 {
     font-size: 2.2rem;
