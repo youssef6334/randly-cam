@@ -50,7 +50,21 @@
 
 <link rel="preload" href="style.css?v=20261007-0645" as="style">
 <link rel="preload" href="style.css?v=20261007-0645" as="style">
-<link rel="stylesheet" href="style.css?v=20261007-0645">
+<!-- تحميل مسبق للخطوط والنصوص الأساسية لتسريع الـ LCP -->
+<link rel="preload" href="style.css?v=20261007-0645" as="style">
+<link rel="preload" as="font" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/webfonts/fa-solid-900.woff2" type="font/woff2" crossorigin="anonymous">
+
+<!-- ستايل مبدئي (Inline) يظهر النص فوراً بدون انتظار ملف الستايل الكبير -->
+<style>
+    /* عرض النص الرئيسي فوراً */
+    h1 { font-family: sans-serif; font-size: 2.2rem; color: #12b886; margin-bottom: 16px; }
+    p { font-family: sans-serif; font-size: 0.95rem; color: #a7a7ad; }
+    .landing-card { background-color: #0b0b0d; padding: 30px; border-radius: 16px; text-align: center; }
+</style>
+
+<!-- تحميل ملف الستايل الأساسي دون حجب الشاشة -->
+<link rel="stylesheet" href="style.css?v=20261007-0645" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="style.css?v=20261007-0645"></noscript>
 
 <!-- تحميل ملف CSS للأيقونات -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'">
