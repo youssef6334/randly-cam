@@ -3268,3 +3268,7 @@ select.site-lang-select:focus-visible {
     display: none !important;
   }
 }
+/* RANDLY LAYOUT-SHIFT FIX (phones) */
+@media (max-width: 899.98px) {
+  #landingPage header.app-header { min-height: 93px; }
+}
