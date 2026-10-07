@@ -3270,3 +3270,16 @@ select.site-lang-select:focus-visible {
     display: none !important;
   }
 }
+
+/* تثبيت أبعاد الأزرار لمنع اهتزاز الصفحة عند تحميل الأيقونات */
+.btn-primary-lg, 
+.btn-secondary-lg {
+    min-height: 48px !important;
+}
+
+.btn-primary-lg i, 
+.btn-secondary-lg i {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+}
