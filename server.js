@@ -15,6 +15,7 @@ const fs = require('fs');
 const crypto = require('crypto');
 const { Server } = require('socket.io');
 const geoip = require('geoip-lite');
+const mod = require('./moderation');
 
 const app = express();
 
@@ -105,7 +106,7 @@ app.use((req, res, next) => {
 });
 
 // منع نشر ملفات السيرفر حتى لو لسه الملفات في نفس المجلد
-const BLOCKED = /^\/(server\.js|package(-lock)?\.json|node_modules|tools|\.env|\.git|.*\.bak)(\/|$)/i;
+const BLOCKED = /^\/(server\.js|moderation\.js|badwords\.txt|data|package(-lock)?\.json|node_modules|tools|\.env|\.git|.*\.bak)(\/|$)/i;
 app.use((req, res, next) => (BLOCKED.test(req.path) ? res.status(404).end() : next()));
 
 const publicDir = path.join(__dirname, 'public');
@@ -373,6 +374,7 @@ function pair(socketA, socketB, roomId, mode) {
     a.xoRole = 'X';
     b.xoRole = 'O';
     if (mode) savedRooms.set(roomId, { createdAt: Date.now(), mode });
+    mod.onPair(socketA, socketB, mode);
     socketA.emit('matched', { isInitiator: true, xoRole: 'X', roomId, partnerCountry: publicCountry(b.actualCountry) });
     socketB.emit('matched', { isInitiator: false, xoRole: 'O', roomId, partnerCountry: publicCountry(a.actualCountry) });
 }
@@ -449,6 +451,8 @@ io.on('connection', (socket) => {
         room: null, peer: null, actualCountry: lookupCountry(ip), ipHash, xoRole: null
     });
     socket.emit('online-count', activeUsers.size);
+
+    mod.attach(socket, { io, activeUsers, detach });   // إشراف أوتوماتيك (الحظر + فلتر الشات + البلاغات)
 
     const isBanned = () => (bans.get(ipHash) || 0) > Date.now();
 

@@ -1,0 +1,413 @@
+# قايمة الشتايم لكل لغات Randly الـ12 (عربي، English، Español، Français، Deutsch، Italiano، Português، Türkçe، Русский، हिन्दी، Bahasa Indonesia، 中文)
+# - كلمة أو عبارة في كل سطر. السطور اللي بتبدأ بـ # تعليقات.
+# - الشتيمة هنا لوحدها *مش* بتحظر حد. الحظر بيحصل بس لما حد يبلّغ والسيرفر يلاقي الشتيمة دي فعلاً في رسايله ليه.
+# - الكلمة بتتطابق ككلمة كاملة. العبارة (فيها مسافة) بتتطابق ككل. الصيني بيتطابق كجزء من الجملة لأنه من غير مسافات.
+# - علامة * في آخر الكلمة (للغات غير اللاتينية بس) تعني "أي كلمة بتبدأ بكده" (مفيدة للروسي والعربي والهندي).
+# - مش لازم تكتب التشكيل ولا الحروف الخاصة؛ السيرفر بيوحّدها (ç=c، ñ=n، ß=ss، ة=ه...). فكتب الكلمة عادي.
+# - بعد أي تعديل أعد تشغيل السيرفر.
+# - تجنّبت عمداً كلمات ممكن تتقال بريئة (زي كلب، pic، got، cono، عرصة=ساحة) عشان ما نظلمش حد. لو عايز تضيف، فكّر في المعنى البريء الأول.
+
+# ================= العربية (مصري وشامي وخليجي) =================
+كسمك
+كسمين
+كس امك
+كس ام
+كس اختك
+كسختك
+كسك
+يا ابن المتناكه
+ابن المتناكه
+متناك
+متناكه
+متناكين
+شرموط
+شرموطه
+شراميط
+اخت الشرموطه
+ابن الشرموطه
+خول
+خولات
+عرص
+معرص
+معرصين
+قحبه
+قحاب
+ابن القحبه
+عاهره
+ابن العاهره
+ابن الزانيه
+ابن الحرام
+ولاد الحرام
+ديوث
+منيوك
+منيك
+طيز
+طيزك
+زبي
+زبك
+انيك
+نيكك
+نيكتك
+هنيكك
+نيكها
+ينيك
+يلعن ابوك
+يلعن امك
+يلعن دينك
+يلعن ابو
+# عربي بحروف لاتينية (Franco-Arab)
+ksomak
+ksomk
+kos omak
+sharmouta
+sharmoota
+sharmoot
+khawal
+5awal
+metnak
+mtnak
+
+# ================= English =================
+fuck
+fucks
+fucked
+fucker
+fuckers
+fucking
+fuckin
+fuckyou
+fuckoff
+fck
+fuk
+motherfucker
+motherfuckers
+mother fucker
+cunt
+cunts
+nigger
+niggers
+faggot
+faggots
+tranny
+kike
+spic
+chink
+retard
+retarded
+whore
+whores
+slut
+sluts
+bitch
+bitches
+asshole
+arsehole
+dickhead
+cocksucker
+cock sucker
+twat
+wanker
+bastard
+kill yourself
+kys
+go die
+
+# ================= Español =================
+puta
+putas
+puto
+putos
+putamadre
+hijueputa
+hijoputa
+hijo de puta
+hijos de puta
+hija de puta
+cabron
+cabrona
+cabrones
+pendejo
+pendeja
+pendejos
+verga
+vergas
+chinga tu madre
+chingatumadre
+chingada
+culero
+culera
+concha tu madre
+concha de tu madre
+la concha de tu madre
+ctm
+malparido
+malparida
+gilipollas
+maricon
+maricones
+joto
+me cago en tu madre
+tu puta madre
+la puta que te pario
+
+# ================= Français =================
+putain
+pute
+putes
+salope
+salopes
+petasse
+connard
+connards
+connasse
+enculer
+encule
+enculee
+fils de pute
+fdp
+ntm
+nique ta mere
+nique ta race
+niquer
+bougnoule
+youpin
+va te faire foutre
+salaud
+
+# ================= Deutsch =================
+scheisse
+scheiss
+scheisskerl
+arschloch
+arschlocher
+wichser
+hurensohn
+hurensohne
+hurentochter
+fotze
+fotzen
+schlampe
+ficken
+ficker
+fick dich
+verpiss dich
+missgeburt
+schwuchtel
+spast
+spasti
+kanake
+neger
+hure
+
+# ================= Italiano =================
+cazzo
+cazzi
+testa di cazzo
+vaffanculo
+fanculo
+stronzo
+stronza
+stronzi
+puttana
+puttane
+figlio di puttana
+figlio di troia
+troia
+troie
+minchia
+porco dio
+porcodio
+dio cane
+diocane
+dio porco
+bastardo
+frocio
+froci
+ricchione
+coglione
+coglioni
+pezzo di merda
+succhiacazzi
+
+# ================= Português =================
+puta
+putas
+filho da puta
+filha da puta
+filho duma puta
+fdp
+caralho
+vai tomar no cu
+vai se foder
+foda se
+buceta
+xoxota
+viado
+arrombado
+arrombada
+cuzao
+pau no cu
+vagabunda
+
+# ================= Türkçe =================
+orospu
+orospu cocugu
+orospucocugu
+siktir
+siktirgit
+siktir git
+sikeyim
+sikerim
+sikik
+amk
+amina koyayim
+amina koyim
+amina koyarim
+aminakoyim
+amcik
+yarrak
+yarak
+dalyarak
+ibne
+pezevenk
+gavat
+surtuk
+kahpe
+yavsak
+anani sikeyim
+got veren
+gotveren
+pic kurusu
+
+# ================= Русский (* = أي كلمة بتبدأ بكده) =================
+сука
+суки
+сучка
+сучара
+блядь
+блять
+бляд*
+блят*
+хуй
+хуя
+хуе
+хуем
+нахуй
+похуй
+хуйня
+хуйн*
+хуев*
+пизда
+пизду
+пизд*
+ебать
+ебал
+ебан*
+ебат*
+еблан*
+уебок
+долбоеб*
+мудак*
+пидор*
+пидар*
+залуп*
+гондон
+шлюха
+мразь
+иди на хуй
+# روسي بحروف لاتينية
+cyka
+suka blyat
+blyat
+blyad
+pidor
+
+# ================= हिन्दी (देवनागरी) =================
+मादरचोद
+मादर चोद
+बहनचोद
+बहन चोद
+भोसड़ीके
+भोसड़ी
+चूतिया
+चुतिया
+गांडू
+गांड
+चूत
+लंड
+लौड़ा
+रंडी
+हरामी
+हरामजादा
+तेरी माँ की
+# هندي بحروف لاتينية (Hinglish)
+madarchod
+behenchod
+bhenchod
+bhosdike
+bhosdi
+chutiya
+chutiye
+chut
+gandu
+randi
+harami
+haramzada
+haramkhor
+lund
+lauda
+loda
+bsdk
+bkl
+teri maa ki
+teri ma ki
+maa ki chut
+
+# ================= Bahasa Indonesia =================
+anjing
+bangsat
+bajingan
+kontol
+kntl
+memek
+ngentot
+ngewe
+jancok
+jancuk
+goblok
+tolol
+brengsek
+sialan
+pantek
+pukimak
+lonte
+pelacur
+
+# ================= 中文 (يتطابق كجزء من الجملة) =================
+操你妈
+操你
+草泥马
+他妈的
+你妈的
+日你妈
+干你娘
+幹你娘
+你妈逼
+妈逼
+傻逼
+傻屄
+煞笔
+婊子
+臭婊子
+贱人
+鸡巴
+狗日的
+王八蛋
+死全家
+去死
+肏
+# صيني بالبينيين
+caonima
+nmsl
+shabi
+tamade
