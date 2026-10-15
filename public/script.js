@@ -767,8 +767,42 @@ function leaveSession() {
 
 function reportUser() {
     socket.emit('submit-report', { reason: 'Inappropriate behavior' });
-    alert(tr('reported'));
 }
+
+// رسالة تأكيد البلاغ داخل الشات (تظهر فقط بعد ما السيرفر يؤكد إنه سجّل البلاغ)
+const REPORT_THANKS = {
+    ar: 'شكراً لك! تم استلام بلاغك.',
+    en: 'Thank you! Your report has been received.',
+    es: '¡Gracias! Hemos recibido tu reporte.',
+    fr: 'Merci ! Votre signalement a bien été reçu.',
+    de: 'Danke! Deine Meldung ist eingegangen.',
+    it: 'Grazie! La tua segnalazione è stata ricevuta.',
+    pt: 'Obrigado! Sua denúncia foi recebida.',
+    tr: 'Teşekkürler! Bildiriminiz alındı.',
+    ru: 'Спасибо! Ваша жалоба получена.',
+    hi: 'धन्यवाद! आपकी रिपोर्ट मिल गई है।',
+    id: 'Terima kasih! Laporan Anda sudah kami terima.',
+    zh: '谢谢！我们已收到你的举报。'
+};
+
+socket.on('report-received', function () {
+    if (!chatBox) return;
+    const last = chatBox.lastElementChild;
+    if (last && last.classList.contains('msg-report-ok')) { chatBox.scrollTop = chatBox.scrollHeight; return; }
+    if (!document.getElementById('reportOkStyle')) {
+        const st = document.createElement('style');
+        st.id = 'reportOkStyle';
+        st.textContent = '.msg.msg-report-ok{align-self:stretch;max-width:100%;text-align:center;font-weight:600;font-size:.85rem;' +
+            'color:var(--accent);background:rgba(0,184,148,.12);border:1px solid var(--accent);border-radius:10px}';
+        document.head.appendChild(st);
+    }
+    const lang = document.documentElement.lang || 'ar';
+    const box = document.createElement('div');
+    box.classList.add('msg', 'msg-sys', 'msg-report-ok');
+    box.textContent = '🛡️ ' + (REPORT_THANKS[lang] || REPORT_THANKS.en);
+    chatBox.appendChild(box);
+    chatBox.scrollTop = chatBox.scrollHeight;
+});
 
 let myGameSymbol = null;
 let isMyTurn = false;

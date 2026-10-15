@@ -412,9 +412,9 @@ function tryMatch(socket, prefs) {
 
 function registerReport(reporterId, reason) {
     const reporter = activeUsers.get(reporterId);
-    if (!reporter || !reporter.peer) return;
+    if (!reporter || !reporter.peer) return false;
     const reported = activeUsers.get(reporter.peer);
-    if (!reported) return;
+    if (!reported) return false;
 
     const now = Date.now();
     reportLog.push({ t: now, reason, reporter: reporter.ipHash, reported: reported.ipHash });
@@ -432,6 +432,7 @@ function registerReport(reporterId, reason) {
         if (target) { target.emit('banned', { until: now + BAN_MS }); detach(target); }
         console.log('[BAN]', reported.ipHash, 'until', new Date(now + BAN_MS).toISOString());
     }
+    return true;
 }
 
 // ---------------------------------------------------------------- الاتصالات
@@ -548,7 +549,7 @@ io.on('connection', (socket) => {
 
     on(socket, 'submit-report', [3, 60000], (data) => {
         const reason = isObj(data) && typeof data.reason === 'string' ? data.reason.slice(0, 200) : 'unspecified';
-        registerReport(socket.id, reason);
+        if (registerReport(socket.id, reason)) socket.emit('report-received');
     });
 
     on(socket, 'leave-room', [10, 10000], () => detach(socket));
