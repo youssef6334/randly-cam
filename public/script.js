@@ -492,7 +492,7 @@ socket.on('connect', () => {
 socket.on('no-country-match', () => {
     const currentLang = document.documentElement.lang || 'ar';
     const t = translations[currentLang] || translations['en'];
-    if (statusDiv) statusDiv.textContent = t.searchingText || 'Searching...';
+    if (statusDiv) statusDiv.textContent = '';
     appendSystemMessage(t.noCountryMatchMsg || 'No one from your selected country is online right now — connecting you with someone from anywhere.');
 });
 
@@ -720,7 +720,7 @@ function nextUser() {
     if(chatBox) chatBox.style.display = 'none';
     if(skeletonLoader) skeletonLoader.style.display = 'block';
     const currentLang = document.documentElement.lang || 'ar';
-    if(statusDiv) statusDiv.textContent = translations[currentLang]?.searchingText || 'Searching...';
+    if(statusDiv) statusDiv.textContent = '';
 
     const selectedCountry = countrySelect ? countrySelect.value : 'global';
 

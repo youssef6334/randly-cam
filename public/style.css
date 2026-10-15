@@ -3288,3 +3288,8 @@ select.site-lang-select:focus-visible {
 .footer-langs { margin-top: 14px; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; font-size: 0.85rem; }
 .footer-langs a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
 .footer-langs a:hover, .footer-langs a[aria-current="page"] { color: var(--accent-purple); }
+
+/* Randly UI tweaks */
+.video-box.local-box .video-label { display: none !important; }
+.status-bar:empty { display: none; }
+
