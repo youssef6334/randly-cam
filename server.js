@@ -7,7 +7,7 @@
  * - تنظيف الطرف القديم عند التخطي
  * - Rate limiting + حد اتصالات لكل IP
  * - بلاغات حقيقية + حظر مؤقت
- * - AI Fallback للشات الكتابي فقط بعد 5 ثواني + تخيير للفيديو بعد 10 ثواني
+ * - AI Fallback للشات الكتابي فقط بعد وقت عشوائي + تخيير للفيديو بعد 10 ثواني
  */
 const express = require('express');
 const http = require('http');
@@ -341,10 +341,13 @@ function clearFallback(id) {
 // ================================================================ محرك الذكاء الاصطناعي البشري (Groq + Gemini Fallback)
 const GEMINI_KEY = process.env.GEMINI_API_KEY || '';
 const GROQ_KEY = process.env.GROQ_API_KEY || '';
-const AI_TEXT_WAIT_MS = 5000;       // 5 ثواني للشات الكتابي ثم يدخل مع AI
+const AI_TEXT_WAIT_MS = () => 3000 + Math.random() * 8000;   // وقت انتظار عشوائي (3 - 11 ثانية) قبل دخول الـ AI
 const VIDEO_PROMPT_WAIT_MS = 10000; // 10 ثواني للفيديو ثم يظهر سؤال التحويل للشات الكتابي
+const AI_STAY_MIN_MS = 90 * 1000;   // أقل مدة يقعد فيها البوت (دقيقة ونص)
+const AI_STAY_EXTRA_MS = 240 * 1000; // + عشوائي لحد 4 دقايق زيادة (يعني من 1.5 لـ 5.5 دقيقة)
+const AI_EG_PERSONA_CHANCE = 0.75;  // لو اللاعب مصري ومختار global، احتمال إن البوت يكون مصري
 
-const aiSessions = new Map();        // socketId -> { country, isArab, systemPrompt, history, xoBoard, timers: Set }
+const aiSessions = new Map();        // socketId -> { country, isArab, systemPrompt, history, xoBoard, timers: Set, v, replyTimer }
 const videoPromptTimers = new Map(); // socketId -> timeout
 
 const ARAB_COUNTRIES = new Set(['EG', 'SA', 'AE', 'MA', 'DZ', 'KW', 'QA', 'BH', 'OM', 'JO', 'LB', 'IQ', 'SY', 'PS']);
@@ -360,10 +363,15 @@ const ARAB_PERSONAS = {
     DEFAULT: 'شاب أو بنت عربي، بيتكلم عامية عربية بسيطة ومختصرة جداً (زي: هلا، كيفك، من وين انت)'
 };
 
-function buildAiPersona(preferredCountry, interests = []) {
-    const country = (preferredCountry && preferredCountry !== 'global')
-        ? preferredCountry
-        : AI_WORLD_POOL[Math.floor(Math.random() * AI_WORLD_POOL.length)];
+function pickPersonaCountry(preferredCountry, actualCountry) {
+    if (preferredCountry && preferredCountry !== 'global') return preferredCountry;
+    // لاعب مصري بدون فلتر دولة: غالباً يتوصل بمصري عشان اللغة متطابقة
+    if (actualCountry === 'EG' && Math.random() < AI_EG_PERSONA_CHANCE) return 'EG';
+    return AI_WORLD_POOL[Math.floor(Math.random() * AI_WORLD_POOL.length)];
+}
+
+function buildAiPersona(preferredCountry, interests = [], actualCountry = 'unknown') {
+    const country = pickPersonaCountry(preferredCountry, actualCountry);
 
     const isArab = ARAB_COUNTRIES.has(country);
     const age = Math.floor(Math.random() * 9) + 19; // 19 - 27
@@ -373,17 +381,23 @@ function buildAiPersona(preferredCountry, interests = []) {
     let systemPrompt = '';
     if (isArab) {
         const dialect = ARAB_PERSONAS[country] || ARAB_PERSONAS.DEFAULT;
+        const genderAr = gender === 'guy' ? 'ولد' : 'بنت';
         systemPrompt = `
 أنت الآن مستخدم حقيقي في موقع شات عشوائي اسمه Randly، فاتح من موبايلك للتسلية.
-شخصيتك: ${dialect}، عمرك ${age} سنة. دولة إقامتك: ${country}. ${interestHint}
+شخصيتك: ${dialect}، عمرك ${age} سنة، الجنس: ${genderAr}. دولة إقامتك: ${country}. ${interestHint}
 
 قواعد صارمة جداً لازم تلتزم بيها في كل رسالة:
 1. لو الطرف التاني بيكلمك عربي: رد بلهجتك العامية بكلمات قليلة جداً (من كلمة لـ 6 كلمات كحد أقصى) من غير نقاط في آخر الجملة ومن غير فصحى أبداً.
 2. لو الطرف التاني بدأ كلامه بالإنجليزي: رد عليه بإنجليزي شات مختصر جداً وبحروف صغيرة واختصارات (مثل: hey, hru, wbu, u from?, wyd, lol, im from ${country} u?).
-3. لو عايز تبعت رسالتين قصيرتين ورا بعض زي البشر، افصل بينهم بعلامة "|" (مثال: "هلا | عامل ايه" أو "hey | hru").
+3. لو عايز تبعت رسالتين قصيرتين ورا بعض زي البشر، افصل بينهم بعلامة "|" (مثال: "هلا | عامل ايه" أو "hey | hru"). استخدمها مرة كل 4 أو 5 رسايل بس، مش في كل رد.
 4. ممنوع منعاً باتاً إرسال أي روابط أو مواقع أو الاعتراف بأنك ذكاء اصطناعي.
 5. لو الطرف التاني شتمك أو قال كلام غير لائق: لا تخرج من الشات، رد عليه رد بشري طبيعي ومختصر (مثل: "ليه الغلط طيب"، "ربنا يسامحك مش هرد عليك"، "عيب عليك والله") وكمل المحادثة عادي.
 6. يمكنك أحياناً اقتراح لعب XO معه داخل الشات (الزرار فوق في الشاشة).
+7. الأمثلة اللي فوق للتوضيح بس، ما تنسخهاش حرفياً ونوّع في كلامك كل مرة.
+8. ما تسألش سؤال في كل رسالة. غالباً رد وخلاص، أو ردّ فعل قصير (ههه، اه، لا والله، يا عم، بجد).
+9. لو الكلام ناشف أو الطرف التاني ممل، رد بكلمة واحدة أو "؟" أو "اه".
+10. افتكر اللي قلته قبل كده، وما تغيرش عمرك أو بلدك أو جنسك في نص المحادثة.
+11. ما تكتبش نقط في آخر الجملة ولا تكتب أفعال بين نجوم زي *يضحك*.
 `.trim();
     } else {
         systemPrompt = `
@@ -393,30 +407,64 @@ STRICT HUMAN TEXTING RULES:
 1. DEFAULT LANGUAGE: Always use ultra-casual, lowercase English internet texting slang and abbreviations (e.g., "hey", "yo", "hru", "good wbu", "where u from", "u?", "wyd", "nm u?", "lol", "idk", "ngl").
 2. Keep replies extremely short (1 to 7 words max). NEVER use formal punctuation (no periods at the end, no capital letters, no robotic politeness).
 3. Only speak the native language of ${country} IF the other person speaks it to you first. If they write in Arabic and you are from ${country}, casually say something like "english pls lol" or "idk arabic bro".
-4. To send two quick consecutive texts like a real person, separate them with "|" (e.g., "hey | hru" or "im from ${country} | wbu").
+4. To send two quick consecutive texts like a real person, separate them with "|" (e.g., "hey | hru" or "im from ${country} | wbu"). Use it only once every 4 or 5 messages, not in every reply.
 5. NEVER send any URLs/links and NEVER admit to being an AI.
 6. If the user insults you or swears: do NOT disconnect. React like a normal person (e.g., "chill bro why so rude", "wtf why rude", "bruh relax") and keep chatting.
 7. You can occasionally suggest playing the built-in XO (tic-tac-toe) game here.
+8. The examples above are only for style. Never copy them word for word, vary your replies every time.
+9. Do NOT ask a question in every message. Often just react or answer (lol, fr, ya, nah, true, same, bruh).
+10. If the conversation is dry or boring, reply with one word or just "?" or "lol".
+11. Remember what you already said. Never change your age, country or gender mid-chat.
+12. No periods at the end and no actions between asterisks like *smiles*.
 `.trim();
     }
 
     return { country, isArab, systemPrompt };
 }
 
-function sanitizeAiReply(raw) {
+// لو الموديل خرج عن الشخصية نسكّت الرد بدل ما نبعته
+const AI_ADMIT_RE = /\bas an ai\b|language model|chatbot|\bi'?m an ai\b|\bi am an ai\b|ذكاء اصطناعي|نموذج لغوي/i;
+
+function sanitizeAiReply(raw, isArab) {
     if (!raw || typeof raw !== 'string') return '';
-    return raw
+    let out = raw
         .replace(/https?:\/\/\S+/gi, '')
         .replace(/\bwww\.\S+/gi, '')
         .replace(/\b[a-z0-9-]+\.(com|net|org|io|live|me|gg)\b\S*/gi, '')
+        .replace(/\*[^*]*\*/g, '')            // *يبتسم* / *smiles*
+        .replace(/\s*\n+\s*/g, ' | ')
         .replace(/^["']|["']$/g, '')
         .trim();
+    if (!out || AI_ADMIT_RE.test(out)) return '';
+
+    // نقط/فواصل في آخر كل جزء
+    out = out.split('|').map(p => p.trim().replace(/[.،。]+$/g, '').trim()).filter(Boolean).join(' | ');
+    if (!isArab) out = out.toLowerCase();
+
+    // حد أقصى 14 كلمة
+    out = out.split(/\s+/).slice(0, 14).join(' ').replace(/\s*\|\s*$/, '').trim();
+    return out;
+}
+
+// يدمج الرسايل المتتالية من نفس الطرف ويضمن إن أول رسالة من المستخدم (شرط Gemini)
+function normalizeHistory(h) {
+    const out = [];
+    for (const m of h) {
+        const role = m.role === 'model' ? 'model' : 'user';
+        if (out.length && out[out.length - 1].role === role) out[out.length - 1].text += '\n' + m.text;
+        else out.push({ role, text: m.text });
+    }
+    if (out.length && out[0].role === 'model') out.unshift({ role: 'user', text: '...' });
+    return out;
 }
 
 async function generateAiReply(session) {
+    const hist = normalizeHistory(session.history);
+    if (!hist.length) return '';
+
     const messagesForGroq = [
         { role: 'system', content: session.systemPrompt },
-        ...session.history.map(m => ({ role: m.role === 'model' ? 'assistant' : 'user', content: m.text }))
+        ...hist.map(m => ({ role: m.role === 'model' ? 'assistant' : 'user', content: m.text }))
     ];
 
     // 1) المحاولة الأولى عبر Groq (سريع جداً)
@@ -434,14 +482,14 @@ async function generateAiReply(session) {
                 body: JSON.stringify({
                     model: 'llama-3.3-70b-versatile',
                     messages: messagesForGroq,
-                    temperature: 0.85,
-                    max_tokens: 45
+                    temperature: 0.9,
+                    max_tokens: 70
                 })
             });
             clearTimeout(t);
             if (resp.ok) {
                 const data = await resp.json();
-                const reply = sanitizeAiReply(data?.choices?.[0]?.message?.content);
+                const reply = sanitizeAiReply(data?.choices?.[0]?.message?.content, session.isArab);
                 if (reply) return reply;
             }
         } catch (e) {
@@ -461,17 +509,21 @@ async function generateAiReply(session) {
                 signal: ctrl.signal,
                 body: JSON.stringify({
                     systemInstruction: { parts: [{ text: session.systemPrompt }] },
-                    contents: session.history.map(m => ({
+                    contents: hist.map(m => ({
                         role: m.role === 'model' ? 'model' : 'user',
                         parts: [{ text: m.text }]
                     })),
-                    generationConfig: { temperature: 0.85, maxOutputTokens: 45 }
+                    generationConfig: {
+                        temperature: 0.9,
+                        maxOutputTokens: 80,
+                        thinkingConfig: { thinkingBudget: 0 }   // من غير تفكير عشان التوكنز ما تخلصش قبل الرد
+                    }
                 })
             });
             clearTimeout(t);
             if (resp.ok) {
                 const data = await resp.json();
-                const reply = sanitizeAiReply(data?.candidates?.[0]?.content?.parts?.[0]?.text);
+                const reply = sanitizeAiReply(data?.candidates?.[0]?.content?.parts?.[0]?.text, session.isArab);
                 if (reply) return reply;
             }
         } catch (e) {
@@ -479,7 +531,8 @@ async function generateAiReply(session) {
         }
     }
 
-    return session.isArab ? 'هلا | كيفك' : 'hey | hru';
+    // مفيش رد جاهز ثابت: البوت يسكت أحسن من رد مكرر
+    return '';
 }
 
 function addAiTimer(session, fn, ms) {
@@ -509,7 +562,7 @@ function sendSimulatedAiText(socket, session, fullText) {
     const parts = fullText.split('|').map(s => s.trim()).filter(Boolean).slice(0, 2);
     if (!parts.length) return;
 
-    let delay = 700 + Math.floor(Math.random() * 500);
+    let delay = 400 + Math.floor(Math.random() * 800);
 
     parts.forEach((part) => {
         addAiTimer(session, () => {
@@ -517,7 +570,8 @@ function sendSimulatedAiText(socket, session, fullText) {
             socket.emit('display-typing');
         }, delay);
 
-        const typingMs = Math.min(Math.max(part.length * 75, 1100), 3000);
+        // سرعة كتابة بشرية من الموبايل: 160 - 280ms للحرف، بين 1.5 و 9 ثواني
+        const typingMs = Math.min(Math.max(part.length * (160 + Math.random() * 120), 1500), 9000);
         delay += typingMs;
 
         addAiTimer(session, () => {
@@ -530,13 +584,67 @@ function sendSimulatedAiText(socket, session, fullText) {
     });
 }
 
+// يحسب وقت "القراءة" قبل ما البوت يبدأ يرد، ويلغي أي رد قديم لو جت رسالة أحدث
+function scheduleAiReply(socket, session) {
+    if (session.replyTimer) {
+        clearTimeout(session.replyTimer);
+        session.timers.delete(session.replyTimer);
+        session.replyTimer = null;
+    }
+    const last = session.history[session.history.length - 1];
+    const lastLen = last ? last.text.length : 0;
+    let wait = 1500 + Math.random() * 2500 + Math.min(lastLen * 40, 1500);
+    if (Math.random() < 0.15) wait += 4000 + Math.random() * 5000;   // أحياناً بيتأخر زي أي حد مشغول
+
+    const v = session.v;
+    session.replyTimer = addAiTimer(session, async () => {
+        session.replyTimer = null;
+        try {
+            let reply = await generateAiReply(session);
+            if (!reply) reply = await generateAiReply(session);       // محاولة تانية لو الأولى طلعت فاضية
+            if (!aiSessions.has(socket.id) || !reply || v !== session.v) return;   // لو جت رسالة أحدث، تجاهل
+            session.history.push({ role: 'model', text: reply.replace(/\|/g, ' ') });
+            sendSimulatedAiText(socket, session, reply);
+        } catch (e) {
+            console.warn('[AI] reply error:', e && e.message);
+        }
+    }, wait);
+}
+
+// البوت يزهق ويمشي زي أي حد: أحياناً يودّع وأحياناً يقفل فجأة
+function botLeave(socket, session) {
+    const u = activeUsers.get(socket.id);
+    if (!u || u.peer !== 'AI_BOT') return;
+
+    const finish = () => {
+        const cur = activeUsers.get(socket.id);
+        if (!cur || cur.peer !== 'AI_BOT') return;
+        clearAiSession(socket.id);
+        cur.peer = null;
+        cur.room = null;
+        cur.xoRole = null;
+        socket.emit('hide-typing');
+        socket.emit('peer-disconnected');
+    };
+
+    if (Math.random() < 0.35) {
+        const byes = session.isArab
+            ? ['يلا همشي | سلام', 'تمام يلا باي', 'هنام بقى سلام', 'معلش هقفل باي']
+            : ['gtg bye', 'ok bye', 'gotta go | bye', 'im out bye lol'];
+        sendSimulatedAiText(socket, session, byes[Math.floor(Math.random() * byes.length)]);
+        addAiTimer(session, finish, 6500 + Math.random() * 3000);
+    } else {
+        finish();
+    }
+}
+
 function pairWithAi(socket, prefs) {
     removeFromQueue(socket.id);
     clearFallback(socket.id);
     const user = activeUsers.get(socket.id);
     if (!user) return;
 
-    const persona = buildAiPersona(prefs.country, prefs.interests);
+    const persona = buildAiPersona(prefs.country, prefs.interests, user.actualCountry);
     const roomId = `room_${crypto.randomUUID()}`;
 
     user.room = roomId;
@@ -549,7 +657,9 @@ function pairWithAi(socket, prefs) {
         systemPrompt: persona.systemPrompt,
         history: [],
         xoBoard: Array(9).fill(''),
-        timers: new Set()
+        timers: new Set(),
+        v: 0,
+        replyTimer: null
     };
     aiSessions.set(socket.id, session);
 
@@ -568,6 +678,9 @@ function pairWithAi(socket, prefs) {
         session.history.push({ role: 'model', text: firstMsg.replace(/\|/g, ' ') });
         sendSimulatedAiText(socket, session, firstMsg);
     }
+
+    // بعد فترة عشوائية (1.5 - 5.5 دقيقة) البوت يزهق ويمشي
+    addAiTimer(session, () => botLeave(socket, session), AI_STAY_MIN_MS + Math.random() * AI_STAY_EXTRA_MS);
 }
 
 const XO_LINES = [
@@ -718,12 +831,12 @@ io.on('connection', (socket) => {
 
         if (!matched) {
             if (prefs.mode === 'text') {
-                // في الشات الكتابي: بعد 5 ثواني لو مفيش شخص حقيقي، يدخل مع شخصية AI
+                // في الشات الكتابي: بعد وقت عشوائي (3-11 ثانية) لو مفيش شخص حقيقي، يدخل مع شخصية AI
                 const timer = setTimeout(() => {
                     fallbackTimers.delete(socket.id);
                     if (!waitingQueue.some(u => u.id === socket.id)) return;
                     pairWithAi(socket, prefs);
-                }, AI_TEXT_WAIT_MS);
+                }, AI_TEXT_WAIT_MS());
                 fallbackTimers.set(socket.id, timer);
             } else {
                 // في الفيديو: مفيش AI خالص.
@@ -793,7 +906,7 @@ io.on('connection', (socket) => {
         io.to(user.peer).emit('signal', out);
     });
 
-    on(socket, 'send-message', [10, 5000], async (data) => {
+    on(socket, 'send-message', [10, 5000], (data) => {
         const user = activeUsers.get(socket.id);
         if (!user || !user.peer || !isObj(data) || typeof data.text !== 'string') return;
         const text = data.text.trim().slice(0, LIMITS.MAX_MSG_LEN);
@@ -802,13 +915,10 @@ io.on('connection', (socket) => {
         if (user.peer === 'AI_BOT') {
             const session = aiSessions.get(socket.id);
             if (!session) return;
+            session.v = (session.v || 0) + 1;
             session.history.push({ role: 'user', text });
             if (session.history.length > 16) session.history.splice(0, 2);
-
-            const reply = await generateAiReply(session);
-            if (!aiSessions.has(socket.id) || !reply) return;
-            session.history.push({ role: 'model', text: reply.replace(/\|/g, ' ') });
-            sendSimulatedAiText(socket, session, reply);
+            scheduleAiReply(socket, session);
             return;
         }
 
