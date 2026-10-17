@@ -1,0 +1,21 @@
+{
+  "name": "randly",
+  "version": "1.2.0",
+  "description": "Random Chat App",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "patch-languages": "node patch-languages.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "geoip-lite": "^2.0.3",
+    "socket.io": "^4.8.4"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.8.4"
+  }
+}

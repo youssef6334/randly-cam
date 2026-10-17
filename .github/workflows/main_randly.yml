@@ -1,0 +1,61 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy Node.js app to Azure Web App - randly
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read #This is required for actions/checkout
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js version
+        uses: actions/setup-node@v3
+        with:
+          node-version: '24.x'
+
+      - name: npm install, build, and test
+        run: |
+          npm ci
+          npm run build --if-present
+          npm run test --if-present
+          npm prune --omit=dev
+          node -e "const fs=require('fs'); const path=require('path'); const engine=path.dirname(require.resolve('engine.io')); const file=path.join(engine,'contrib','base64id.js'); if (!fs.existsSync(file)) throw new Error('Missing '+file); require('socket.io');"
+          mkdir deploy
+          rsync -a --exclude='.git' --exclude='node_modules' --exclude='*.tgz' --exclude='backups' ./ deploy/
+          cp -R node_modules deploy/node_modules
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-app
+          path: deploy
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: node-app
+      
+      - name: 'Deploy to Azure Web App'
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'randly'
+          slot-name: 'Production'
+          package: .
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0160C497C71D4DFCAB3160E16F683F4E }}
+          clean: true

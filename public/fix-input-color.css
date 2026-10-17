@@ -1,0 +1,16 @@
+
+/* ===== RANDLY INPUT TEXT COLOR FIX (light mode) =====
+   A legacy rule (.bottom-action-bar .chat-input-wrapper input {color:#f1f1f3 !important})
+   made typed text white in light mode. Light mode now gets dark text and a dark caret;
+   dark mode is not touched. */
+html[data-theme="light"] .rl-input input,
+html[data-theme="light"] .bottom-action-bar .chat-input-wrapper input {
+  color: #1c1d20 !important;
+  -webkit-text-fill-color: #1c1d20;
+  caret-color: #1c1d20;
+}
+html[data-theme="light"] .rl-input input::placeholder {
+  color: #6b7078;
+  -webkit-text-fill-color: #6b7078;
+  opacity: 1;
+}
