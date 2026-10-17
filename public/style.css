@@ -3293,3 +3293,12 @@ select.site-lang-select:focus-visible {
 .video-box.local-box .video-label { display: none !important; }
 .status-bar:empty { display: none; }
 
+
+/* Randly chat-fill fix */
+@media (max-width: 899.98px) {
+    .rl-text-mode > #chatSection > .rl-msgs > .chat-box {
+        flex: 1 1 0;
+        min-height: 0;
+        max-height: none;
+    }
+}
