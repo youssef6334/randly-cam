@@ -11,6 +11,7 @@
  */
 const express = require('express');
 const http = require('http');
+const https = require('https');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
@@ -339,8 +340,9 @@ function clearFallback(id) {
 }
 
 // ================================================================ محرك الذكاء الاصطناعي البشري (Groq + Gemini Fallback)
-const GEMINI_KEY = process.env.GEMINI_API_KEY || '';
-const GROQ_KEY = process.env.GROQ_API_KEY || '';
+const cleanKey = v => String(v || '').trim().replace(/^["']|["']$/g, '').trim();
+const GEMINI_KEY = cleanKey(process.env.GEMINI_API_KEY);
+const GROQ_KEY = cleanKey(process.env.GROQ_API_KEY);
 const AI_TEXT_WAIT_MS = () => 3000 + Math.random() * 8000;   // وقت انتظار عشوائي (3 - 11 ثانية) قبل دخول الـ AI
 const VIDEO_PROMPT_WAIT_MS = 10000; // 10 ثواني للفيديو ثم يظهر سؤال التحويل للشات الكتابي
 const AI_STAY_MIN_MS = 90 * 1000;   // أقل مدة يقعد فيها البوت (دقيقة ونص)
@@ -376,6 +378,7 @@ function buildAiPersona(preferredCountry, interests = [], actualCountry = 'unkno
     const isArab = ARAB_COUNTRIES.has(country);
     const age = Math.floor(Math.random() * 9) + 19; // 19 - 27
     const gender = Math.random() > 0.5 ? 'guy' : 'girl';
+    const name = pickName(isArab, gender);
     const interestHint = interests.length ? `Your interests include: ${interests.join(', ')}.` : '';
 
     let systemPrompt = '';
@@ -384,7 +387,7 @@ function buildAiPersona(preferredCountry, interests = [], actualCountry = 'unkno
         const genderAr = gender === 'guy' ? 'ولد' : 'بنت';
         systemPrompt = `
 أنت الآن مستخدم حقيقي في موقع شات عشوائي اسمه Randly، فاتح من موبايلك للتسلية.
-شخصيتك: ${dialect}، عمرك ${age} سنة، الجنس: ${genderAr}. دولة إقامتك: ${country}. ${interestHint}
+شخصيتك: ${dialect}، عمرك ${age} سنة، الجنس: ${genderAr}، اسمك ${name} (قوله بس لو حد سأل). دولة إقامتك: ${country}. ${interestHint}
 
 قواعد صارمة جداً لازم تلتزم بيها في كل رسالة:
 1. لو الطرف التاني بيكلمك عربي: رد بلهجتك العامية بكلمات قليلة جداً (من كلمة لـ 6 كلمات كحد أقصى) من غير نقاط في آخر الجملة ومن غير فصحى أبداً.
@@ -401,7 +404,7 @@ function buildAiPersona(preferredCountry, interests = [], actualCountry = 'unkno
 `.trim();
     } else {
         systemPrompt = `
-You are a real human (${age}yo ${gender} from country code ${country}) casually chatting on a random text chat site called Randly from your phone. ${interestHint}
+You are a real human named ${name} (${age}yo ${gender} from country code ${country}) casually chatting on a random text chat site called Randly from your phone. ${interestHint}
 
 STRICT HUMAN TEXTING RULES:
 1. DEFAULT LANGUAGE: Always use ultra-casual, lowercase English internet texting slang and abbreviations (e.g., "hey", "yo", "hru", "good wbu", "where u from", "u?", "wyd", "nm u?", "lol", "idk", "ngl").
@@ -419,7 +422,7 @@ STRICT HUMAN TEXTING RULES:
 `.trim();
     }
 
-    return { country, isArab, systemPrompt };
+    return { country, isArab, systemPrompt, age, gender, name };
 }
 
 // لو الموديل خرج عن الشخصية نسكّت الرد بدل ما نبعته
@@ -458,81 +461,246 @@ function normalizeHistory(h) {
     return out;
 }
 
+// ---------- أدوات HTTP (تشتغل حتى لو نسخة Node قديمة من غير fetch) ----------
+const GROQ_MODELS = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
+
+const _aiLogAt = {};
+function aiWarn(key, msg) {            // لوج واضح من غير ما يملا السيرفر (سطر كل 5 ثواني لكل نوع)
+    const n = Date.now();
+    if (n - (_aiLogAt[key] || 0) < 5000) return;
+    _aiLogAt[key] = n;
+    console.warn('[AI]', msg);
+}
+
+function postJson(url, headers, bodyObj, timeoutMs) {
+    const body = JSON.stringify(bodyObj);
+    if (typeof fetch === 'function') {
+        const ctrl = new AbortController();
+        const t = setTimeout(() => ctrl.abort(), timeoutMs);
+        return fetch(url, {
+            method: 'POST',
+            headers: Object.assign({ 'Content-Type': 'application/json' }, headers),
+            body,
+            signal: ctrl.signal
+        }).then(async r => ({ status: r.status, text: await r.text() }))
+          .finally(() => clearTimeout(t));
+    }
+    return new Promise((resolve, reject) => {
+        const u = new URL(url);
+        const req = https.request({
+            hostname: u.hostname, path: u.pathname + u.search, method: 'POST', timeout: timeoutMs,
+            headers: Object.assign({ 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }, headers)
+        }, res => {
+            let d = '';
+            res.setEncoding('utf8');
+            res.on('data', c => { d += c; });
+            res.on('end', () => resolve({ status: res.statusCode, text: d }));
+        });
+        req.on('timeout', () => req.destroy(new Error('timeout')));
+        req.on('error', reject);
+        req.write(body);
+        req.end();
+    });
+}
+
+async function callGroq(model, messages, maxTokens = 70) {
+    const r = await postJson('https://api.groq.com/openai/v1/chat/completions',
+        { Authorization: `Bearer ${GROQ_KEY}` },
+        { model, messages, temperature: 0.9, max_tokens: maxTokens }, 6000);
+    if (r.status < 200 || r.status >= 300) throw new Error(`Groq(${model}) HTTP ${r.status}: ${String(r.text).slice(0, 200)}`);
+    const data = JSON.parse(r.text);
+    return (data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
+}
+
+async function callGemini(systemPrompt, hist, maxTokens = 80) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(GEMINI_KEY)}`;
+    const r = await postJson(url, {}, {
+        systemInstruction: { parts: [{ text: systemPrompt }] },
+        contents: hist.map(m => ({ role: m.role === 'model' ? 'model' : 'user', parts: [{ text: m.text }] })),
+        generationConfig: { temperature: 0.9, maxOutputTokens: maxTokens, thinkingConfig: { thinkingBudget: 0 } }
+    }, 6000);
+    if (r.status < 200 || r.status >= 300) throw new Error(`Gemini HTTP ${r.status}: ${String(r.text).slice(0, 200)}`);
+    const data = JSON.parse(r.text);
+    const parts = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts;
+    return Array.isArray(parts) ? parts.map(p => p.text || '').join('') : '';
+}
+
+console.log(`[AI] node=${process.version} fetch=${typeof fetch === 'function'} groqKey=${GROQ_KEY ? 'set(' + GROQ_KEY.length + ')' : 'MISSING'} geminiKey=${GEMINI_KEY ? 'set(' + GEMINI_KEY.length + ')' : 'MISSING'}`);
+
+// افتح /api/ai-health من المتصفح تعرف الـ API شغال ولا لأ وسبب الفشل (مفيش مفاتيح بتظهر)
+let _lastAiHealth = 0;
+app.get('/api/ai-health', async (req, res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    const now = Date.now();
+    if (now - _lastAiHealth < 10000) return res.status(429).json({ error: 'استنى 10 ثواني وجرب تاني' });
+    _lastAiHealth = now;
+    const out = {
+        node: process.version,
+        hasFetch: typeof fetch === 'function',
+        groqKeySet: !!GROQ_KEY, groqKeyLength: GROQ_KEY.length,
+        geminiKeySet: !!GEMINI_KEY, geminiKeyLength: GEMINI_KEY.length,
+        groq: GROQ_KEY ? null : 'no key', gemini: GEMINI_KEY ? null : 'no key'
+    };
+    if (GROQ_KEY) {
+        try {
+            const raw = await callGroq(GROQ_MODELS[0], [{ role: 'system', content: 'reply with one short word' }, { role: 'user', content: 'hi' }], 10);
+            out.groq = { ok: true, reply: raw };
+        } catch (e) { out.groq = { ok: false, error: e.message }; }
+    }
+    if (GEMINI_KEY) {
+        try {
+            const raw = await callGemini('reply with one short word', [{ role: 'user', text: 'hi' }], 10);
+            out.gemini = { ok: true, reply: raw };
+        } catch (e) { out.gemini = { ok: false, error: e.message }; }
+    }
+    res.json(out);
+});
+
 async function generateAiReply(session) {
     const hist = normalizeHistory(session.history);
     if (!hist.length) return '';
 
-    const messagesForGroq = [
-        { role: 'system', content: session.systemPrompt },
-        ...hist.map(m => ({ role: m.role === 'model' ? 'assistant' : 'user', content: m.text }))
-    ];
-
-    // 1) المحاولة الأولى عبر Groq (سريع جداً)
+    // 1) Groq (جرّب الموديل الأساسي ثم الأخف لو الأول فشل)
     if (GROQ_KEY) {
-        try {
-            const ctrl = new AbortController();
-            const t = setTimeout(() => ctrl.abort(), 6000);
-            const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${GROQ_KEY}`
-                },
-                signal: ctrl.signal,
-                body: JSON.stringify({
-                    model: 'llama-3.3-70b-versatile',
-                    messages: messagesForGroq,
-                    temperature: 0.9,
-                    max_tokens: 70
-                })
-            });
-            clearTimeout(t);
-            if (resp.ok) {
-                const data = await resp.json();
-                const reply = sanitizeAiReply(data?.choices?.[0]?.message?.content, session.isArab);
+        const messages = [
+            { role: 'system', content: session.systemPrompt },
+            ...hist.map(m => ({ role: m.role === 'model' ? 'assistant' : 'user', content: m.text }))
+        ];
+        for (const model of GROQ_MODELS) {
+            try {
+                const raw = await callGroq(model, messages, 70);
+                const reply = sanitizeAiReply(raw, session.isArab);
                 if (reply) return reply;
+                aiWarn('groq-empty', `Groq(${model}) رجّع رد فاضي بعد الفلترة. الأصلي: "${String(raw).slice(0, 80)}"`);
+                break;
+            } catch (e) {
+                aiWarn('groq-' + model, e.message);
             }
-        } catch (e) {
-            console.warn('[AI] Groq fallback to Gemini:', e.message);
         }
+    } else {
+        aiWarn('groq-nokey', 'GROQ_API_KEY مش موجود في بيئة السيرفر');
     }
 
-    // 2) المحاولة الثانية عبر Gemini Flash
+    // 2) Gemini
     if (GEMINI_KEY) {
         try {
-            const ctrl = new AbortController();
-            const t = setTimeout(() => ctrl.abort(), 6000);
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(GEMINI_KEY)}`;
-            const resp = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                signal: ctrl.signal,
-                body: JSON.stringify({
-                    systemInstruction: { parts: [{ text: session.systemPrompt }] },
-                    contents: hist.map(m => ({
-                        role: m.role === 'model' ? 'model' : 'user',
-                        parts: [{ text: m.text }]
-                    })),
-                    generationConfig: {
-                        temperature: 0.9,
-                        maxOutputTokens: 80,
-                        thinkingConfig: { thinkingBudget: 0 }   // من غير تفكير عشان التوكنز ما تخلصش قبل الرد
-                    }
-                })
-            });
-            clearTimeout(t);
-            if (resp.ok) {
-                const data = await resp.json();
-                const reply = sanitizeAiReply(data?.candidates?.[0]?.content?.parts?.[0]?.text, session.isArab);
-                if (reply) return reply;
-            }
+            const raw = await callGemini(session.systemPrompt, hist, 80);
+            const reply = sanitizeAiReply(raw, session.isArab);
+            if (reply) return reply;
+            aiWarn('gemini-empty', `Gemini رجّع رد فاضي بعد الفلترة. الأصلي: "${String(raw).slice(0, 80)}"`);
         } catch (e) {
-            console.warn('[AI] Gemini error:', e.message);
+            aiWarn('gemini', e.message);
         }
+    } else {
+        aiWarn('gemini-nokey', 'GEMINI_API_KEY مش موجود في بيئة السيرفر');
     }
 
-    // مفيش رد جاهز ثابت: البوت يسكت أحسن من رد مكرر
     return '';
+}
+
+// ---------- ردود احتياطية محلية: البوت عمره ما يسكت حتى لو الـ API وقع ----------
+const NAMES = {
+    ar: { guy: ['أحمد', 'محمد', 'عمر', 'يوسف', 'كريم', 'مصطفى', 'خالد'], girl: ['سارة', 'مريم', 'نور', 'هبة', 'ياسمين', 'ليلى', 'دنيا'] },
+    en: { guy: ['jake', 'alex', 'mike', 'dan', 'sam', 'chris', 'leo'], girl: ['emma', 'mia', 'sara', 'lily', 'anna', 'zoe', 'lea'] }
+};
+function pickName(isArab, gender) {
+    const a = NAMES[isArab ? 'ar' : 'en'][gender];
+    return a[Math.floor(Math.random() * a.length)];
+}
+
+const COUNTRY_AR = { EG: 'مصر', SA: 'السعودية', AE: 'الإمارات', MA: 'المغرب', DZ: 'الجزائر', KW: 'الكويت', QA: 'قطر', BH: 'البحرين', OM: 'عمان', JO: 'الأردن', LB: 'لبنان', IQ: 'العراق', SY: 'سوريا', PS: 'فلسطين' };
+const COUNTRY_EN = { EG: 'egypt', SA: 'saudi', AE: 'uae', MA: 'morocco', DZ: 'algeria', KW: 'kuwait', QA: 'qatar', BH: 'bahrain', OM: 'oman', JO: 'jordan', LB: 'lebanon', IQ: 'iraq', SY: 'syria', PS: 'palestine', US: 'usa', GB: 'uk', ES: 'spain', FR: 'france', DE: 'germany', IT: 'italy', BR: 'brazil', TR: 'turkey', RU: 'russia', IN: 'india', ID: 'indonesia', CA: 'canada', MX: 'mexico', NL: 'netherlands', SE: 'sweden' };
+
+function dialectOf(c) {
+    if (c === 'EG') return 'EG';
+    if (['SA', 'AE', 'KW', 'QA', 'BH', 'OM'].includes(c)) return 'SA';
+    if (['MA', 'DZ'].includes(c)) return 'MA';
+    return 'DEF';
+}
+
+const AR_T = {
+    greet: { EG: ['هلا', 'ازيك', 'اهلا', 'هاي', 'سلام', 'يا هلا'], SA: ['هلا والله', 'هلا', 'حياك', 'هاي', 'يا هلا'], MA: ['سلام', 'لاباس', 'هلا', 'سلام لاباس'], DEF: ['هلا', 'سلام', 'هاي', 'اهلا', 'مرحبا'] },
+    how: { EG: ['تمام الحمد لله', 'كويس وانت', 'زي الفل', 'الحمد لله تمام', 'تمام وانت'], SA: ['الحمدلله تمام', 'تمام وانت', 'بخير الحمدلله', 'طيب وانت'], MA: ['لاباس الحمد لله', 'بخير نتا', 'لاباس عليك', 'الحمد لله'], DEF: ['تمام وانت', 'الحمدلله', 'كويس', 'بخير وانت'] },
+    doing: { EG: ['قاعد بس', 'ولا حاجة', 'بتسلى شوية', 'مفيش حاجة وانت', 'قاعد على الموبايل'], SA: ['جالس بس', 'ولا شي', 'اتسلى شوي', 'ما في شي وانت'], MA: ['والو غير جالس', 'ما كاين والو', 'كنتسلى شوية'], DEF: ['ولا شي', 'قاعد بس', 'بتسلى شوي', 'ما في شي وانت'] },
+    gen: { EG: ['اه', 'ههه', 'بجد', 'تمام', 'ايوه', 'عادي', 'ماشي', 'والله', 'يعني', 'طب', 'اوك', 'اممم'], SA: ['اي', 'ههه', 'صدق', 'تمام', 'ايوه', 'عادي', 'طيب', 'والله', 'اوكي', 'امم'], MA: ['اه', 'هههه', 'بصح', 'تمام', 'واخا', 'عادي', 'صافي', 'والله', 'اوك'], DEF: ['اه', 'ههه', 'فعلا', 'تمام', 'ايوه', 'عادي', 'ماشي', 'والله', 'اوك', 'امم'] },
+    laugh: ['ههه', 'هههه', '😂', 'ههههه'],
+    bye: ['باي', 'سلام', 'مع السلامة', 'يلا سلام'],
+    xo: ['يلا العب', 'ماشي ابدأ انت', 'يلا بينا', 'اوك'],
+    insult: ['ليه الغلط طيب', 'عيب كده', 'ربنا يسامحك', 'ليه كده بس'],
+    thanks: ['العفو', 'ولا يهمك', 'الله يسلمك', 'عفوا'],
+    q: ['مش عارف والله', 'يمكن', 'ليه بتسأل', 'مش فاكر', 'تفرق', 'والله ما اعرف']
+};
+const EN_T = {
+    greet: ['hey', 'hi', 'yo', 'hey | hru', 'sup', 'hello'],
+    how: ['good u', 'good wbu', 'fine lol', 'good hbu', 'pretty good', 'nm u'],
+    doing: ['nothing much', 'just chilling', 'nm u', 'bored lol', 'just here lol'],
+    gen: ['lol', 'fr', 'true', 'same', 'haha', 'ok', 'yea', 'bruh', 'nice', 'oh', 'ahh', 'ngl'],
+    laugh: ['lol', 'haha', '😂', 'lmao'],
+    bye: ['ok bye', 'bye', 'cya', 'take care'],
+    xo: ['ok lets play', 'sure u start', 'ok lol', 'yea go'],
+    insult: ['chill bro why so rude', 'wtf why rude', 'bruh relax', 'ok rude lol'],
+    thanks: ['np', 'no worries', 'ur welcome', 'anytime'],
+    q: ['idk lol', 'maybe', 'hmm not sure', 'why', 'depends lol', 'ngl idk']
+};
+
+const RE_AR = /[\u0600-\u06FF]/;
+const RE_INSULT = /\b(fuck|fck|shit|bitch|asshole|idiot|stupid|dumb|dick)\b|(^|\s)(كس|احا|كسمك|متناك|شرموط|قحبة|قحبه|حمار|غبي|كلب)(\s|$)/i;
+const RE_BYE = /(\bbye\b|\bgtg\b|\bcya\b|see ya|goodbye|باي|مع السلامة|تصبح على خير|الى اللقاء|إلى اللقاء)/i;
+const RE_ASL = /(\basl\b|\ba\/s\/l\b|\ba s l\b)/i;
+const RE_NAME = /(your name|ur name|\bname\?|اسمك|إسمك)/i;
+const RE_AGE = /(how old|\bage\b|\bold r u\b|كم عمرك|عمرك|سنك|كام سنة|كام سنه|عندك كام)/i;
+const RE_GENDER = /(boy or girl|girl or boy|guy or girl|male or female|\bm or f\b|are (you|u) a (boy|girl|guy|man|woman)|ولد ولا بنت|بنت ولا ولد|انت بنت|انت ولد|ذكر ولا)/i;
+const RE_FROM = /(where (are |r )?(you |u |ya )?from|\bu from\b|where u at|which country|ur country|your country|^from\??$|منين|من وين|من اين|من أين|بلدك|دولتك|من فين|فين ساكن)/i;
+const RE_DOING = /(\bwyd\b|what (are|r) (you|u) doing|what u doing|whatcha doing|بتعمل ايه|بتعمل إيه|بتعمل اية|ايش تسوي|شو بتعمل|شو عم تعمل|شنو تسوي)/i;
+const RE_HOW = /(\bhru\b|how are (you|u)|how r u|hows it going|how's it going|how u doing|how you doing|\bwbu\b|\bhbu\b|\bu good\b|عامل ايه|عامل اية|عاملة ايه|اخبارك|أخبارك|شخبارك|شلونك|كيفك|كيف حالك|ازيك|إزيك|كيف الحال|لاباس|كيداير)/i;
+const RE_XO = /(\bxo\b|tic ?tac|play a game|play game|نلعب|لعبة|اكس او)/i;
+const RE_THANKS = /(\bthanks?\b|\bthx\b|\bty\b|شكرا|شكراً|تسلم|مشكور)/i;
+const RE_GREET = /((^|\s)(hi+|hey+|hello+|hola|yo+|sup|hallo|hai|bonjour|salut|ciao|merhaba|привет|namaste)(\s|$|[!.,?])|هلا|هلو|اهلا|أهلا|سلام|مرحبا|صباح|مساء|هاي)/i;
+const RE_LAUGH = /(^(ha){2,}|\blol\b|\blmao\b|😂|🤣|هه+ه)/i;
+
+function pickFresh(session, arr) {
+    const recent = session.recent || (session.recent = []);
+    const pool = arr.filter(x => !recent.includes(x));
+    const src = pool.length ? pool : arr;
+    const choice = src[Math.floor(Math.random() * src.length)];
+    recent.push(choice);
+    if (recent.length > 6) recent.shift();
+    return choice;
+}
+
+function localReply(session, text) {
+    const t = String(text || '').toLowerCase().trim();
+    if (!t) return '';
+    const userAr = RE_AR.test(t);
+    const pf = arr => pickFresh(session, arr);
+
+    // شخصية أجنبية واللاعب بيكتب عربي
+    if (!session.isArab && userAr) return pf(['english pls lol', 'idk arabic bro', 'sorry what lol']);
+
+    const ar = session.isArab && userAr;       // نرد بعربي بس لو الشخصية عربية واللاعب بيكتب عربي
+    const d = dialectOf(session.country);
+    const T = ar ? AR_T : EN_T;
+    const g = k => { const v = T[k]; return Array.isArray(v) ? v : (v[d] || v.DEF); };
+    const country = ar ? (COUNTRY_AR[session.country] || session.country) : (COUNTRY_EN[session.country] || String(session.country).toLowerCase());
+    const gWord = ar ? (session.gender === 'guy' ? 'ولد' : 'بنت') : (session.gender === 'guy' ? 'guy' : 'girl');
+    const age = session.age;
+    const nm = ar ? session.name : String(session.name).toLowerCase();
+
+    if (RE_INSULT.test(t)) return pf(g('insult'));
+    if (RE_BYE.test(t)) return pf(g('bye'));
+    if (RE_ASL.test(t)) return `${age} ${gWord} ${country}`;
+    if (RE_NAME.test(t)) return ar ? pf([nm, `انا ${nm}`]) : pf([nm, `im ${nm}`]);
+    if (RE_AGE.test(t)) return ar ? pf([`${age}`, `${age} وانت`, `عندي ${age}`]) : pf([`${age}`, `${age} u?`, `im ${age}`]);
+    if (RE_GENDER.test(t)) return ar ? pf([gWord, `انا ${gWord}`]) : pf([gWord, `im a ${gWord}`]);
+    if (RE_FROM.test(t)) return ar ? pf([country, `من ${country}`, `${country} وانت`]) : pf([country, `im from ${country}`, `${country} u?`]);
+    if (RE_DOING.test(t)) return pf(g('doing'));
+    if (RE_HOW.test(t)) return pf(g('how'));
+    if (RE_XO.test(t)) return pf(g('xo'));
+    if (RE_THANKS.test(t)) return pf(g('thanks'));
+    if (RE_GREET.test(t)) return pf(g('greet'));
+    if (RE_LAUGH.test(t)) return pf(g('laugh'));
+    if (/[?؟]\s*$/.test(t)) return pf(g('q'));
+    return pf(g('gen'));
 }
 
 function addAiTimer(session, fn, ms) {
@@ -600,8 +768,24 @@ function scheduleAiReply(socket, session) {
     session.replyTimer = addAiTimer(session, async () => {
         session.replyTimer = null;
         try {
-            let reply = await generateAiReply(session);
-            if (!reply) reply = await generateAiReply(session);       // محاولة تانية لو الأولى طلعت فاضية
+            const lastUser = [...session.history].reverse().find(m => m.role === 'user');
+            let reply = '';
+
+            // لو الـ API فشل مرتين ورا بعض، نستخدم الرد المحلي دقيقة كاملة من غير ما نستنى مهلة الشبكة
+            const skipApi = session.apiFail >= 2 && Date.now() < session.apiSkipUntil;
+            if (!skipApi) {
+                reply = await generateAiReply(session);
+                if (reply) session.apiFail = 0;
+                else {
+                    session.apiFail = (session.apiFail || 0) + 1;
+                    if (session.apiFail >= 2) session.apiSkipUntil = Date.now() + 60000;
+                }
+            }
+            if (!reply && lastUser) {
+                reply = localReply(session, lastUser.text);
+                aiWarn('local', 'استخدمت الرد المحلي لأن الـ API ما رجّعش رد (شوف الأسطر اللي فوق لسبب الفشل)');
+            }
+
             if (!aiSessions.has(socket.id) || !reply || v !== session.v) return;   // لو جت رسالة أحدث، تجاهل
             session.history.push({ role: 'model', text: reply.replace(/\|/g, ' ') });
             sendSimulatedAiText(socket, session, reply);
@@ -610,6 +794,7 @@ function scheduleAiReply(socket, session) {
         }
     }, wait);
 }
+
 
 // البوت يزهق ويمشي زي أي حد: أحياناً يودّع وأحياناً يقفل فجأة
 function botLeave(socket, session) {
@@ -654,12 +839,18 @@ function pairWithAi(socket, prefs) {
     const session = {
         country: persona.country,
         isArab: persona.isArab,
+        age: persona.age,
+        gender: persona.gender,
+        name: persona.name,
         systemPrompt: persona.systemPrompt,
         history: [],
         xoBoard: Array(9).fill(''),
         timers: new Set(),
         v: 0,
-        replyTimer: null
+        replyTimer: null,
+        apiFail: 0,
+        apiSkipUntil: 0,
+        recent: []
     };
     aiSessions.set(socket.id, session);
 
