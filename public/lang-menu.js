@@ -54,6 +54,8 @@
 
   function init() {
     if (document.querySelector('[data-lm]')) return;
+    var stale = document.querySelectorAll('.lm-pop');
+    for (var si = 0; si < stale.length; si++) if (stale[si].parentNode) stale[si].parentNode.removeChild(stale[si]);
     var map = collect();
     var codes = ORDER.filter(function (c) { return map[c]; });
     if (codes.length < 2) return;
@@ -126,8 +128,24 @@
   }
 
   if (HOME) {
-    // run after the page's own scripts have built the header
-    var go = function () { setTimeout(init, 0); };
+    // The home pages' own scripts rebuild the header after load and can wipe the menu,
+    // so (re)build it when needed and keep the old <select> hidden.
+    var timer = null;
+    var tick = function () {
+      timer = null;
+      var s = document.getElementById('landingLangSelect');
+      if (!s) return;
+      if (document.querySelector('[data-lm]')) { s.hidden = true; s.style.display = 'none'; }
+      else init();
+    };
+    var soon = function () { if (!timer) timer = setTimeout(tick, 30); };
+    var go = function () { setTimeout(tick, 0); setTimeout(tick, 500); setTimeout(tick, 1500); };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
+    window.addEventListener('load', go);
+    if (window.MutationObserver) {
+      var mo = new MutationObserver(soon);
+      var start = function () { mo.observe(document.body, { childList: true, subtree: true }); setTimeout(function () { mo.disconnect(); }, 15000); };
+      if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+    }
   } else if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
