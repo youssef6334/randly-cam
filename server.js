@@ -218,13 +218,17 @@ setInterval(() => {
         if (!m.size) reportsByHash.delete(h);
     }
 }, 60 * 1000).unref();
+// عداد المتصلين الذكي: يتحرك بنعومة بين 2000 و 6000 + أول رقم على اليمين يمثل العدد الحقيقي
+let fakeBaseTens = 240 + Math.floor(Math.random() * 200); // يبدأ بين 2400 و 4400
+function getDisplayOnlineCount() {
+    const real = activeUsers.size;
+    return (fakeBaseTens * 10) + real;
+}
 
-let lastBroadcastCount = -1;
 setInterval(() => {
-    if (activeUsers.size !== lastBroadcastCount) {
-        lastBroadcastCount = activeUsers.size;
-        io.emit('online-count', lastBroadcastCount);
-    }
+    const step = (Math.floor(Math.random() * 5) - 2); // يتحرك -20 أو -10 أو 0 أو +10 أو +20
+    fakeBaseTens = Math.min(595, Math.max(201, fakeBaseTens + step));
+    io.emit('online-count', getDisplayOnlineCount());
 }, 5000).unref();
 
 // ---------------------------------------------------------------- أدوات مساعدة
@@ -1192,7 +1196,7 @@ io.on('connection', (socket) => {
     activeUsers.set(socket.id, {
         room: null, peer: null, actualCountry: lookupCountry(ip), ipHash, xoRole: null
     });
-    socket.emit('online-count', activeUsers.size);
+    socket.emit('online-count', getDisplayOnlineCount());
 
     mod.attach(socket, { io, activeUsers, detach });
 
