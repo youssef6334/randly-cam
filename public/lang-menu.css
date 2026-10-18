@@ -40,6 +40,12 @@ html[data-theme="light"] .lm-pop {
     outline-offset: 2px;
 }
 .lm-btn svg { flex: none; }
+.lm-btn .lm-flag { width: 24px; height: 24px; }
+.lm-btn .lm-flag svg { width: 24px; height: 24px; }
+/* chat home pages: the language control sits in the second header row next to the online badge */
+.rl-top-row2 .lm { flex: 1 1 auto; min-width: 0; }
+.rl-top-row2 .lm-btn { width: 100%; max-width: 170px; justify-content: flex-start; }
+.rl-top-row2 .lm-btn .lm-chev { margin-inline-start: auto; }
 .lm-chev { transition: transform .15s ease; }
 .lm-btn[aria-expanded="true"] .lm-chev { transform: rotate(180deg); }
 

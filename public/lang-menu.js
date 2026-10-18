@@ -3,10 +3,11 @@
    - Languages and links come from the page's own <link rel="alternate" hreflang="..."> tags,
      so any new page that has those tags + these two files gets the menu automatically.
    - Items are real links (crawlable, work without extra JS).
-   - Not used on the chat home pages (they have their own language logic). */
+   - On the chat home pages only the landing-page selector is replaced (the old <select> stays hidden in the
+     page so the existing scripts keep working); the chat screen itself is untouched. */
 (function () {
   'use strict';
-  if (document.getElementById('landingPage')) return;
+  var HOME = !!document.getElementById('landingPage');
 
   var ORDER = ['ar', 'en', 'es', 'fr', 'de', 'it', 'pt', 'tr', 'ru', 'hi', 'id', 'zh'];
   var NAMES = { ar: 'العربية', en: 'English', es: 'Español', fr: 'Français', de: 'Deutsch', it: 'Italiano',
@@ -26,7 +27,6 @@
     id: S + '<rect width="30" height="15" fill="#f00"/><rect y="15" width="30" height="15" fill="#fff"/></svg>',
     zh: S + '<rect width="30" height="30" fill="#de2910"/><polygon points="8.0,4.0 9.2,7.4 12.8,7.5 9.9,9.6 10.9,13.0 8.0,11.0 5.1,13.0 6.1,9.6 3.2,7.5 6.8,7.4" fill="#ffde00"/><polygon points="15.0,1.9 15.4,3.0 16.5,3.0 15.6,3.7 15.9,4.8 15.0,4.2 14.1,4.8 14.4,3.7 13.5,3.0 14.6,3.0" fill="#ffde00"/><polygon points="18.0,5.4 18.4,6.5 19.5,6.5 18.6,7.2 18.9,8.3 18.0,7.7 17.1,8.3 17.4,7.2 16.5,6.5 17.6,6.5" fill="#ffde00"/><polygon points="18.0,10.4 18.4,11.5 19.5,11.5 18.6,12.2 18.9,13.3 18.0,12.7 17.1,13.3 17.4,12.2 16.5,11.5 17.6,11.5" fill="#ffde00"/><polygon points="15.0,13.9 15.4,15.0 16.5,15.0 15.6,15.7 15.9,16.8 15.0,16.1 14.1,16.8 14.4,15.7 13.5,15.0 14.6,15.0" fill="#ffde00"/></svg>'
   };
-  var GLOBE = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18"/></svg>';
   var CHEV = '<svg class="lm-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
   var CHECK = '<svg class="lm-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>';
 
@@ -60,8 +60,8 @@
     var cur = currentLang(map);
     if (!map[cur]) cur = codes[0];
 
-    var select = document.querySelector('.app-header select.site-lang-select');
-    var host = select ? select.parentNode : (document.querySelector('.app-header .header-right') || document.querySelector('.app-header'));
+    var select = HOME ? document.getElementById('landingLangSelect') : document.querySelector('.app-header select.site-lang-select');
+    var host = select ? select.parentNode : (HOME ? null : (document.querySelector('.app-header .header-right') || document.querySelector('.app-header')));
     if (!host) return;
 
     var id = 'lmPop' + Math.floor(Math.random() * 1e6);
@@ -69,7 +69,7 @@
     wrap.className = 'lm';
     wrap.setAttribute('data-lm', '');
     wrap.innerHTML = '<button type="button" class="lm-btn" aria-haspopup="true" aria-expanded="false" aria-controls="' + id + '" aria-label="Language: ' + esc(NAMES[cur]) + '">' +
-      GLOBE + '<span>' + cur.toUpperCase() + '</span>' + CHEV + '</button>';
+      '<span class="lm-flag">' + FLAGS[cur] + '</span><span>' + cur.toUpperCase() + '</span>' + CHEV + '</button>';
     var btn = wrap.firstChild;
 
     var pop = document.createElement('nav');
@@ -82,7 +82,11 @@
         '<span class="lm-flag">' + FLAGS[c] + '</span><span class="lm-name">' + esc(NAMES[c]) + '</span>' + (c === cur ? CHECK : '') + '</a>';
     }).join('');
 
-    if (select) host.replaceChild(wrap, select); else host.appendChild(wrap);
+    if (select && HOME) {
+      host.insertBefore(wrap, select);
+      select.hidden = true; select.style.display = 'none'; select.setAttribute('aria-hidden', 'true'); select.tabIndex = -1;
+    } else if (select) host.replaceChild(wrap, select);
+    else host.appendChild(wrap);
     document.body.appendChild(pop);
 
     function place() {
@@ -121,5 +125,9 @@
     });
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  if (HOME) {
+    // run after the page's own scripts have built the header
+    var go = function () { setTimeout(init, 0); };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
+  } else if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
