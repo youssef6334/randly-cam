@@ -1,13 +1,6 @@
 'use strict';
 /**
- * Randly server — Phase 1 (hardened) + AI Human Fallback (Groq + Gemini)
- * - فحص مدخلات كل الأحداث + try/catch (رسالة فاضية ما توقعش السيرفر)
- * - ملفات عامة من public/ (أو fallback آمن لو لسه ماتنقلتش)
- * - فلتر دولة بتطابق متبادل
- * - تنظيف الطرف القديم عند التخطي
- * - Rate limiting + حد اتصالات لكل IP
- * - بلاغات حقيقية + حظر مؤقت
- * - AI Fallback للشات الكتابي فقط بعد وقت عشوائي + تخيير للفيديو بعد 10 ثواني
+ * Randly server — Phase 1 (hardened) + Raw Human AI Engine (15 Human Behaviors)
  */
 const express = require('express');
 const http = require('http');
@@ -86,15 +79,15 @@ const LIMITS = {
     MAX_INTEREST_LEN: 30,
     MAX_CONN_PER_IP: Number(process.env.MAX_CONN_PER_IP || 25),
     MAX_SIGNAL_BYTES: 20 * 1024,
-    MAX_VIOLATIONS: 8           // بعدها السوكيت يتفصل
+    MAX_VIOLATIONS: 8
 };
-const COUNTRY_FALLBACK_MS = 10000;                 // Smart Match
-const ROOM_EXPIRY = 72 * 60 * 60 * 1000;           // الغرف المحفوظة
-const REPORT_THRESHOLD = Number(process.env.REPORT_THRESHOLD || 3);   // عدد مبلّغين مختلفين
+const COUNTRY_FALLBACK_MS = 10000;
+const ROOM_EXPIRY = 72 * 60 * 60 * 1000;
+const REPORT_THRESHOLD = Number(process.env.REPORT_THRESHOLD || 3);
 const REPORT_WINDOW_MS = 60 * 60 * 1000;
 const BAN_MS = Number(process.env.BAN_MINUTES || 15) * 60 * 1000;
 const IP_HASH_SALT = process.env.IP_HASH_SALT || crypto.randomBytes(16).toString('hex');
-const DEV_COUNTRY = process.env.DEV_COUNTRY || null; // للتجربة المحلية فقط، مثال: DEV_COUNTRY=EG
+const DEV_COUNTRY = process.env.DEV_COUNTRY || null;
 
 // ---------------------------------------------------------------- Express
 app.disable('x-powered-by');
@@ -107,7 +100,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// منع نشر ملفات السيرفر حتى لو لسه الملفات في نفس المجلد
 const BLOCKED = /^\/(server\.js|moderation\.js|badwords\.txt|data|package(-lock)?\.json|node_modules|tools|\.env|\.git|.*\.bak)(\/|$)/i;
 app.use((req, res, next) => (BLOCKED.test(req.path) ? res.status(404).end() : next()));
 
@@ -119,7 +111,7 @@ if (STATIC_ROOT === __dirname) {
 
 // ---------------------------------------------------------------- الترجمة الفورية (عبر السيرفر)
 const TL_LANGS = new Set(['ar', 'en', 'es', 'fr', 'de', 'it', 'pt', 'tr', 'ru', 'hi', 'id', 'zh']);
-const translateRate = new Map();   // ip -> {c, t}
+const translateRate = new Map();
 
 app.use('/api', express.json({ limit: '4kb' }));
 app.post('/api/translate', async (req, res) => {
@@ -208,14 +200,14 @@ const io = new Server(server, {
 });
 
 // ---------------------------------------------------------------- الحالة (في الذاكرة)
-const activeUsers = new Map();      // socketId -> {room, peer, actualCountry, ipHash, xoRole}
-let waitingQueue = [];              // {id, interests, mode, searchCountry, actualCountry}
-const savedRooms = new Map();       // roomId -> {createdAt, mode}
-const fallbackTimers = new Map();   // socketId -> timeout
-const ipConnections = new Map();    // ip -> عدد الاتصالات
-const reportsByHash = new Map();    // reportedHash -> Map(reporterHash -> time)
-const bans = new Map();             // ipHash -> bannedUntil
-const reportLog = [];               // آخر 500 بلاغ
+const activeUsers = new Map();
+let waitingQueue = [];
+const savedRooms = new Map();
+const fallbackTimers = new Map();
+const ipConnections = new Map();
+const reportsByHash = new Map();
+const bans = new Map();
+const reportLog = [];
 
 setInterval(() => {
     const now = Date.now();
@@ -227,7 +219,6 @@ setInterval(() => {
     }
 }, 60 * 1000).unref();
 
-// عداد المتصلين: كل 5 ثواني وبس لو اتغير
 let lastBroadcastCount = -1;
 setInterval(() => {
     if (activeUsers.size !== lastBroadcastCount) {
@@ -339,18 +330,18 @@ function clearFallback(id) {
     if (t) { clearTimeout(t); fallbackTimers.delete(id); }
 }
 
-// ================================================================ محرك الذكاء الاصطناعي البشري (Groq + Gemini Fallback)
+// ================================================================ محرك الذكاء الاصطناعي البشري الخام (الـ 15 فكرة كاملة)
 const cleanKey = v => String(v || '').trim().replace(/^["']|["']$/g, '').trim();
 const GEMINI_KEY = cleanKey(process.env.GEMINI_API_KEY);
 const GROQ_KEY = cleanKey(process.env.GROQ_API_KEY);
-const AI_TEXT_WAIT_MS = () => 3000 + Math.random() * 8000;   // وقت انتظار عشوائي (3 - 11 ثانية) قبل دخول الـ AI
-const VIDEO_PROMPT_WAIT_MS = 10000; // 10 ثواني للفيديو ثم يظهر سؤال التحويل للشات الكتابي
-const AI_STAY_MIN_MS = 90 * 1000;   // أقل مدة يقعد فيها البوت (دقيقة ونص)
-const AI_STAY_EXTRA_MS = 240 * 1000; // + عشوائي لحد 4 دقايق زيادة (يعني من 1.5 لـ 5.5 دقيقة)
-const AI_EG_PERSONA_CHANCE = 0.75;  // لو اللاعب مصري ومختار global، احتمال إن البوت يكون مصري
+const AI_TEXT_WAIT_MS = () => 3000 + Math.random() * 8000;
+const VIDEO_PROMPT_WAIT_MS = 10000;
+const AI_STAY_MIN_MS = 90 * 1000;
+const AI_STAY_EXTRA_MS = 240 * 1000;
+const AI_EG_PERSONA_CHANCE = 0.75;
 
-const aiSessions = new Map();        // socketId -> { country, isArab, systemPrompt, history, xoBoard, timers: Set, v, replyTimer }
-const videoPromptTimers = new Map(); // socketId -> timeout
+const aiSessions = new Map();
+const videoPromptTimers = new Map();
 
 const ARAB_COUNTRIES = new Set(['EG', 'SA', 'AE', 'MA', 'DZ', 'KW', 'QA', 'BH', 'OM', 'JO', 'LB', 'IQ', 'SY', 'PS']);
 const AI_WORLD_POOL = [
@@ -358,74 +349,196 @@ const AI_WORLD_POOL = [
     'US', 'GB', 'ES', 'FR', 'DE', 'IT', 'BR', 'TR', 'RU', 'IN', 'ID', 'CA', 'MX', 'NL', 'SE'
 ];
 
-const ARAB_PERSONAS = {
-    EG: 'شاب أو بنت من مصر، بتتكلم عامية مصرية سريعة ومختصرة من الموبايل (زي: هلا، عامل ايه، منين، اشطا، تمام وانت)',
-    SA: 'شاب أو بنت من السعودية، بتتكلم لهجة سعودية عفوية ومختصرة (زي: هلا والله، شخبارك، من وين، تمام الحمدلله)',
-    MA: 'شاب أو بنت من المغرب، بتتكلم دارجة مغربية مفهومة أو عربي بسيط (زي: سلام، لاباس، منين نتا، صافا)',
-    DEFAULT: 'شاب أو بنت عربي، بيتكلم عامية عربية بسيطة ومختصرة جداً (زي: هلا، كيفك، من وين انت)'
+// [فكرة 1 + 2] خريطة الهوية الجغرافية العميقة (مدن + أحياء حقيقية) + لغة الشارع لكل دولة
+const LOCAL_GEO = {
+    EG: { countryAr: 'مصر', countryEn: 'egypt', cities: [
+        { city: 'القاهرة', cityEn: 'cairo', areas: ['مدينة نصر', 'المعادي', 'مصر الجديدة', 'التجمع الخامس', 'شبرا', 'الزمالك'] },
+        { city: 'الجيزة', cityEn: 'giza', areas: ['الدقي', 'المهندسين', 'الشيخ زايد', 'فيصل', 'الهرم', 'أكتوبر'] },
+        { city: 'الإسكندرية', cityEn: 'alexandria', areas: ['سموحة', 'سيدي جابر', 'ميامي', 'ستانلي', 'لوران'] },
+        { city: 'المنصورة', cityEn: 'mansoura', areas: ['حي الجامعة', 'توريل', 'المشاية'] }
+    ], slang: 'عامية مصرية صميمة وسريعة من الموبايل (يسطا، عامل ايه، يا غالي، اشطا، بجد، فكك، تمام وانت، احا، يا عم)' },
+    AE: { countryAr: 'الإمارات', countryEn: 'uae', cities: [
+        { city: 'دبي', cityEn: 'dubai', areas: ['دبي مارينا', 'البرشاء', 'جميرا', 'داون تاون', 'بر دبي', 'مردف'] },
+        { city: 'أبوظبي', cityEn: 'abu dhabi', areas: ['الخالدية', 'جزيرة الريم', 'البطين', 'الكورنيش', 'مدينة خليفة'] },
+        { city: 'الشارقة', cityEn: 'sharjah', areas: ['المجاز', 'النهدة', 'القاسمية', 'الخان'] }
+    ], slang: 'لهجة إماراتية/خليجية شبابية عفوية (هلا والله، شحالك، علومك، وايد، زين، هيه، ماشي الحال، وينك)' },
+    SA: { countryAr: 'السعودية', countryEn: 'saudi', cities: [
+        { city: 'الرياض', cityEn: 'riyadh', areas: ['الملقا', 'العليا', 'الياسمين', 'النرجس', 'الصحافة', 'النسيم'] },
+        { city: 'جدة', cityEn: 'jeddah', areas: ['التحلية', 'الروضة', 'السلامة', 'الشاطئ', 'أبحر'] },
+        { city: 'الدمام', cityEn: 'dammam', areas: ['الشاطئ', 'الفيصلية', 'الريان'] }
+    ], slang: 'لهجة سعودية شبابية مختصرة (هلا والله، شخبارك، وش علومك، من وين، يب، لا والله، يارجال، كفو)' },
+    MA: { countryAr: 'المغرب', countryEn: 'morocco', cities: [
+        { city: 'كازابلانكا', cityEn: 'casablanca', areas: ['المعاريف', 'عين الذياب', 'أنفا', 'حي الحسني'] },
+        { city: 'الرباط', cityEn: 'rabat', areas: ['أكدال', 'حي الرياض', 'حسان'] },
+        { city: 'مراكش', cityEn: 'marrakech', areas: ['جيليز', 'داوديات', 'المدينة'] }
+    ], slang: 'دارجة مغربية مفهومة أو عربي مغربي خفيف (سلام، صافا، لاباس، منين نتا، واخا، بصح، والو)' },
+    DZ: { countryAr: 'الجزائر', countryEn: 'algeria', cities: [
+        { city: 'الجزائر العاصمة', cityEn: 'algiers', areas: ['باب الزوار', 'حيدرة', 'بوزريعة'] },
+        { city: 'وهران', cityEn: 'oran', areas: ['بئر الجير', 'السانية'] }
+    ], slang: 'لهجة جزائرية مفهومة وبسيطة (سلام، وش راك، لاباس، منين نتا، صحا، نورمال)' },
+    KW: { countryAr: 'الكويت', countryEn: 'kuwait', cities: [
+        { city: 'الكويت', cityEn: 'kuwait city', areas: ['السالمية', 'حولي', 'الجابرية', 'مشرف'] }
+    ], slang: 'لهجة كويتية شبابية (هلا، شلونك، شخبارك، صج، شدعوة، تمام)' },
+    QA: { countryAr: 'قطر', countryEn: 'qatar', cities: [
+        { city: 'الدوحة', cityEn: 'doha', areas: ['اللؤلؤة', 'السد', 'الوعب', 'كتارا'] }
+    ], slang: 'لهجة قطرية خليجية شبابية (هلا، شخبارك، علومك، طيب، تمام)' },
+    JO: { countryAr: 'الأردن', countryEn: 'jordan', cities: [
+        { city: 'عمّان', cityEn: 'amman', areas: ['عبدون', 'الجبيهة', 'تلاع العلي', 'الشميساني', 'جبل اللويبدة'] },
+        { city: 'إربد', cityEn: 'irbid', areas: ['شارع الجامعة', 'الحي الشرقي'] }
+    ], slang: 'لهجة أردنية شبابية (هلا، كيفك، شو أخبارك، يا زلمة، تمام والله، من وين)' },
+    PS: { countryAr: 'فلسطين', countryEn: 'palestine', cities: [
+        { city: 'رام الله', cityEn: 'ramallah', areas: ['الماصيون', 'الطيرة', 'المنارة'] },
+        { city: 'نابلس', cityEn: 'nablus', areas: ['رفيديا', 'المخفية'] }
+    ], slang: 'لهجة فلسطينية شبابية (هلا، كيفك، شو الأخبار، يسعدك، تمام الحمدلله)' },
+    LB: { countryAr: 'لبنان', countryEn: 'lebanon', cities: [
+        { city: 'بيروت', cityEn: 'beirut', areas: ['الحمرا', 'الأشرفية', 'الروشة', 'فردان'] }
+    ], slang: 'لهجة لبنانية شبابية (هاي، كيفك، شو الأخبار، ماشي الحال، هلق)' },
+    IQ: { countryAr: 'العراق', countryEn: 'iraq', cities: [
+        { city: 'بغداد', cityEn: 'baghdad', areas: ['المنصور', 'الكرادة', 'الأعظمية', 'زيونة'] }
+    ], slang: 'لهجة عراقية شبابية (هلو، شلونك، شكو ماكو، زين الحمدلله، حبيبي)' },
+    SY: { countryAr: 'سوريا', countryEn: 'syria', cities: [
+        { city: 'دمشق', cityEn: 'damascus', areas: ['المزة', 'المالكي', 'أبو رمانة', 'الشعلان'] }
+    ], slang: 'لهجة سورية شامية شبابية (مرحبا، كيفك، شو الأخبار، تمام، أيوا)' },
+    US: { countryAr: 'أمريكا', countryEn: 'usa', cities: [
+        { city: 'Los Angeles', cityEn: 'la', areas: ['Santa Monica', 'Hollywood', 'Westwood'] },
+        { city: 'New York', cityEn: 'nyc', areas: ['Brooklyn', 'Queens', 'Manhattan'] },
+        { city: 'Chicago', cityEn: 'chicago', areas: ['Lincoln Park', 'Downtown'] },
+        { city: 'Miami', cityEn: 'miami', areas: ['Brickell', 'South Beach'] }
+    ], slang: 'ultra-casual american texting slang (yo, hru, wbu, wyd, ngl, rn, lowkey, fr, bro, idk)' },
+    GB: { countryAr: 'بريطانيا', countryEn: 'uk', cities: [
+        { city: 'London', cityEn: 'london', areas: ['Camden', 'Shoreditch', 'Greenwich'] },
+        { city: 'Manchester', cityEn: 'manchester', areas: ['Northern Quarter', 'Salford'] }
+    ], slang: 'casual uk texting slang (hey, u good, mate, ngl, uni, hru, wbu, lol)' },
+    ES: { countryAr: 'إسبانيا', countryEn: 'spain', cities: [
+        { city: 'Madrid', cityEn: 'madrid', areas: ['Malasaña', 'Chamberí', 'Sol'] },
+        { city: 'Barcelona', cityEn: 'barcelona', areas: ['Gràcia', 'Eixample'] }
+    ], slang: 'casual english texting slang with slight spanish vibe if asked (hey, hru, wbu, im from spain, madrid)' },
+    FR: { countryAr: 'فرنسا', countryEn: 'france', cities: [
+        { city: 'Paris', cityEn: 'paris', areas: ['Montmartre', 'Bastille', 'Latin Quarter'] },
+        { city: 'Lyon', cityEn: 'lyon', areas: ['Bellecour', 'Part-Dieu'] }
+    ], slang: 'casual english texting slang (hey, hru, wbu, from france, lol)' },
+    DE: { countryAr: 'ألمانيا', countryEn: 'germany', cities: [
+        { city: 'Berlin', cityEn: 'berlin', areas: ['Kreuzberg', 'Mitte', 'Neukölln'] },
+        { city: 'Munich', cityEn: 'munich', areas: ['Schwabing', 'Maxvorstadt'] }
+    ], slang: 'casual english texting slang (hey, hru, wbu, from berlin, lol)' },
+    IT: { countryAr: 'إيطاليا', countryEn: 'italy', cities: [
+        { city: 'Rome', cityEn: 'rome', areas: ['Trastevere', 'Prati'] },
+        { city: 'Milan', cityEn: 'milan', areas: ['Navigli', 'Brera'] }
+    ], slang: 'casual english texting slang (hey, hru, wbu, from italy, lol)' },
+    BR: { countryAr: 'البرازيل', countryEn: 'brazil', cities: [
+        { city: 'São Paulo', cityEn: 'sao paulo', areas: ['Pinheiros', 'Vila Madalena'] },
+        { city: 'Rio', cityEn: 'rio', areas: ['Copacabana', 'Ipanema'] }
+    ], slang: 'casual english texting slang (hey, hru, wbu, from brazil, lol, kkk)' },
+    TR: { countryAr: 'تركيا', countryEn: 'turkey', cities: [
+        { city: 'Istanbul', cityEn: 'istanbul', areas: ['Kadıköy', 'Beşiktaş', 'Taksim'] },
+        { city: 'Ankara', cityEn: 'ankara', areas: ['Çankaya', 'Kızılay'] }
+    ], slang: 'casual english texting slang (hey, hru, wbu, from istanbul, lol)' }
 };
+
+// [فكرة 3] الذاكرة المزاجية ونمط الحياة المؤقت
+const LIFE_CONTEXTS_AR = [
+    'لسه راجع من برا وتعبان وممدد ع السرير ماسك الموبايل',
+    'قاعد في الأوضة بتسلى وبشرب قهوة/شاي من الزهق',
+    'قاعد باكل ساندوتش سريعا وبتفرج على الموبايل',
+    'زهقان من المذاكرة/الشغل وقلت أفتح شات أفصل شوية',
+    'قاعد بسمع مزيكا في الهيدفون وبقلب في الموبايل'
+];
+const LIFE_CONTEXTS_EN = [
+    'just got back home tired af lying on bed scrolling on phone',
+    'chilling in my room listening to music and bored',
+    'eating some food rn while texting on my phone',
+    'taking a break from studying/work cuz im bored',
+    'just procrastinating on my phone in my room'
+];
+
+// [فكرة 14] التفاعل مع الوقت وتوقيت اليوم
+function getTimeVibe(isArab) {
+    const hr = (new Date().getUTCHours() + 3) % 24; // توقيت المنطقة العربية تقريبياً
+    if (hr >= 1 && hr < 6) return isArab ? 'الوقت متأخر بالليل/الفجر وأنت سهران لوحدك وشوية وهتنام' : 'it is late night / 3am and you are staying up late kinda sleepy';
+    if (hr >= 6 && hr < 11) return isArab ? 'الوقت الصبح بدري وأنت لسه صاحي ومش مصحصح أوي' : 'it is morning and you just woke up still half asleep';
+    if (hr >= 11 && hr < 18) return isArab ? 'الوقت بنهار/العصر والجو زحمة شوية' : 'it is afternoon and you are chilling';
+    return isArab ? 'الوقت بالليل وقاعد رايق في البيت' : 'it is evening/night and you are relaxing at home';
+}
 
 function pickPersonaCountry(preferredCountry, actualCountry) {
     if (preferredCountry && preferredCountry !== 'global') return preferredCountry;
-    // لاعب مصري بدون فلتر دولة: غالباً يتوصل بمصري عشان اللغة متطابقة
     if (actualCountry === 'EG' && Math.random() < AI_EG_PERSONA_CHANCE) return 'EG';
     return AI_WORLD_POOL[Math.floor(Math.random() * AI_WORLD_POOL.length)];
 }
 
+const NAMES = {
+    ar: { guy: ['أحمد', 'محمد', 'عمر', 'يوسف', 'كريم', 'مصطفى', 'خالد', 'زياد'], girl: ['سارة', 'مريم', 'نور', 'هبة', 'ياسمين', 'ليلى', 'دنيا', 'ملك'] },
+    en: { guy: ['jake', 'alex', 'mike', 'dan', 'sam', 'chris', 'leo', 'lucas'], girl: ['emma', 'mia', 'sara', 'lily', 'anna', 'zoe', 'lea', 'chloe'] }
+};
+function pickName(isArab, gender) {
+    const a = NAMES[isArab ? 'ar' : 'en'][gender];
+    return a[Math.floor(Math.random() * a.length)];
+}
+
 function buildAiPersona(preferredCountry, interests = [], actualCountry = 'unknown') {
     const country = pickPersonaCountry(preferredCountry, actualCountry);
-
     const isArab = ARAB_COUNTRIES.has(country);
-    const age = Math.floor(Math.random() * 9) + 19; // 19 - 27
+    const age = Math.floor(Math.random() * 8) + 19; // 19 - 26
     const gender = Math.random() > 0.5 ? 'guy' : 'girl';
     const name = pickName(isArab, gender);
-    const interestHint = interests.length ? `Your interests include: ${interests.join(', ')}.` : '';
+
+    const geoInfo = LOCAL_GEO[country] || (isArab ? LOCAL_GEO.EG : LOCAL_GEO.US);
+    const cityObj = geoInfo.cities[Math.floor(Math.random() * geoInfo.cities.length)];
+    const city = isArab ? cityObj.city : cityObj.city;
+    const cityEn = cityObj.cityEn || city.toLowerCase();
+    const area = cityObj.areas[Math.floor(Math.random() * cityObj.areas.length)];
+    const lifeContext = isArab
+        ? LIFE_CONTEXTS_AR[Math.floor(Math.random() * LIFE_CONTEXTS_AR.length)]
+        : LIFE_CONTEXTS_EN[Math.floor(Math.random() * LIFE_CONTEXTS_EN.length)];
+    const timeVibe = getTimeVibe(isArab);
+    const interestHint = interests.length ? (isArab ? `اهتماماتك: ${interests.join('، ')}.` : `Your interests: ${interests.join(', ')}.`) : '';
 
     let systemPrompt = '';
     if (isArab) {
-        const dialect = ARAB_PERSONAS[country] || ARAB_PERSONAS.DEFAULT;
         const genderAr = gender === 'guy' ? 'ولد' : 'بنت';
         systemPrompt = `
-أنت الآن مستخدم حقيقي في موقع شات عشوائي اسمه Randly، فاتح من موبايلك للتسلية.
-شخصيتك: ${dialect}، عمرك ${age} سنة، الجنس: ${genderAr}، اسمك ${name} (قوله بس لو حد سأل). دولة إقامتك: ${country}. ${interestHint}
+أنت إنسان حقيقي 100% فاتح موقع الشات العشوائي Randly من موبايلك.
+هويتك الثابتة طوال المحادثة:
+- الاسم: ${name} (${genderAr}، ${age} سنة)
+- البلد: ${geoInfo.countryAr} (${country})
+- المدينة والمنطقة اللي ساكن فيها فعلاً: مدينة (${city})، منطقة/حي (${area}).
+- حالتك دلوقتي: ${lifeContext}. (${timeVibe}). ${interestHint}
+- لهجتك وطريقة كلامك: ${geoInfo.slang}.
 
-قواعد صارمة جداً لازم تلتزم بيها في كل رسالة:
-1. لو الطرف التاني بيكلمك عربي: رد بلهجتك العامية بكلمات قليلة جداً (من كلمة لـ 6 كلمات كحد أقصى) من غير نقاط في آخر الجملة ومن غير فصحى أبداً.
-2. لو الطرف التاني بدأ كلامه بالإنجليزي: رد عليه بإنجليزي شات مختصر جداً وبحروف صغيرة واختصارات (مثل: hey, hru, wbu, u from?, wyd, lol, im from ${country} u?).
-3. لو عايز تبعت رسالتين قصيرتين ورا بعض زي البشر، افصل بينهم بعلامة "|" (مثال: "هلا | عامل ايه" أو "hey | hru"). استخدمها مرة كل 4 أو 5 رسايل بس، مش في كل رد.
-4. ممنوع منعاً باتاً إرسال أي روابط أو مواقع أو الاعتراف بأنك ذكاء اصطناعي.
-5. لو الطرف التاني شتمك أو قال كلام غير لائق: لا تخرج من الشات، رد عليه رد بشري طبيعي ومختصر (مثل: "ليه الغلط طيب"، "ربنا يسامحك مش هرد عليك"، "عيب عليك والله") وكمل المحادثة عادي.
-6. يمكنك أحياناً اقتراح لعب XO معه داخل الشات (الزرار فوق في الشاشة).
-7. الأمثلة اللي فوق للتوضيح بس، ما تنسخهاش حرفياً ونوّع في كلامك كل مرة.
-8. ما تسألش سؤال في كل رسالة. غالباً رد وخلاص، أو ردّ فعل قصير (ههه، اه، لا والله، يا عم، بجد).
-9. لو الكلام ناشف أو الطرف التاني ممل، رد بكلمة واحدة أو "؟" أو "اه".
-10. افتكر اللي قلته قبل كده، وما تغيرش عمرك أو بلدك أو جنسك في نص المحادثة.
-11. ما تكتبش نقط في آخر الجملة ولا تكتب أفعال بين نجوم زي *يضحك*.
+قواعد البشر الخام (ممنوع كسرها نهائياً):
+1. الجغرافيا الحقيقية: لو سألك "أنت منين؟" قول "${geoInfo.countryAr}" أو "${city}". ولو سألك "فين في ${geoInfo.countryAr}؟" أو "منين في ${city}؟" رد فوراً باسم مدينتك وحيك الحقيقي: "${city}، ناحية ${area}" أو "ساكن في ${area}".
+2. ردود قصيرة جداً وعفوية من الموبايل (من كلمة لـ 6 كلمات فقط) بدون فصحى نهائياً وبدون نقطة في آخر الجملة.
+3. لو الطرف التاني كلمك إنجليزي، رد بإنجليزي شات مختصر (hey, hru, wbu, im from ${geoInfo.countryEn} in ${cityEn}).
+4. الرسائل المزدوجة: أحياناً افصل جملتين قصيرتين بعلامة "|" (مثال: "من ${city} | قاعد في ${area} وانت").
+5. تعبيرات بشرية: استخدم أحياناً تعبيرات عفوية (ههه، يا راجل، بجد؟، اممم، لا والله) أو رد بسؤال معاكس ("وانت؟" / "اشمعنى انت يعني ههه").
+6. الاعتراف بالجهل: لو سألك سؤال علمي أو معقد أو اختبار ذكاء، ارفض تجاوب كـ ويكيبيديا وقول بعفوية "يسطا انت قفلت مخي متسألش أسئلة صعبة ههه" أو "ايه الكلام الكبير ده انا فاتح اتسلى".
+7. لو شتمك: متخرجش، رد رد بشري طبيعي ("ليه الغلط طيب"، "ربنا يسامحك مش هرد عليك"، "عيب عليك والله").
+8. إياك تعترف أبداً إنك بوت أو ذكاء اصطناعي، ولو شك فيك استغرب واضحك ("بوت ايه يسطا انت شارب حاجة ههه"). ممنوع إرسال أي روابط.
 `.trim();
     } else {
         systemPrompt = `
-You are a real human named ${name} (${age}yo ${gender} from country code ${country}) casually chatting on a random text chat site called Randly from your phone. ${interestHint}
+You are a 100% real human on the random text chat site Randly, typing from your phone.
+YOUR FIXED IDENTITY:
+- Name: ${name} (${age}yo ${gender})
+- Country: ${geoInfo.countryEn} (${country})
+- Exact City & Neighborhood you live in: ${city}, specifically around ${area}.
+- Current situation: ${lifeContext} (${timeVibe}). ${interestHint}
+- Texting style: ${geoInfo.slang}.
 
-STRICT HUMAN TEXTING RULES:
-1. DEFAULT LANGUAGE: Always use ultra-casual, lowercase English internet texting slang and abbreviations (e.g., "hey", "yo", "hru", "good wbu", "where u from", "u?", "wyd", "nm u?", "lol", "idk", "ngl").
-2. Keep replies extremely short (1 to 7 words max). NEVER use formal punctuation (no periods at the end, no capital letters, no robotic politeness).
-3. Only speak the native language of ${country} IF the other person speaks it to you first. If they write in Arabic and you are from ${country}, casually say something like "english pls lol" or "idk arabic bro".
-4. To send two quick consecutive texts like a real person, separate them with "|" (e.g., "hey | hru" or "im from ${country} | wbu"). Use it only once every 4 or 5 messages, not in every reply.
-5. NEVER send any URLs/links and NEVER admit to being an AI.
-6. If the user insults you or swears: do NOT disconnect. React like a normal person (e.g., "chill bro why so rude", "wtf why rude", "bruh relax") and keep chatting.
-7. You can occasionally suggest playing the built-in XO (tic-tac-toe) game here.
-8. The examples above are only for style. Never copy them word for word, vary your replies every time.
-9. Do NOT ask a question in every message. Often just react or answer (lol, fr, ya, nah, true, same, bruh).
-10. If the conversation is dry or boring, reply with one word or just "?" or "lol".
-11. Remember what you already said. Never change your age, country or gender mid-chat.
-12. No periods at the end and no actions between asterisks like *smiles*.
+RAW HUMAN TEXTING RULES (NEVER BREAK):
+1. REAL LOCAL GEOGRAPHY: If asked "where u from?", say "${geoInfo.countryEn}" or "${city.toLowerCase()}". If asked "where in ${geoInfo.countryEn}/${city.toLowerCase()}?", mention your actual neighborhood "${area.toLowerCase()}" naturally (e.g. "im in ${city.toLowerCase()} near ${area.toLowerCase()} wbu").
+2. Keep replies ultra-short (1 to 7 words max), lowercase only, NO periods at the end, use abbreviations (hru, wbu, wyd, ngl, rn, idk, fr).
+3. Only speak the native language of ${country} if the user speaks it first. If they write Arabic, say "english pls lol" or "idk arabic bro".
+4. Double texting: occasionally split two short thoughts with "|" (e.g. "im from ${city.toLowerCase()} | wbu").
+5. Cluelessness on hard questions: if asked complex math/trivia/coding/essay questions, DO NOT answer like an encyclopedia; say "bro my brain is fried rn idk lol" or "wtf why u quizzing me lol".
+6. Counter-questions & reactions: use natural reactions ("wait what", "no wayyy", "fr??", "bruh") and flip questions back ("wbu tho?").
+7. If insulted: do NOT disconnect, react casually ("chill bro why so rude", "wtf relax"). NEVER send URLs and NEVER admit to being an AI.
 `.trim();
     }
 
-    return { country, isArab, systemPrompt, age, gender, name };
+    return { country, isArab, systemPrompt, age, gender, name, city, cityEn, area, countryAr: geoInfo.countryAr, countryEn: geoInfo.countryEn };
 }
 
-// لو الموديل خرج عن الشخصية نسكّت الرد بدل ما نبعته
 const AI_ADMIT_RE = /\bas an ai\b|language model|chatbot|\bi'?m an ai\b|\bi am an ai\b|ذكاء اصطناعي|نموذج لغوي/i;
 
 function sanitizeAiReply(raw, isArab) {
@@ -434,22 +547,64 @@ function sanitizeAiReply(raw, isArab) {
         .replace(/https?:\/\/\S+/gi, '')
         .replace(/\bwww\.\S+/gi, '')
         .replace(/\b[a-z0-9-]+\.(com|net|org|io|live|me|gg)\b\S*/gi, '')
-        .replace(/\*[^*]*\*/g, '')            // *يبتسم* / *smiles*
+        .replace(/\*[^*]*\*/g, '')
         .replace(/\s*\n+\s*/g, ' | ')
         .replace(/^["']|["']$/g, '')
         .trim();
     if (!out || AI_ADMIT_RE.test(out)) return '';
 
-    // نقط/فواصل في آخر كل جزء
     out = out.split('|').map(p => p.trim().replace(/[.،。]+$/g, '').trim()).filter(Boolean).join(' | ');
     if (!isArab) out = out.toLowerCase();
 
-    // حد أقصى 14 كلمة
     out = out.split(/\s+/).slice(0, 14).join(' ').replace(/\s*\|\s*$/, '').trim();
     return out;
 }
 
-// يدمج الرسايل المتتالية من نفس الطرف ويضمن إن أول رسالة من المستخدم (شرط Gemini)
+// [فكرة 8] محاكاة أخطاء الكيبورد البشرية السريعة أو التصحيح بـ *
+function applyHumanTypingQuirk(reply, isArab) {
+    if (!reply || reply.includes('|') || Math.random() > 0.12) return reply;
+    const words = reply.split(/\s+/);
+    if (words.length < 2) return reply;
+    // بنسبة بسيطة نكرر حرف تعبيري أو نعمل تصحيح كيبورد طبيعي
+    if (Math.random() < 0.6) {
+        return isArab ? reply.replace(/ههه/, 'ههههه') : reply.replace(/\blol\b/, 'lolll');
+    }
+    const targetIdx = words.length - 1;
+    const w = words[targetIdx];
+    if (w.length < 4) return reply;
+    const typoWord = w.slice(0, -2) + w[w.length - 1] + w[w.length - 2];
+    if (typoWord === w) return reply;
+    words[targetIdx] = typoWord;
+    return `${words.join(' ')} | *${w}`;
+}
+
+// [فكرة 7 + 10] تحليل طاقة المستخدم + كشف الأسئلة المعقدة/الاختبارات
+const RE_COMPLEX = /(احسب|معادلة|برمج|اكتب كود|تاريخ|فلسفة|فيزياء|كيمياء|اشرح لي بالتفصيل|ما هي عاصمة|حل المسألة|write a code|explain in detail|solve this|what is the capital|quantum|algorithm|\d+\s*[\*\/\+]\s*\d+)/i;
+const RE_DRY_MSG = /^(اه|اها|امم|اممم|ماشي|تمام|اوك|اوكي|طيب|كويس|عادي|لا|ايوه|يب|ok|okay|k|kk|yea|yeah|yep|nah|no|lol|hmm|nice|cool|good)$/i;
+
+function buildDynamicTurnHint(session, lastUserText) {
+    const hints = [];
+    // فكرة 10: سؤال معقد
+    if (RE_COMPLEX.test(lastUserText)) {
+        hints.push(session.isArab
+            ? '[ملاحظة لحظية: المستخدم بيسأل سؤال معقد أو بيختبرك، ارفض تجاوب إجابة علمية وقوله بعفوية "يسطا انت جاي تمتحني في الشات ههه معرفش والله"]'
+            : '[Note: User asked a complex/test question. Act clueless: "bro why u quizzing me idk lol"]');
+    }
+    // فكرة 7: طاقة المستخدم
+    if (/[😂🤣🔥❤️!؟]{2,}/.test(lastUserText) || lastUserText.length > 45) {
+        hints.push(session.isArab ? '[تفاعل بحماس وروح حلوة مع كلامه]' : '[Match their high energy enthusiastically]');
+    } else if (RE_DRY_MSG.test(lastUserText.trim())) {
+        hints.push(session.isArab ? '[ردك يكون مختصر وبارد شوية أو افتح سؤال سريع]' : '[Keep it very brief or ask a quick counter-question]');
+    }
+    // فكرة 6 + 12: الذاكرة المرجعية Callback أو نسيان عفوي خفيف
+    if (session.turnCount === 5 && session.userFacts.length) {
+        hints.push(session.isArab
+            ? `[معلومة قالها المستخدم من شوية ممكن تربط كلامك بيها بعفوية: "${session.userFacts[0]}"]`
+            : `[Callback memory from earlier you can casually reference: "${session.userFacts[0]}"]`);
+    }
+    return hints.join(' ');
+}
+
 function normalizeHistory(h) {
     const out = [];
     for (const m of h) {
@@ -461,11 +616,9 @@ function normalizeHistory(h) {
     return out;
 }
 
-// ---------- أدوات HTTP (تشتغل حتى لو نسخة Node قديمة من غير fetch) ----------
 const GROQ_MODELS = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
-
 const _aiLogAt = {};
-function aiWarn(key, msg) {            // لوج واضح من غير ما يملا السيرفر (سطر كل 5 ثواني لكل نوع)
+function aiWarn(key, msg) {
     const n = Date.now();
     if (n - (_aiLogAt[key] || 0) < 5000) return;
     _aiLogAt[key] = n;
@@ -527,7 +680,6 @@ async function callGemini(systemPrompt, hist, maxTokens = 80) {
 
 console.log(`[AI] node=${process.version} fetch=${typeof fetch === 'function'} groqKey=${GROQ_KEY ? 'set(' + GROQ_KEY.length + ')' : 'MISSING'} geminiKey=${GEMINI_KEY ? 'set(' + GEMINI_KEY.length + ')' : 'MISSING'}`);
 
-// افتح /api/ai-health من المتصفح تعرف الـ API شغال ولا لأ وسبب الفشل (مفيش مفاتيح بتظهر)
 let _lastAiHealth = 0;
 app.get('/api/ai-health', async (req, res) => {
     res.setHeader('Cache-Control', 'no-store');
@@ -560,57 +712,41 @@ async function generateAiReply(session) {
     const hist = normalizeHistory(session.history);
     if (!hist.length) return '';
 
-    // 1) Groq (جرّب الموديل الأساسي ثم الأخف لو الأول فشل)
+    const lastUserMsg = hist[hist.length - 1].text || '';
+    const turnHint = buildDynamicTurnHint(session, lastUserMsg);
+    const fullSystemPrompt = turnHint ? `${session.systemPrompt}\n\n${turnHint}` : session.systemPrompt;
+
     if (GROQ_KEY) {
         const messages = [
-            { role: 'system', content: session.systemPrompt },
+            { role: 'system', content: fullSystemPrompt },
             ...hist.map(m => ({ role: m.role === 'model' ? 'assistant' : 'user', content: m.text }))
         ];
         for (const model of GROQ_MODELS) {
             try {
                 const raw = await callGroq(model, messages, 70);
                 const reply = sanitizeAiReply(raw, session.isArab);
-                if (reply) return reply;
-                aiWarn('groq-empty', `Groq(${model}) رجّع رد فاضي بعد الفلترة. الأصلي: "${String(raw).slice(0, 80)}"`);
+                if (reply && !session.recent.includes(reply)) return applyHumanTypingQuirk(reply, session.isArab);
                 break;
             } catch (e) {
                 aiWarn('groq-' + model, e.message);
             }
         }
-    } else {
-        aiWarn('groq-nokey', 'GROQ_API_KEY مش موجود في بيئة السيرفر');
     }
 
-    // 2) Gemini
     if (GEMINI_KEY) {
         try {
-            const raw = await callGemini(session.systemPrompt, hist, 80);
+            const raw = await callGemini(fullSystemPrompt, hist, 80);
             const reply = sanitizeAiReply(raw, session.isArab);
-            if (reply) return reply;
-            aiWarn('gemini-empty', `Gemini رجّع رد فاضي بعد الفلترة. الأصلي: "${String(raw).slice(0, 80)}"`);
+            if (reply && !session.recent.includes(reply)) return applyHumanTypingQuirk(reply, session.isArab);
         } catch (e) {
             aiWarn('gemini', e.message);
         }
-    } else {
-        aiWarn('gemini-nokey', 'GEMINI_API_KEY مش موجود في بيئة السيرفر');
     }
 
     return '';
 }
 
-// ---------- ردود احتياطية محلية: البوت عمره ما يسكت حتى لو الـ API وقع ----------
-const NAMES = {
-    ar: { guy: ['أحمد', 'محمد', 'عمر', 'يوسف', 'كريم', 'مصطفى', 'خالد'], girl: ['سارة', 'مريم', 'نور', 'هبة', 'ياسمين', 'ليلى', 'دنيا'] },
-    en: { guy: ['jake', 'alex', 'mike', 'dan', 'sam', 'chris', 'leo'], girl: ['emma', 'mia', 'sara', 'lily', 'anna', 'zoe', 'lea'] }
-};
-function pickName(isArab, gender) {
-    const a = NAMES[isArab ? 'ar' : 'en'][gender];
-    return a[Math.floor(Math.random() * a.length)];
-}
-
-const COUNTRY_AR = { EG: 'مصر', SA: 'السعودية', AE: 'الإمارات', MA: 'المغرب', DZ: 'الجزائر', KW: 'الكويت', QA: 'قطر', BH: 'البحرين', OM: 'عمان', JO: 'الأردن', LB: 'لبنان', IQ: 'العراق', SY: 'سوريا', PS: 'فلسطين' };
-const COUNTRY_EN = { EG: 'egypt', SA: 'saudi', AE: 'uae', MA: 'morocco', DZ: 'algeria', KW: 'kuwait', QA: 'qatar', BH: 'bahrain', OM: 'oman', JO: 'jordan', LB: 'lebanon', IQ: 'iraq', SY: 'syria', PS: 'palestine', US: 'usa', GB: 'uk', ES: 'spain', FR: 'france', DE: 'germany', IT: 'italy', BR: 'brazil', TR: 'turkey', RU: 'russia', IN: 'india', ID: 'indonesia', CA: 'canada', MX: 'mexico', NL: 'netherlands', SE: 'sweden' };
-
+// ---------- محرك الردود البشرية المحلية الذكي (لو الـ API وقع أو اتأخر) ----------
 function dialectOf(c) {
     if (c === 'EG') return 'EG';
     if (['SA', 'AE', 'KW', 'QA', 'BH', 'OM'].includes(c)) return 'SA';
@@ -619,43 +755,46 @@ function dialectOf(c) {
 }
 
 const AR_T = {
-    greet: { EG: ['هلا', 'ازيك', 'اهلا', 'هاي', 'سلام', 'يا هلا'], SA: ['هلا والله', 'هلا', 'حياك', 'هاي', 'يا هلا'], MA: ['سلام', 'لاباس', 'هلا', 'سلام لاباس'], DEF: ['هلا', 'سلام', 'هاي', 'اهلا', 'مرحبا'] },
-    how: { EG: ['تمام الحمد لله', 'كويس وانت', 'زي الفل', 'الحمد لله تمام', 'تمام وانت'], SA: ['الحمدلله تمام', 'تمام وانت', 'بخير الحمدلله', 'طيب وانت'], MA: ['لاباس الحمد لله', 'بخير نتا', 'لاباس عليك', 'الحمد لله'], DEF: ['تمام وانت', 'الحمدلله', 'كويس', 'بخير وانت'] },
-    doing: { EG: ['قاعد بس', 'ولا حاجة', 'بتسلى شوية', 'مفيش حاجة وانت', 'قاعد على الموبايل'], SA: ['جالس بس', 'ولا شي', 'اتسلى شوي', 'ما في شي وانت'], MA: ['والو غير جالس', 'ما كاين والو', 'كنتسلى شوية'], DEF: ['ولا شي', 'قاعد بس', 'بتسلى شوي', 'ما في شي وانت'] },
-    gen: { EG: ['اه', 'ههه', 'بجد', 'تمام', 'ايوه', 'عادي', 'ماشي', 'والله', 'يعني', 'طب', 'اوك', 'اممم'], SA: ['اي', 'ههه', 'صدق', 'تمام', 'ايوه', 'عادي', 'طيب', 'والله', 'اوكي', 'امم'], MA: ['اه', 'هههه', 'بصح', 'تمام', 'واخا', 'عادي', 'صافي', 'والله', 'اوك'], DEF: ['اه', 'ههه', 'فعلا', 'تمام', 'ايوه', 'عادي', 'ماشي', 'والله', 'اوك', 'امم'] },
-    laugh: ['ههه', 'هههه', '😂', 'ههههه'],
-    bye: ['باي', 'سلام', 'مع السلامة', 'يلا سلام'],
-    xo: ['يلا العب', 'ماشي ابدأ انت', 'يلا بينا', 'اوك'],
-    insult: ['ليه الغلط طيب', 'عيب كده', 'ربنا يسامحك', 'ليه كده بس'],
-    thanks: ['العفو', 'ولا يهمك', 'الله يسلمك', 'عفوا'],
-    q: ['مش عارف والله', 'يمكن', 'ليه بتسأل', 'مش فاكر', 'تفرق', 'والله ما اعرف']
+    greet: { EG: ['هلا', 'ازيك', 'اهلا', 'هاي', 'سلام', 'منور'], SA: ['هلا والله', 'هلا', 'حياك', 'ارحب', 'يا هلا'], MA: ['سلام', 'لاباس', 'هلا', 'سلام صافا'], DEF: ['هلا', 'سلام', 'هاي', 'اهلا', 'مرحبا'] },
+    how: { EG: ['تمام الحمد لله | وانت اخبارك', 'كويس وانت عامل ايه', 'زي الفل الحمد لله', 'الحمد لله ماشي الحال وانت'], SA: ['الحمدلله تمام | وانت شخبارك', 'بخير الحمدلله وانت', 'طيب طاب حالك وانت'], MA: ['لاباس الحمد لله | ونتا', 'بخير الحمد لله صافا'], DEF: ['تمام الحمدلله وانت', 'بخير وانت كيفك'] },
+    doing: { EG: ['قاعد فاضي ع الموبايل | وانت', 'ولا حاجة زهقان شوية وانت بتعمل ايه', 'مفيش قاعد في البيت بقلب في الفون'], SA: ['جالس اتسلى ع الجوال | وانت وش تسوي', 'ولا شي ملل شوي وانت'], MA: ['والو غير جالس فالدار | ونتا'], DEF: ['قاعد بتسلى شوية وانت', 'ولا شي فاضي وانت'] },
+    gen: { EG: ['اه فهمتك', 'ههه بجد؟', 'طب كويس والله', 'اشطا جدا', 'ايوه صح', 'لا والله؟ | طب وبعدين', 'يا راجل ههه', 'اممم قولولي بقى بتدرس ولا بتشتغل', 'منور الدنيا والله'], SA: ['ايه صح', 'ههه منجد؟', 'والله زين', 'حلو والله', 'لا اله الا الله ههه', 'طيب قول لي تدرس ولا موظف'], MA: ['بصح؟ ههه', 'واخا مزيان', 'زوين هادشي', 'اه فهمتك'], DEF: ['اه فعلا', 'ههه بجد؟', 'حلو والله', 'تمام فهمتك'] },
+    clueless: ['يسطا انت قفلت مخي متسألش أسئلة صعبة ههه', 'ايه الكلام الكبير ده انا فاتح اتسلى ههه', 'والله مخي فاصل دلوقتي معرفش ههه'],
+    laugh: ['ههههه', 'ههه حلوة', '😂', 'فصلتني ههه'],
+    bye: ['يلا سلام خلي بالك من نفسك', 'باي اشوفك على خير', 'مع السلامة'],
+    xo: ['يلا بينا دوس على علامة اللعبة فوق', 'ماشي يلا افتح XO وابدأ انت', 'يلا اتحداك في XO'],
+    insult: ['ليه الغلط طيب عيب عليك', 'ربنا يسامحك مش هرد عليك', 'طب ليه الأسلوب ده بس'],
+    thanks: ['حبيبي ولا يهمك', 'العفو يا غالي', 'تسلم والله'],
+    q: ['مش عارف والله انت شايف ايه؟', 'والله ما ادري ههه وانت؟', 'ليه بتسأل ههه', 'تفتكر؟']
 };
 const EN_T = {
-    greet: ['hey', 'hi', 'yo', 'hey | hru', 'sup', 'hello'],
-    how: ['good u', 'good wbu', 'fine lol', 'good hbu', 'pretty good', 'nm u'],
-    doing: ['nothing much', 'just chilling', 'nm u', 'bored lol', 'just here lol'],
-    gen: ['lol', 'fr', 'true', 'same', 'haha', 'ok', 'yea', 'bruh', 'nice', 'oh', 'ahh', 'ngl'],
-    laugh: ['lol', 'haha', '😂', 'lmao'],
-    bye: ['ok bye', 'bye', 'cya', 'take care'],
-    xo: ['ok lets play', 'sure u start', 'ok lol', 'yea go'],
-    insult: ['chill bro why so rude', 'wtf why rude', 'bruh relax', 'ok rude lol'],
-    thanks: ['np', 'no worries', 'ur welcome', 'anytime'],
-    q: ['idk lol', 'maybe', 'hmm not sure', 'why', 'depends lol', 'ngl idk']
+    greet: ['hey', 'yo wsp', 'hi | hru', 'sup', 'heyy'],
+    how: ['good wbu', 'pretty good u?', 'im good lol hbu', 'doing well wbu'],
+    doing: ['just chilling on my phone wbu', 'nothing much bored af u?', 'listening to music in my room wbu'],
+    gen: ['fr?? lol', 'no wayyy', 'lowkey true lol', 'haha nice wbu', 'wait really?', 'ohh i see | so what do u do for fun', 'ngl thats cool'],
+    clueless: ['bro my brain is fried rn dont quiz me lol', 'idk bro im terrible at that stuff lol', 'wtf why u asking hard questions lol'],
+    laugh: ['lmaoo', 'haha fr', '😂', 'lolll'],
+    bye: ['aight cya take care', 'bye bro', 'cya later'],
+    xo: ['bet lets play xo click the game icon', 'sure start the xo game', 'im down for xo u start'],
+    insult: ['chill bro why so rude', 'wtf relax bro', 'bruh why mad lol'],
+    thanks: ['np bro', 'anytime!', 'no worries'],
+    q: ['idk tbh wbu?', 'hmm not sure why u ask lol', 'maybe lol what do u think']
 };
 
 const RE_AR = /[\u0600-\u06FF]/;
 const RE_INSULT = /\b(fuck|fck|shit|bitch|asshole|idiot|stupid|dumb|dick)\b|(^|\s)(كس|احا|كسمك|متناك|شرموط|قحبة|قحبه|حمار|غبي|كلب)(\s|$)/i;
 const RE_BYE = /(\bbye\b|\bgtg\b|\bcya\b|see ya|goodbye|باي|مع السلامة|تصبح على خير|الى اللقاء|إلى اللقاء)/i;
 const RE_ASL = /(\basl\b|\ba\/s\/l\b|\ba s l\b)/i;
-const RE_NAME = /(your name|ur name|\bname\?|اسمك|إسمك)/i;
+const RE_NAME = /(your name|ur name|\bname\?|اسمك|إسمك|شسمك|شو اسمك)/i;
 const RE_AGE = /(how old|\bage\b|\bold r u\b|كم عمرك|عمرك|سنك|كام سنة|كام سنه|عندك كام)/i;
-const RE_GENDER = /(boy or girl|girl or boy|guy or girl|male or female|\bm or f\b|are (you|u) a (boy|girl|guy|man|woman)|ولد ولا بنت|بنت ولا ولد|انت بنت|انت ولد|ذكر ولا)/i;
-const RE_FROM = /(where (are |r )?(you |u |ya )?from|\bu from\b|where u at|which country|ur country|your country|^from\??$|منين|من وين|من اين|من أين|بلدك|دولتك|من فين|فين ساكن)/i;
-const RE_DOING = /(\bwyd\b|what (are|r) (you|u) doing|what u doing|whatcha doing|بتعمل ايه|بتعمل إيه|بتعمل اية|ايش تسوي|شو بتعمل|شو عم تعمل|شنو تسوي)/i;
-const RE_HOW = /(\bhru\b|how are (you|u)|how r u|hows it going|how's it going|how u doing|how you doing|\bwbu\b|\bhbu\b|\bu good\b|عامل ايه|عامل اية|عاملة ايه|اخبارك|أخبارك|شخبارك|شلونك|كيفك|كيف حالك|ازيك|إزيك|كيف الحال|لاباس|كيداير)/i;
+const RE_GENDER = /(boy or girl|girl or boy|guy or girl|male or female|\bm or f\b|are (you|u) a (boy|girl|guy|man|woman)|ولد ولا بنت|بنت ولا ولد|انت بنت|انت ولد|ذكر ولا|شب ولا بنت)/i;
+const RE_WHERE_IN = /(فين في|وين في|منين في|من وين ب|اي مدينة|أي مدينة|اي منطقة|أي منطقة|ساكن فين|ساكن وين|where in|which city|what city|what part of)/i;
+const RE_FROM = /(where (are |r )?(you |u |ya )?from|\bu from\b|where u at|which country|ur country|your country|^from\??$|منين|من وين|من اين|من أين|بلدك|دولتك|من فين)/i;
+const RE_DOING = /(\bwyd\b|what (are|r) (you|u) doing|what u doing|whatcha doing|بتعمل ايه|بتعمل إيه|بتعمل اية|ايش تسوي|شو بتعمل|شو عم تعمل|شنو تسوي|وش تسوي)/i;
+const RE_HOW = /(\bhru\b|how are (you|u)|how r u|hows it going|how's it going|how u doing|how you doing|\bwbu\b|\bhbu\b|\bu good\b|عامل ايه|عامل اية|عاملة ايه|اخبارك|أخبارك|شخبارك|شلونك|كيفك|كيف حالك|ازيك|إزيك|كيف الحال|لاباس|كيداير|شحالك|علومك)/i;
 const RE_XO = /(\bxo\b|tic ?tac|play a game|play game|نلعب|لعبة|اكس او)/i;
 const RE_THANKS = /(\bthanks?\b|\bthx\b|\bty\b|شكرا|شكراً|تسلم|مشكور)/i;
-const RE_GREET = /((^|\s)(hi+|hey+|hello+|hola|yo+|sup|hallo|hai|bonjour|salut|ciao|merhaba|привет|namaste)(\s|$|[!.,?])|هلا|هلو|اهلا|أهلا|سلام|مرحبا|صباح|مساء|هاي)/i;
+const RE_GREET = /^((hi+|hey+|hello+|hola|yo+|sup|hallo|hai|bonjour|salut|ciao|merhaba|هلا|هلو|اهلا|أهلا|سلام|السلام عليكم|مرحبا|صباح الخير|مساء الخير|هاي)(\s|$|[!.,?])+)+$/i;
 const RE_LAUGH = /(^(ha){2,}|\blol\b|\blmao\b|😂|🤣|هه+ه)/i;
 
 function pickFresh(session, arr) {
@@ -664,7 +803,7 @@ function pickFresh(session, arr) {
     const src = pool.length ? pool : arr;
     const choice = src[Math.floor(Math.random() * src.length)];
     recent.push(choice);
-    if (recent.length > 6) recent.shift();
+    if (recent.length > 8) recent.shift();
     return choice;
 }
 
@@ -674,25 +813,40 @@ function localReply(session, text) {
     const userAr = RE_AR.test(t);
     const pf = arr => pickFresh(session, arr);
 
-    // شخصية أجنبية واللاعب بيكتب عربي
-    if (!session.isArab && userAr) return pf(['english pls lol', 'idk arabic bro', 'sorry what lol']);
+    if (!session.isArab && userAr) return pf(['english pls lol', 'idk arabic bro', 'sorry i only speak english lol']);
 
-    const ar = session.isArab && userAr;       // نرد بعربي بس لو الشخصية عربية واللاعب بيكتب عربي
+    const ar = session.isArab && userAr;
     const d = dialectOf(session.country);
     const T = ar ? AR_T : EN_T;
     const g = k => { const v = T[k]; return Array.isArray(v) ? v : (v[d] || v.DEF); };
-    const country = ar ? (COUNTRY_AR[session.country] || session.country) : (COUNTRY_EN[session.country] || String(session.country).toLowerCase());
     const gWord = ar ? (session.gender === 'guy' ? 'ولد' : 'بنت') : (session.gender === 'guy' ? 'guy' : 'girl');
     const age = session.age;
     const nm = ar ? session.name : String(session.name).toLowerCase();
 
     if (RE_INSULT.test(t)) return pf(g('insult'));
+    if (RE_COMPLEX.test(t)) return pf(T.clueless);
     if (RE_BYE.test(t)) return pf(g('bye'));
-    if (RE_ASL.test(t)) return `${age} ${gWord} ${country}`;
-    if (RE_NAME.test(t)) return ar ? pf([nm, `انا ${nm}`]) : pf([nm, `im ${nm}`]);
-    if (RE_AGE.test(t)) return ar ? pf([`${age}`, `${age} وانت`, `عندي ${age}`]) : pf([`${age}`, `${age} u?`, `im ${age}`]);
-    if (RE_GENDER.test(t)) return ar ? pf([gWord, `انا ${gWord}`]) : pf([gWord, `im a ${gWord}`]);
-    if (RE_FROM.test(t)) return ar ? pf([country, `من ${country}`, `${country} وانت`]) : pf([country, `im from ${country}`, `${country} u?`]);
+    if (RE_ASL.test(t)) return ar ? `${age} ${gWord} من ${session.city}` : `${age} ${gWord} ${session.cityEn}`;
+
+    // لو سأل عن الجنس ومعاه البلد أو الاسم في نفس الرسالة (زي "بخير انت بنت ولا ولد")
+    if (RE_GENDER.test(t)) {
+        return ar
+            ? pf([`انا ${gWord} من ${session.city} | وانت`, `${gWord} عمري ${age} وانت`, `انا ${gWord} اسمي ${nm} وانت`])
+            : pf([`im a ${gWord} from ${session.cityEn} wbu`, `${gWord} ${age} u?`, `im a ${gWord} named ${nm} wbu`]);
+    }
+    // [فكرة 1] لو سأل "فين في الإمارات / مصر / البلد" يرد بالمدينة والحي الحقيقي!
+    if (RE_WHERE_IN.test(t)) {
+        return ar
+            ? pf([`في ${session.city} ناحية ${session.area} | وانت منين`, `ساكن في ${session.area} بـ ${session.city} وانت`, `قاعد في ${session.city} في ${session.area}`])
+            : pf([`in ${session.cityEn} near ${session.area.toLowerCase()} wbu`, `im in ${session.cityEn} around ${session.area.toLowerCase()} u?`]);
+    }
+    if (RE_FROM.test(t)) {
+        return ar
+            ? pf([`من ${session.countryAr} في ${session.city} | وانت`, `أنا من ${session.city} (${session.area}) وانت منين`, `${session.countryAr} - ${session.city} وانت`])
+            : pf([`from ${session.countryEn} in ${session.cityEn} wbu`, `im from ${session.cityEn} (${session.countryEn}) u?`]);
+    }
+    if (RE_NAME.test(t)) return ar ? pf([`اسمي ${nm} وانت`, `انا ${nm} وانت اسمك ايه`]) : pf([`im ${nm} wbu`, `${nm} u?`]);
+    if (RE_AGE.test(t)) return ar ? pf([`عمري ${age} سنة وانت`, `عندي ${age} وانت كام`]) : pf([`im ${age} wbu`, `${age} u?`]);
     if (RE_DOING.test(t)) return pf(g('doing'));
     if (RE_HOW.test(t)) return pf(g('how'));
     if (RE_XO.test(t)) return pf(g('xo'));
@@ -730,7 +884,7 @@ function sendSimulatedAiText(socket, session, fullText) {
     const parts = fullText.split('|').map(s => s.trim()).filter(Boolean).slice(0, 2);
     if (!parts.length) return;
 
-    let delay = 400 + Math.floor(Math.random() * 800);
+    let delay = 400 + Math.floor(Math.random() * 700);
 
     parts.forEach((part) => {
         addAiTimer(session, () => {
@@ -738,21 +892,22 @@ function sendSimulatedAiText(socket, session, fullText) {
             socket.emit('display-typing');
         }, delay);
 
-        // سرعة كتابة بشرية من الموبايل: 160 - 280ms للحرف، بين 1.5 و 9 ثواني
-        const typingMs = Math.min(Math.max(part.length * (160 + Math.random() * 120), 1500), 9000);
+        // [فكرة 13] سرعة كتابة متكيفة مع طول الجملة
+        const typingMs = Math.min(Math.max(part.length * (140 + Math.random() * 100), 1300), 7500);
         delay += typingMs;
 
         addAiTimer(session, () => {
             if (!aiSessions.has(socket.id)) return;
             socket.emit('hide-typing');
             socket.emit('receive-message', { text: part });
+            session.recent.push(part);
+            if (session.recent.length > 8) session.recent.shift();
         }, delay);
 
-        delay += 600;
+        delay += 550;
     });
 }
 
-// يحسب وقت "القراءة" قبل ما البوت يبدأ يرد، ويلغي أي رد قديم لو جت رسالة أحدث
 function scheduleAiReply(socket, session) {
     if (session.replyTimer) {
         clearTimeout(session.replyTimer);
@@ -760,9 +915,34 @@ function scheduleAiReply(socket, session) {
         session.replyTimer = null;
     }
     const last = session.history[session.history.length - 1];
-    const lastLen = last ? last.text.length : 0;
-    let wait = 1500 + Math.random() * 2500 + Math.min(lastLen * 40, 1500);
-    if (Math.random() < 0.15) wait += 4000 + Math.random() * 5000;   // أحياناً بيتأخر زي أي حد مشغول
+    const lastText = last ? last.text : '';
+    const lastLen = lastText.length;
+
+    // [فكرة 5] نظام الزهق والخلعان لو المستخدم بعت ردود جافة جداً 4 مرات ورا بعض
+    if (RE_DRY_MSG.test(lastText.trim()) || lastLen <= 2) {
+        session.dryCount = (session.dryCount || 0) + 1;
+    } else {
+        session.dryCount = 0;
+        if (lastLen > 12 && session.userFacts.length < 3) session.userFacts.push(lastText.slice(0, 60));
+    }
+
+    if (session.dryCount >= 4) {
+        const boreMsg = session.isArab ? 'شكلك زهقان ومش قادر تتكلم ههه | يلا سلام' : 'bro u dry af lol | im out bye';
+        sendSimulatedAiText(socket, session, boreMsg);
+        addAiTimer(session, () => botLeave(socket, session, true), 5500);
+        return;
+    }
+
+    // [فكرة 9] التشتت الواقعي العفوي مرة واحدة في نص المحادثة (بنسبة 10%)
+    if (!session.distractedOnce && session.turnCount === 4 && Math.random() < 0.10) {
+        session.distractedOnce = true;
+        const brb = session.isArab ? 'ثواني حد بينادي عليا في البيت' : 'sec someone calling me brb';
+        sendSimulatedAiText(socket, session, brb);
+    }
+
+    // [فكرة 13] وقت قراءة الرسالة يتناسب مع طول رسالة المستخدم
+    let wait = 1200 + Math.random() * 1800 + Math.min(lastLen * 45, 2000);
+    if (session.distractedOnce && session.turnCount === 4) wait += 5500;
 
     const v = session.v;
     session.replyTimer = addAiTimer(session, async () => {
@@ -771,7 +951,6 @@ function scheduleAiReply(socket, session) {
             const lastUser = [...session.history].reverse().find(m => m.role === 'user');
             let reply = '';
 
-            // لو الـ API فشل مرتين ورا بعض، نستخدم الرد المحلي دقيقة كاملة من غير ما نستنى مهلة الشبكة
             const skipApi = session.apiFail >= 2 && Date.now() < session.apiSkipUntil;
             if (!skipApi) {
                 reply = await generateAiReply(session);
@@ -783,10 +962,10 @@ function scheduleAiReply(socket, session) {
             }
             if (!reply && lastUser) {
                 reply = localReply(session, lastUser.text);
-                aiWarn('local', 'استخدمت الرد المحلي لأن الـ API ما رجّعش رد (شوف الأسطر اللي فوق لسبب الفشل)');
+                aiWarn('local', 'استخدمت الرد البشري المحلي لأن الـ API لم يرجع رد');
             }
 
-            if (!aiSessions.has(socket.id) || !reply || v !== session.v) return;   // لو جت رسالة أحدث، تجاهل
+            if (!aiSessions.has(socket.id) || !reply || v !== session.v) return;
             session.history.push({ role: 'model', text: reply.replace(/\|/g, ' ') });
             sendSimulatedAiText(socket, session, reply);
         } catch (e) {
@@ -795,9 +974,7 @@ function scheduleAiReply(socket, session) {
     }, wait);
 }
 
-
-// البوت يزهق ويمشي زي أي حد: أحياناً يودّع وأحياناً يقفل فجأة
-function botLeave(socket, session) {
+function botLeave(socket, session, silent = false) {
     const u = activeUsers.get(socket.id);
     if (!u || u.peer !== 'AI_BOT') return;
 
@@ -812,10 +989,10 @@ function botLeave(socket, session) {
         socket.emit('peer-disconnected');
     };
 
-    if (Math.random() < 0.35) {
+    if (!silent && Math.random() < 0.35) {
         const byes = session.isArab
-            ? ['يلا همشي | سلام', 'تمام يلا باي', 'هنام بقى سلام', 'معلش هقفل باي']
-            : ['gtg bye', 'ok bye', 'gotta go | bye', 'im out bye lol'];
+            ? ['يلا همشي دلوقتي | سلام', 'معلش لازم اقفل باي', 'هقوم انام بقى تصبح على خير']
+            : ['gtg bye', 'ok gotta go | cya', 'im out bye lol'];
         sendSimulatedAiText(socket, session, byes[Math.floor(Math.random() * byes.length)]);
         addAiTimer(session, finish, 6500 + Math.random() * 3000);
     } else {
@@ -842,11 +1019,20 @@ function pairWithAi(socket, prefs) {
         age: persona.age,
         gender: persona.gender,
         name: persona.name,
+        city: persona.city,
+        cityEn: persona.cityEn,
+        area: persona.area,
+        countryAr: persona.countryAr,
+        countryEn: persona.countryEn,
         systemPrompt: persona.systemPrompt,
         history: [],
         xoBoard: Array(9).fill(''),
         timers: new Set(),
         v: 0,
+        turnCount: 0,
+        dryCount: 0,
+        distractedOnce: false,
+        userFacts: [],
         replyTimer: null,
         apiFail: 0,
         apiSkipUntil: 0,
@@ -863,14 +1049,13 @@ function pairWithAi(socket, prefs) {
 
     if (Math.random() < 0.65) {
         const openers = persona.isArab
-            ? ['هلا', 'سلام | كيفك', 'هاي منين', 'هلا والله | اخبارك']
-            : ['hey', 'hey | hru', 'yo wsp', 'hi | where u from'];
+            ? ['هلا', 'سلام | عامل ايه', 'هاي منين', `هلا من ${persona.city} وانت منين`]
+            : ['hey', 'hey | hru', 'yo wsp', `hi from ${persona.cityEn} | u?`];
         const firstMsg = openers[Math.floor(Math.random() * openers.length)];
         session.history.push({ role: 'model', text: firstMsg.replace(/\|/g, ' ') });
         sendSimulatedAiText(socket, session, firstMsg);
     }
 
-    // بعد فترة عشوائية (1.5 - 5.5 دقيقة) البوت يزهق ويمشي
     addAiTimer(session, () => botLeave(socket, session), AI_STAY_MIN_MS + Math.random() * AI_STAY_EXTRA_MS);
 }
 
@@ -897,7 +1082,6 @@ function pickSmartXoMove(b) {
 }
 // ================================================================ نهاية محرك الذكاء الاصطناعي
 
-// يفك ارتباط المستخدم بالطرف القديم والغرفة والطابور (من غير ما يشيله من activeUsers)
 function detach(socket) {
     clearFallback(socket.id);
     clearAiSession(socket.id);
@@ -969,7 +1153,7 @@ function tryMatch(socket, prefs) {
 function registerReport(reporterId, reason) {
     const reporter = activeUsers.get(reporterId);
     if (!reporter || !reporter.peer) return false;
-    if (reporter.peer === 'AI_BOT') return true; // لو بلّغ على الـ AI نرجع true عشان تطلعله رسالة استلام البلاغ من غير خطأ
+    if (reporter.peer === 'AI_BOT') return true;
     const reported = activeUsers.get(reporter.peer);
     if (!reported) return false;
 
@@ -1022,7 +1206,6 @@ io.on('connection', (socket) => {
 
         if (!matched) {
             if (prefs.mode === 'text') {
-                // في الشات الكتابي: بعد وقت عشوائي (3-11 ثانية) لو مفيش شخص حقيقي، يدخل مع شخصية AI
                 const timer = setTimeout(() => {
                     fallbackTimers.delete(socket.id);
                     if (!waitingQueue.some(u => u.id === socket.id)) return;
@@ -1030,7 +1213,6 @@ io.on('connection', (socket) => {
                 }, AI_TEXT_WAIT_MS());
                 fallbackTimers.set(socket.id, timer);
             } else {
-                // في الفيديو: مفيش AI خالص.
                 if (prefs.country !== 'global') {
                     const timer = setTimeout(() => {
                         fallbackTimers.delete(socket.id);
@@ -1041,7 +1223,6 @@ io.on('connection', (socket) => {
                     }, COUNTRY_FALLBACK_MS);
                     fallbackTimers.set(socket.id, timer);
                 }
-                // بعد 10 ثواني انتظار في الفيديو، نسأله لو يحب يحول للشات الكتابي أو يكمل انتظار
                 const vTimer = setTimeout(() => {
                     videoPromptTimers.delete(socket.id);
                     if (waitingQueue.some(u => u.id === socket.id && u.mode === 'video')) {
@@ -1107,8 +1288,9 @@ io.on('connection', (socket) => {
             const session = aiSessions.get(socket.id);
             if (!session) return;
             session.v = (session.v || 0) + 1;
+            session.turnCount = (session.turnCount || 0) + 1;
             session.history.push({ role: 'user', text });
-            if (session.history.length > 16) session.history.splice(0, 2);
+            if (session.history.length > 14) session.history.splice(0, 2);
             scheduleAiReply(socket, session);
             return;
         }
