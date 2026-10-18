@@ -57,6 +57,9 @@
     var stale = document.querySelectorAll('.lm-pop');
     for (var si = 0; si < stale.length; si++) if (stale[si].parentNode) stale[si].parentNode.removeChild(stale[si]);
     var map = collect();
+    if (window.RANDLY_LEGAL) {
+      for (var li = 0; li < window.RANDLY_LEGAL.langs.length; li++) { var lc = window.RANDLY_LEGAL.langs[li]; if (!map[lc]) map[lc] = '#' + lc; }
+    }
     var codes = ORDER.filter(function (c) { return map[c]; });
     if (codes.length < 2) return;
     var cur = currentLang(map);
@@ -126,6 +129,8 @@
       else if (e.key === 'End') { e.preventDefault(); items[items.length - 1].focus(); }
     });
   }
+
+  window.RandlyLangMenu = { init: init };
 
   if (HOME) {
     // The home pages' own scripts rebuild the header after load and can wipe the menu,
