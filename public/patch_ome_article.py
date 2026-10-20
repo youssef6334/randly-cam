@@ -88,9 +88,10 @@ def build_article(l, tpl):
     sel = re.search(r'<select class="site-lang-select".*?</select>', t, re.S)
     if sel:
         t = t[:sel.start()] + sel.group(0).replace(TEMPLATE + "-", SLUG + "-") + t[sel.end():]
-    m = re.search(r'(<div class="blog-article">\n)(.*?)(\n</div>\n\n<!-- related-posts -->)', t, re.S)
+    m = re.search(r'(<div class="blog-article">\n)(.*?)(\n</div>\n)', t, re.S)
     if not m: raise Skip("article container not found")
     inner = m.group(2)
+    if "<div" in inner: raise Skip("unexpected <div> inside the article")
     back = re.search(r'<a class="blog-back"[^\n]*</a>', inner)
     upd = re.search(r'<p class="updated">.*?</p>', inner, re.S)
     cta = re.search(r'<a class="blog-cta" href="[^"]*">(.*?)</a>', inner, re.S)
@@ -108,7 +109,7 @@ def build_article(l, tpl):
         li = '<li><a href="' + TEMPLATE + "-" + l + '.html"' + (a.group(4) or "") + ">" + old_h1 + "</a></li>"
         t = t[:a.start(2)] + li + t[a.start(2):]
     else:
-        print("NOTE   %s: 'read also' box not found, left as is" % page(l))
+        print("ok     %s: this language's template has no 'read also' box, none added" % page(l))
     return t
 
 def main():
@@ -154,19 +155,22 @@ def main():
     sp = os.path.join(PUBLIC, "sitemap.xml")
     if os.path.exists(sp) and built:
         t, crlf = read(sp)
-        if page("ar") in t or "</urlset>" not in t:
-            print("ok     sitemap.xml: " + ("already has the article" if page("ar") in t else "no </urlset>, skipped"))
+        todo = [l for l in built if url(l) not in t]
+        if "</urlset>" not in t:
+            print("NOTE   sitemap.xml: no </urlset>, skipped")
+        elif not todo:
+            print("ok     sitemap.xml: already has the article")
         else:
-            add = "".join("  <url><loc>%s</loc><lastmod>%s</lastmod></url>\n" % (url(l), DATE) for l in built)
+            add = "".join("  <url><loc>%s</loc><lastmod>%s</lastmod></url>\n" % (url(l), DATE) for l in todo)
             t = t.replace("</urlset>", add + "</urlset>", 1)
-            writes[sp] = out(t, crlf); print("CHANGE sitemap.xml: %d URLs added" % len(built))
+            writes[sp] = out(t, crlf); print("CHANGE sitemap.xml: %d URLs added" % len(todo))
     lp = os.path.join(PUBLIC, "llms.txt")
     if os.path.exists(lp) and built:
         t, crlf = read(lp)
-        if SLUG in t: print("ok     llms.txt: already has the article")
+        lines = [("- [%s](%s): %s" % (DATA[l]["title"], url(l), LLMS[l])) for l in ("en", "ar") if l in built and url(l) not in t]
+        if not lines: print("ok     llms.txt: already has the article")
         else:
-            lines = [("- [%s](%s): %s" % (DATA[l]["title"], url(l), LLMS[l])) for l in ("en", "ar") if l in built]
-            t = t.rstrip("\n") + "\n\n## Comparison\n" + "\n".join(lines) + "\n"
+            t = t.rstrip("\n") + ("\n" if "## Comparison" in t else "\n\n## Comparison\n") + "\n".join(lines) + "\n"
             writes[lp] = out(t, crlf); print("CHANGE llms.txt: comparison section added")
     for name in IMGS:
         p = os.path.join(PUBLIC, name)

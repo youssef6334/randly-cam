@@ -50,3 +50,7 @@ Randly is an Omegle alternative. Omegle shut down permanently in November 2023 a
 - [Blog (Indonesian)](https://randly.live/blog-id.html)
 - [Blog (Chinese)](https://randly.live/blog-zh.html)
 - [Full sitemap](https://randly.live/sitemap.xml)
+
+## Comparison
+- [Randly vs Ome.tv: Which Random Video Chat Is Better?](https://randly.live/post-randly-vs-ome-tv-en.html): Randly vs Ome.tv compared (price, registration, country filter, translation, safety), based on our own testing
+- [Randly مقابل Ome.tv أيهما أفضل للدردشة العشوائية بالفيديو؟](https://randly.live/post-randly-vs-ome-tv-ar.html): مقارنة بين Randly و Ome.tv (السعر والتسجيل وفلتر الدول والترجمة والأمان) بناءً على تجربتنا
