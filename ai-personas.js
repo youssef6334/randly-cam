@@ -594,6 +594,11 @@ function startingLanguage(country) {
     // never a claim about any real person's language or nationality.
     return { nativeLanguage: native, language: language(native, 'en') };
 }
+function replyLanguageFor(persona, requested) {
+    const allowed = persona.replyLanguages || [language(persona.nativeLanguage, 'en'), 'en'];
+    const code = language(requested, 'en');
+    return allowed.includes(code) ? code : 'en';
+}
 function styleFor(persona, locale) {
     const code = language(locale), country = persona.country;
     if (code === 'ar' && persona.nativeLanguage === 'ar' && LOCAL_GEO[country]) return LOCAL_GEO[country].slang;
@@ -622,6 +627,7 @@ function createPersona({ preferredCountry, actualCountry, interests = [], pick =
     else if (replyLanguage === 'pt' && country === 'BR') style = 'Brazilian Portuguese';
     return Object.freeze({
         kind: 'ai', country, countryName: countryName(country), city, timeZone,
+        replyLanguages: Object.freeze([...new Set([replyLanguage, 'en'])]),
         nativeLanguage, language: replyLanguage, style, name: NAMES[replyLanguage][pick(NAMES[replyLanguage].length)],
         interests: Object.freeze(Array.isArray(interests) ? interests.filter(x => typeof x === 'string').slice(0, 10).map(x => x.slice(0, 30)) : []),
         locallyCurated: !!setting
@@ -631,4 +637,4 @@ function localTime(persona, date = new Date()) {
     if (!persona.timeZone) return null;
     return new Intl.DateTimeFormat('en-GB', { timeZone: persona.timeZone, hour: '2-digit', minute: '2-digit', hour12: false }).format(date);
 }
-module.exports = { LANGUAGES, WORLD: Object.freeze(WORLD), language, countryName, startingLanguage, createPersona, styleFor, localTime };
+module.exports = { LANGUAGES, WORLD: Object.freeze(WORLD), language, countryName, startingLanguage, replyLanguageFor, createPersona, styleFor, localTime };

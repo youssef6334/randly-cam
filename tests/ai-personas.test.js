@@ -16,6 +16,8 @@ test('every supported country retains its code without borrowing another country
         assert.doesNotThrow(() => personas.localTime(p));
         if (!p.locallyCurated) { assert.equal(p.city, null); assert.equal(p.timeZone, null); }
         assert.ok(personas.LANGUAGES.includes(p.language));
+        assert.ok(p.replyLanguages.includes('en')); assert.ok(p.replyLanguages.includes(p.language));
+        assert.ok(p.replyLanguages.length <= 2);
     }
     const canada = make({ preferredCountry: 'CA', actualCountry: 'EG', locale: 'ar' });
     assert.equal(canada.country, 'CA'); assert.equal(canada.city, 'Toronto'); assert.equal(canada.language, 'en');
@@ -40,6 +42,14 @@ test('country defaults stay independent of website locale, with English for unsu
         const otherUi = make({ preferredCountry: country, locale: 'en' });
         assert.equal(otherUi.language, initial, country + ' with English UI');
     }
+});
+test('per-profile reply language selection permits the supported native language and English only', () => {
+    const us = make({ preferredCountry: 'US' }), ae = make({ preferredCountry: 'AE' }), fr = make({ preferredCountry: 'FR' });
+    assert.deepEqual(us.replyLanguages, ['en']); assert.equal(personas.replyLanguageFor(us, 'ar'), 'en');
+    assert.deepEqual(ae.replyLanguages, ['ar', 'en']); assert.equal(personas.replyLanguageFor(ae, 'ar'), 'ar');
+    assert.equal(personas.replyLanguageFor(ae, 'en'), 'en'); assert.equal(personas.replyLanguageFor(ae, 'fr'), 'en');
+    assert.deepEqual(fr.replyLanguages, ['fr', 'en']); assert.equal(personas.replyLanguageFor(fr, 'ar'), 'en');
+    assert.throws(() => ae.replyLanguages.push('fr'), TypeError);
 });
 test('representative time uses the chosen city and profile data stays immutable', () => {
     const p = make({ preferredCountry: 'US', locale: 'en' });

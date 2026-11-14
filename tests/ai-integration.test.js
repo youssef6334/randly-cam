@@ -36,9 +36,9 @@ test('AI session lifecycle through real Socket.IO clients', { timeout: 50000 }, 
     const messages = []; a.on('receive-message', m => messages.push(m));
     let first;
     await t.test('AI metadata identifies its fictional country and scoped session', async () => {
-        const matched = once(a, 'matched'); a.emit('find-match', { mode: 'text', country: 'SE', locale: 'ar', interests: [] });
+        const matched = once(a, 'matched'); a.emit('find-match', { mode: 'text', country: 'US', locale: 'ar', interests: [] });
         first = await matched; assert.equal(first.partnerType, 'ai'); assert.equal(first.countryKind, 'fictional');
-        assert.equal(first.partnerCountry, 'SE'); assert.match(first.matchId, /^[0-9a-f-]{36}$/);
+        assert.equal(first.partnerCountry, 'US'); assert.match(first.matchId, /^[0-9a-f-]{36}$/);
         const greeting = await once(a, 'receive-message'); assert.match(greeting.text, /Hey!/);
         assert.match(greeting.text, /AI chat character/); assert.doesNotMatch(greeting.text, /[\u0600-\u06ff]/);
         assert.equal(greeting.matchId, first.matchId); assert.equal(greeting.roomId, first.roomId);
@@ -51,6 +51,9 @@ test('AI session lifecycle through real Socket.IO clients', { timeout: 50000 }, 
         reply = once(a, 'receive-message'); a.emit('send-message', { text: 'Are you AI?' });
         const identity = await reply; assert.match(identity.text, /AI/); assert.equal(identity.matchId, before);
         assert.equal(skipped, false); a.off('peer-disconnected', handler);
+        reply = once(a, 'receive-message'); a.emit('send-message', { text: 'هل أنت ذكاء اصطناعي؟' });
+        const arabicQuestion = await reply; assert.match(arabicQuestion.text, /AI chat character/);
+        assert.doesNotMatch(arabicQuestion.text, /\p{Script=Arabic}/u);
     });
     let second;
     await t.test('skip cancels queued replies and starts a new AI session without old memory', async () => {
@@ -63,21 +66,21 @@ test('AI session lifecycle through real Socket.IO clients', { timeout: 50000 }, 
         const currentMessages = messages.filter(m => m.matchId === second.matchId);
         assert.ok(currentMessages.every(m => !m.text.includes('Alice')));
     });
-    await t.test('interface locale does not force speech; written language switches replies and the game still works', async () => {
+    await t.test('interface locale and unsupported language do not override profile restrictions; game still works', async () => {
         a.emit('chat-language', { locale: 'fr' }); await wait(30);
         const unchanged = once(a, 'receive-message'); a.emit('send-message', { text: '123' });
         assert.match((await unchanged).text, /^The reply service/);
         const reply = once(a, 'receive-message'); a.emit('send-message', { text: 'Tu es une IA ?' });
-        assert.match((await reply).text, /personnage.*IA/);
+        assert.match((await reply).text, /AI chat character/);
         const move = once(a, 'xo-receive-move'); a.emit('xo-move', { index: 0, symbol: 'X' });
         const played = await move; assert.equal(played.symbol, 'O'); assert.ok(played.index >= 1 && played.index <= 8);
     });
-    await t.test('Saudi opening uses its own Arabic, and short English and Arabic greetings switch correctly', async () => {
-        const matched = once(a, 'matched'); a.emit('find-match', { mode: 'text', country: 'SA', locale: 'en', interests: [] });
-        assert.equal((await matched).partnerCountry, 'SA');
-        const greeting = await once(a, 'receive-message'); assert.match(greeting.text, /وش ودّك/); assert.doesNotMatch(greeting.text, /إيه|دلوقتي/);
+    await t.test('Emirati profile switches between its Arabic and English, independently of English interface', async () => {
+        const matched = once(a, 'matched'); a.emit('find-match', { mode: 'text', country: 'AE', locale: 'en', interests: [] });
+        assert.equal((await matched).partnerCountry, 'AE');
+        const greeting = await once(a, 'receive-message'); assert.match(greeting.text, /شو تحب/); assert.doesNotMatch(greeting.text, /إيه|دلوقتي/);
         let reply = once(a, 'receive-message'); a.emit('send-message', { text: 'hello' }); assert.match((await reply).text, /^Hey!/);
-        reply = once(a, 'receive-message'); a.emit('send-message', { text: 'هلا' }); assert.match((await reply).text, /وش ودّك/);
+        reply = once(a, 'receive-message'); a.emit('send-message', { text: 'هلا' }); assert.match((await reply).text, /شو تحب/);
     });
     await t.test('moving to a real person removes AI state and queued messages', async () => {
         const b = await connect(), pa = once(a, 'matched'), pb = once(b, 'matched');
