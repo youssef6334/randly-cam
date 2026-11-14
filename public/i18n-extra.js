@@ -165,6 +165,25 @@ function tr(key) {
   return (translations[l] && translations[l][key]) || translations.en[key] || key;
 }
 
+const AI_CHAT_UI = {
+  ar: ['محادثة مع شخصية AI', 'أنت تتحدث مع شخصية ذكاء اصطناعي، وليست شخصاً حقيقياً. الدولة إعداد افتراضي للشخصية. قد تُرسل رسائلك لمزوّد الذكاء الاصطناعي لتوليد الردود. يمكنك اختيار التالي للبحث مجدداً.'],
+  en: ['AI character chat', 'You are chatting with an AI character, not a real person. Its country is a fictional setting. Your messages may be sent to an AI provider to generate replies. Choose Next to search again.'],
+  es: ['Chat con personaje de IA', 'Hablas con un personaje de IA, no con una persona real. Su país es un entorno ficticio. Tus mensajes pueden enviarse a un proveedor de IA para generar respuestas. Pulsa Siguiente para buscar de nuevo.'],
+  fr: ['Discussion avec un personnage IA', 'Vous discutez avec un personnage IA, pas une personne réelle. Son pays est un cadre fictif. Vos messages peuvent être transmis à un fournisseur IA pour générer les réponses. Choisissez Suivant pour relancer la recherche.'],
+  de: ['Chat mit einer KI-Figur', 'Du chattest mit einer KI-Figur, keinem echten Menschen. Ihr Land ist eine fiktive Kulisse. Deine Nachrichten können zur Antworterstellung an einen KI-Anbieter gesendet werden. Mit Weiter suchst du erneut.'],
+  it: ['Chat con un personaggio IA', 'Stai parlando con un personaggio IA, non con una persona reale. Il paese è un contesto immaginario. I messaggi possono essere inviati a un fornitore IA per generare risposte. Scegli Avanti per cercare di nuovo.'],
+  pt: ['Conversa com personagem de IA', 'Você conversa com um personagem de IA, não uma pessoa real. O país é um cenário fictício. Suas mensagens podem ser enviadas a um provedor de IA para gerar respostas. Escolha Próximo para buscar novamente.'],
+  tr: ['Yapay zekâ karakteriyle sohbet', 'Gerçek bir insanla değil, bir yapay zekâ karakteriyle konuşuyorsun. Ülkesi kurgusal bir ortamdır. Yanıt üretmek için mesajların bir yapay zekâ sağlayıcısına gönderilebilir. Yeniden aramak için Sonraki seçeneğini seç.'],
+  ru: ['Чат с ИИ-персонажем', 'Вы общаетесь с ИИ-персонажем, а не реальным человеком. Его страна — вымышленная обстановка. Сообщения могут отправляться провайдеру ИИ для создания ответов. Нажмите «Далее» для нового поиска.'],
+  hi: ['AI किरदार के साथ चैट', 'आप AI किरदार से बात कर रहे हैं, किसी असली इंसान से नहीं। इसका देश काल्पनिक परिवेश है। जवाब बनाने के लिए संदेश AI प्रदाता को भेजे जा सकते हैं। दोबारा खोजने के लिए अगला चुनें।'],
+  id: ['Obrolan dengan karakter AI', 'Kamu mengobrol dengan karakter AI, bukan orang sungguhan. Negaranya merupakan latar fiksi. Pesanmu dapat dikirim ke penyedia AI untuk membuat balasan. Pilih Berikutnya untuk mencari lagi.'],
+  zh: ['与 AI 虚拟角色聊天', '你正在与 AI 虚拟角色聊天，并非真人。其国家是虚构背景设定。你的消息可能会发送给 AI 服务提供商以生成回复。选择“下一个”可重新搜索。']
+};
+Object.entries(AI_CHAT_UI).forEach(([lang, values]) => {
+  translations[lang].aiConnected = values[0];
+  translations[lang].aiNotice = values[1];
+});
+
 function fillLangSelects(current) {
   ['landingLangSelect', 'siteLang'].forEach(id => {
     const s = document.getElementById(id);
@@ -199,7 +218,7 @@ function applyLanguage(lang, initial) {
   // تلميحات الأزرار
   const tips = { micBtn: 'tipMic', camBtn: 'tipCam', muteBtn: 'tipSound', copyLinkBtn: 'tipLink' };
   Object.keys(tips).forEach(id => { const el = document.getElementById(id); if (el) el.title = t[tips[id]]; });
-  const rep = document.querySelector('[onclick="reportUser()"]'); if (rep) rep.title = t.tipReport;
+  const rep = document.querySelector('[data-handler-click="36839dc34708"]'); if (rep) rep.title = t.tipReport;
   const lv = document.querySelector('.btn-close-chat'); if (lv) lv.title = t.tipLeave;
   if (typeof updateControlLabels === 'function') updateControlLabels();
 
@@ -216,10 +235,7 @@ function applyLanguage(lang, initial) {
     document.querySelectorAll('#countrySelect option').forEach(o => {
       if (/^[A-Z]{2}$/.test(o.value)) o.textContent = getFlagEmoji(o.value) + ' ' + names.of(o.value);
     });
-    const nameEl = document.getElementById('remoteUserCountryName');
-    if (nameEl && currentPartnerCountry && currentPartnerCountry !== 'global') {
-      nameEl.textContent = '- ' + names.of(currentPartnerCountry.toUpperCase());
-    }
+    refreshPartnerCountry(lang);
   } catch (e) {}
 
   ['landingLangSelect', 'siteLang'].forEach(id => { const s = document.getElementById(id); if (s) s.value = lang; });
@@ -228,6 +244,8 @@ function applyLanguage(lang, initial) {
     document.title = t.siteTitle;
     localStorage.setItem('randly_lang', lang);
   }
+  refreshPartnerKind();
+  if (socket.connected) socket.emit('chat-language', { locale: lang });
 }
 
 // بديل changeGlobalLanguage: من الصفحة الرئيسية يفتح صفحة اللغة، ومن جوه الشات يغيّر مكانه

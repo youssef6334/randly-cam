@@ -126,10 +126,10 @@
     if (statusDiv) statusDiv.textContent = '';
     appendSystemMessage(tr('bannedMsg'));
   });
-  socket.on('matched', function () {
+  socket.on('matched', function (data) {
     try {
       var c = currentPartnerCountry;
-      if (c && c !== 'global') {
+      if (data.partnerType !== 'ai' && c && c !== 'global') {
         var name = new Intl.DisplayNames([document.documentElement.lang || 'en'], { type: 'region' }).of(c.toUpperCase());
         appendSystemMessage(tr('connectedTo') + ' ' + getFlagEmoji(c) + ' ' + name);
       }

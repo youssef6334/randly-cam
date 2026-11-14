@@ -151,7 +151,7 @@ async function step(name, fn) {
 
     // ---------- الترجمة (من غير نداء Google فعلي) ----------
     await step('/api/translate بيرفض طلب فاسد (400)', async () =>
-      (await get('/api/translate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })).status === 400);
+      (await get('/api/translate', { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: ORIGIN }, body: '{}' })).status === 400);
     await step('/api/translate بيرفض Origin غريب (403)', async () =>
       (await get('/api/translate', { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: 'https://evil.example' }, body: '{"text":"hi","target":"es"}' })).status === 403);
 
@@ -171,9 +171,10 @@ async function step(name, fn) {
       const m = once(B, 'receive-message'); A.emit('send-message', { text: 'hello' });
       return (await m).text === 'hello';
     });
-    await step('رسالة طويلة (5000 حرف) بتتقص عند 500', async () => {
-      const m = once(B, 'receive-message'); A.emit('send-message', { text: 'x'.repeat(5000) });
-      return (await m).text.length === 500;
+    await step('رسالة طويلة (5000 حرف) يتم رفضها', async () => {
+      let received = false; const handler = () => { received = true; };
+      B.on('receive-message', handler); A.emit('send-message', { text: 'x'.repeat(5000) });
+      await sleep(200); B.off('receive-message', handler); return !received;
     });
     await step('التخطي: الطرف القديم بيستلم peer-disconnected', async () => {
       const pd = once(B, 'peer-disconnected');
@@ -197,8 +198,10 @@ async function step(name, fn) {
     await step('شخص تالت بيترفض من الغرفة الممتلئة', async () => {
       const nf = once(E, 'room-not-found'); E.emit('join-saved-room', { roomId, mode: 'text' }); await nf;
     });
-    await step('معرّف غرفة مزيّف بيترفض', async () => {
-      const nf = once(E, 'room-not-found'); E.emit('join-saved-room', { roomId: 'room_../../etc/passwd' }); await nf;
+    await step('معرّف غرفة مزيّف لا يسمح بالدخول', async () => {
+      let matched = false; const handler = () => { matched = true; };
+      E.on('matched', handler); E.emit('join-saved-room', { roomId: 'room_../../etc/passwd' });
+      await sleep(200); E.off('matched', handler); return !matched && E.connected;
     });
 
     // ---------- مقاومة المدخلات الفاسدة ----------

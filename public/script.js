@@ -21,7 +21,9 @@ let isMicMuted = false;
 let isCamOff = false;
 let buttonState = 'start';
 let currentRoomId = null;
+let currentMatchId = null;
 let currentPartnerCountry = null;
+let currentPartnerType = null;
 let pendingCandidates = [];
 let skipConfirmTimer = null;
 
@@ -571,6 +573,10 @@ socket.on('display-typing', () => { if(typingIndicator) typingIndicator.style.di
 socket.on('hide-typing', () => { if(typingIndicator) typingIndicator.style.display = 'none'; });
 
 function clearRemoteVideo() {
+    currentMatchId = null;
+    currentPartnerType = null;
+    const aiNotice = document.getElementById('aiChatNotice');
+    if (aiNotice) aiNotice.remove();
     if (remoteVideo) {
         if (remoteVideo.srcObject) {
             remoteVideo.srcObject.getTracks().forEach(track => track.stop());
@@ -586,9 +592,16 @@ function clearRemoteVideo() {
         peerConnection = null;
     }
     const flagElement = document.getElementById('remoteUserFlag');
-    if (flagElement) flagElement.textContent = '';
+    for (const flag of [flagElement, document.getElementById('textFlagIcon')]) {
+        if (!flag) continue;
+        RandlyCountry.renderFlag(flag, null);
+        flag.textContent = '';
+        flag.hidden = true;
+    }
     const nameElement = document.getElementById('remoteUserCountryName');
     if (nameElement) nameElement.textContent = '';
+    const textNameElement = document.getElementById('textCountryName');
+    if (textNameElement) textNameElement.textContent = '';
         const textInfoBoxClear = document.getElementById('textChatPartnerInfo');
     if (textInfoBoxClear) textInfoBoxClear.style.display = 'none';
     currentPartnerCountry = null;
@@ -727,6 +740,7 @@ function nextUser() {
     // إرسال مصفوفة اهتمامات الـ Tags للسيرفر
     socket.emit('find-match', {
         mode: currentMode,
+        locale: currentLang,
         interests: interestsArray,
         country: selectedCountry
     });
@@ -766,7 +780,7 @@ function leaveSession() {
 }
 
 function reportUser() {
-    socket.emit('submit-report', { reason: 'Inappropriate behavior' });
+    socket.emit('submit-report', { reason: 'other' });
 }
 
 // رسالة تأكيد البلاغ داخل الشات (تظهر فقط بعد ما السيرفر يؤكد إنه سجّل البلاغ)
@@ -849,6 +863,9 @@ socket.on('xo-receive-move', (data) => {
 
 function createPeerConnection() {
     peerConnection = new RTCPeerConnection(rtcConfig);
+    const connection = peerConnection;
+    const roomId = currentRoomId;
+    const matchId = currentMatchId;
     let streamToSend = localStream;
 
     if (streamToSend && currentMode === 'video') {
@@ -858,14 +875,14 @@ function createPeerConnection() {
     }
 
     peerConnection.ontrack = (event) => {
-        if (remoteVideo && event.streams[0]) {
+        if (connection === peerConnection && matchId === currentMatchId && remoteVideo && event.streams[0]) {
             remoteVideo.srcObject = event.streams[0];
         }
     };
 
     peerConnection.onicecandidate = (event) => {
-        if (event.candidate) {
-            socket.emit('signal', { candidate: event.candidate });
+        if (event.candidate && connection === peerConnection && matchId === currentMatchId) {
+            socket.emit('signal', { roomId, matchId, candidate: event.candidate.toJSON() });
         }
     };
 
@@ -877,60 +894,63 @@ function createPeerConnection() {
 }
 
 async function flushPendingCandidates() {
+    const connection = peerConnection;
     const list = pendingCandidates;
     pendingCandidates = [];
     for (const c of list) {
-        try { await peerConnection.addIceCandidate(new RTCIceCandidate(c)); } catch (e) { console.warn('ICE', e); }
+        if (connection !== peerConnection) return;
+        try { await connection.addIceCandidate(new RTCIceCandidate(c)); } catch (e) { console.warn('ICE', e); }
     }
 }
 
 function getFlagEmoji(countryCode) {
-    if (!countryCode || countryCode === 'global') return '🌐';
-    return countryCode.toUpperCase().replace(/./g, char => String.fromCodePoint(char.charCodeAt(0) + 127397));
+    return RandlyCountry.emoji(countryCode);
+}
+
+function refreshPartnerCountry(lang = document.documentElement.lang || 'en') {
+    if (!currentPartnerCountry) return;
+    currentPartnerCountry = RandlyCountry.renderPartner(currentPartnerCountry, lang, {
+        videoFlag: document.getElementById('remoteUserFlag'),
+        videoName: document.getElementById('remoteUserCountryName'),
+        textFlag: document.getElementById('textFlagIcon'),
+        textName: document.getElementById('textCountryName')
+    });
+}
+
+function refreshPartnerKind() {
+    if (currentPartnerType === 'ai' && statusDiv) statusDiv.textContent = tr('aiConnected');
+}
+
+function showAiChatNotice() {
+    const previous = document.getElementById('aiChatNotice');
+    if (previous) previous.remove();
+    if (!chatBox || currentPartnerType !== 'ai') return;
+    const notice = document.createElement('div');
+    notice.id = 'aiChatNotice';
+    notice.className = 'msg msg-sys ai-chat-notice';
+    notice.setAttribute('data-i18n', 'aiNotice');
+    notice.setAttribute('role', 'note');
+    notice.textContent = tr('aiNotice');
+    chatBox.prepend(notice);
 }
 
 socket.on('matched', async (data) => {
+    if (!data || typeof data.roomId !== 'string') return;
+    currentMatchId = data.matchId || null;
+    currentPartnerType = data.partnerType === 'ai' ? 'ai' : 'human';
     const currentLang = document.documentElement.lang || 'ar';
     if(statusDiv) statusDiv.textContent = translations[currentLang]?.connectedStatus || 'Connected!';
     currentRoomId = data.roomId;
+    refreshPartnerKind();
+    showAiChatNotice();
     if(skeletonLoader) skeletonLoader.style.display = 'none';
     if(chatBox) chatBox.style.display = 'flex';
     if (!isSoundMuted) matchSound.play().catch(()=>{});
 
-    currentPartnerCountry = data.partnerCountry || 'global';
-    const flagElement = document.getElementById('remoteUserFlag');
-    const nameElement = document.getElementById('remoteUserCountryName');
-
-    if (flagElement) {
-        flagElement.textContent = getFlagEmoji(currentPartnerCountry);
-    }
-    const textFlagEl = document.getElementById('textFlagIcon');
-const textNameEl = document.getElementById('textCountryName');
-const textInfoBox = document.getElementById('textChatPartnerInfo');
-if (textInfoBox) textInfoBox.style.display = 'block';
-if (textFlagEl) textFlagEl.textContent = getFlagEmoji(currentPartnerCountry);
-if (textNameEl) {
-    if (currentPartnerCountry === 'global') {
-        textNameEl.textContent = translations[currentLang]?.matchGlobal || '';
-    } else {
-        try {
-            const rn = new Intl.DisplayNames([currentLang], { type: 'region' });
-            textNameEl.textContent = rn.of(currentPartnerCountry.toUpperCase());
-        } catch(e) { textNameEl.textContent = ''; }
-    }
-}
-    if (nameElement) {
-        if (currentPartnerCountry === 'global') {
-            nameElement.textContent = translations[currentLang]?.matchGlobal || 'عالمي (Smart Match)';
-        } else {
-            try {
-                const regionNames = new Intl.DisplayNames([currentLang], { type: 'region' });
-                nameElement.textContent = '- ' + regionNames.of(currentPartnerCountry.toUpperCase());
-            } catch (e) {
-                nameElement.textContent = '';
-            }
-        }
-    }
+    currentPartnerCountry = RandlyCountry.normalize(data.partnerCountry);
+    refreshPartnerCountry(currentLang);
+    const textInfoBox = document.getElementById('textChatPartnerInfo');
+    if (textInfoBox) textInfoBox.style.display = 'block';
 
     myGameSymbol = data.xoRole;
     isMyTurn = (myGameSymbol === 'X');
@@ -939,9 +959,14 @@ if (textNameEl) {
     if (currentMode === 'video') {
         if (!peerConnection) createPeerConnection();   // ممكن يكون اتعمل بسبب offer وصل بدري
         if (data.isInitiator) {
-            const offer = await peerConnection.createOffer();
-            await peerConnection.setLocalDescription(offer);
-            socket.emit('signal', { offer: offer });
+            const connection = peerConnection, matchId = currentMatchId, roomId = currentRoomId;
+            try {
+                const offer = await connection.createOffer();
+                if (connection !== peerConnection || matchId !== currentMatchId) return;
+                await connection.setLocalDescription(offer);
+                if (connection !== peerConnection || matchId !== currentMatchId) return;
+                socket.emit('signal', { roomId, matchId, offer });
+            } catch (err) { console.warn('Video offer failed'); }
         }
     }
 });
@@ -952,23 +977,31 @@ socket.on('room-not-found', () => {
 });
 
 socket.on('signal', async (data) => {
+    if (!data || currentMode !== 'video' || data.roomId !== currentRoomId || data.matchId !== currentMatchId) return;
+    const matchId = currentMatchId;
     try {
+        if (!peerConnection) createPeerConnection();
+        const connection = peerConnection;
         if (data.offer) {
-            if (!peerConnection) createPeerConnection();
-            await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+            await connection.setRemoteDescription(new RTCSessionDescription(data.offer));
+            if (connection !== peerConnection || matchId !== currentMatchId) return;
             await flushPendingCandidates();
-            const answer = await peerConnection.createAnswer();
-            await peerConnection.setLocalDescription(answer);
-            socket.emit('signal', { answer: answer });
+            if (connection !== peerConnection || matchId !== currentMatchId) return;
+            const answer = await connection.createAnswer();
+            if (connection !== peerConnection || matchId !== currentMatchId) return;
+            await connection.setLocalDescription(answer);
+            if (connection !== peerConnection || matchId !== currentMatchId) return;
+            socket.emit('signal', { roomId: currentRoomId, matchId: currentMatchId, answer: answer });
         } else if (data.answer) {
             if (peerConnection) {
-                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+                await connection.setRemoteDescription(new RTCSessionDescription(data.answer));
+                if (connection !== peerConnection || matchId !== currentMatchId) return;
                 await flushPendingCandidates();
             }
         } else if (data.candidate) {
             // الـ candidate قبل setRemoteDescription بيتحط في طابور بدل ما يرمي خطأ
             if (peerConnection && peerConnection.remoteDescription) {
-                await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+                await connection.addIceCandidate(new RTCIceCandidate(data.candidate));
             } else {
                 if (pendingCandidates.length < 100) pendingCandidates.push(data.candidate);
             }
@@ -979,12 +1012,16 @@ socket.on('signal', async (data) => {
 });
 
 socket.on('peer-disconnected', () => {
+    currentMatchId = null;
     clearRemoteVideo();
     if(statusDiv) statusDiv.textContent = tr('disconnected');
     appendSystemMessage(tr('partnerLeft'));
 });
 
 socket.on('receive-message', async (data) => {
+    if (!data || typeof data.text !== 'string' || data.text.length > 500) return;
+    if ((data.roomId && data.roomId !== currentRoomId) || (data.matchId && data.matchId !== currentMatchId)) return;
+    const roomId = currentRoomId, matchId = currentMatchId;
     if (!isSoundMuted) msgSound.play().catch(()=>{});
     const translationLangEl = document.getElementById('translationLang');
     const targetLang = translationLangEl ? translationLangEl.value : 'none';
@@ -1007,13 +1044,14 @@ socket.on('receive-message', async (data) => {
         }
     }
 
+    if (roomId !== currentRoomId || matchId !== currentMatchId) return;
     appendMessage(data.text, 'other', translatedText);
     if(typingIndicator) typingIndicator.style.display = 'none';
 });
 
 function sendMsg() {
     if(!msgInput) return;
-    const text = msgInput.value.trim();
+    const text = msgInput.value.trim().slice(0, 500);
     if (!text) return;
     appendMessage(text, 'me');
     socket.emit('send-message', { text: text });
@@ -1025,15 +1063,16 @@ function appendMessage(text, type, translatedText = null) {
     if(!chatBox) return;
     const msgDiv = document.createElement('div');
     msgDiv.classList.add('msg', type === 'me' ? 'msg-me' : 'msg-other');
-    const safeText = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
+    msgDiv.textContent = typeof text === 'string' ? text : '';
     if (translatedText) {
-        const safeTrans = translatedText.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        msgDiv.innerHTML = `${safeText} <br><small style="color:var(--accent-purple); display:block; margin-top:5px; font-size:11px; font-weight:bold;">${tr('translationLabel')}: ${safeTrans}</small>`;
-    } else {
-        msgDiv.textContent = text;
+        const translation = document.createElement('small');
+        translation.className = 'message-translation';
+        translation.textContent = tr('translationLabel') + ': ' + String(translatedText).slice(0, 4000);
+        msgDiv.appendChild(document.createElement('br'));
+        msgDiv.appendChild(translation);
     }
     chatBox.appendChild(msgDiv);
+    while (chatBox.children.length > 200) chatBox.firstElementChild.remove();
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
@@ -1044,13 +1083,14 @@ function appendSystemMessage(text) {
     msgDiv.style.whiteSpace = 'pre-line';
     msgDiv.textContent = text;
     chatBox.appendChild(msgDiv);
+    while (chatBox.children.length > 200) chatBox.firstElementChild.remove();
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 // --- نظام الترجمة (الـ 12 لغة كاملة) ---
 const translations = {
     ar: {
-        siteTitle: "Randly - شات فيديو ورسائل عشوائي مع الغرباء",
+        siteTitle: "شات فيديو عشوائي مجاني ومجهول مع الغرباء | Randly",
         logoTitle: "Randly 🎲",
         landingSub: "تحدث مع أناس عشوائيين حول العالم بكل أمان وسرعة!",
         onlineNow: "المتصلون الآن",
@@ -1104,7 +1144,7 @@ const translations = {
         cameraRequired: "لازم تسمح بالكاميرا وتظهر وجهك قبل بدء المحادثة."
     },
     en: {
-        siteTitle: "Randly - Random Video & Text Chat with Strangers",
+        siteTitle: "Free Anonymous Random Video Chat | Talk to Strangers - Randly",
         logoTitle: "Randly 🎲",
         landingSub: "Talk to random people around the world safely and fast!",
         onlineNow: "Online now",
@@ -1158,7 +1198,7 @@ const translations = {
         cameraRequired: "Allow camera access and show your face before starting."
     },
     es: {
-        siteTitle: "Randly - Chat aleatorio de video y texto",
+        siteTitle: "Videochat aleatorio gratis y anónimo con extraños | Randly",
         logoTitle: "Randly 🎲",
         landingSub: "¡Habla con personas aleatorias de todo el mundo de forma segura!",
         onlineNow: "En línea",
@@ -1210,7 +1250,7 @@ const translations = {
         noCountryMatchMsg: "No hay nadie de tu país conectado ahora mismo — te conectaremos con alguien de cualquier parte del mundo."
     },
     fr: {
-        siteTitle: "Randly - Chat vidéo et texte aléatoire",
+        siteTitle: "Chat vidéo aléatoire gratuit et anonyme | Randly",
         logoTitle: "Randly 🎲",
         landingSub: "Parlez à des inconnus du monde entier en toute sécurité !",
         onlineNow: "En ligne",
@@ -1262,7 +1302,7 @@ const translations = {
         noCountryMatchMsg: "Personne de votre pays n'est connecté en ce moment — nous vous connectons avec quelqu'un du monde entier."
     },
     de: {
-        siteTitle: "Randly - Zufälliger Video- und Text-Chat",
+        siteTitle: "Kostenloser anonymer Zufalls-Videochat mit Fremden | Randly",
         logoTitle: "Randly 🎲",
         landingSub: "Sicher mit Fremden weltweit chatten!",
         onlineNow: "Online",
@@ -1314,7 +1354,7 @@ const translations = {
         noCountryMatchMsg: "Gerade ist niemand aus deinem Land online — wir verbinden dich mit jemandem von überall."
     },
     it: {
-        siteTitle: "Randly - Chat video e testo casuale",
+        siteTitle: "Videochat casuale gratis e anonima con sconosciuti | Randly",
         logoTitle: "Randly 🎲",
         landingSub: "Parla con estranei in tutto il mondo in sicurezza!",
         onlineNow: "Online",
@@ -1366,7 +1406,7 @@ const translations = {
         noCountryMatchMsg: "Nessuno dal tuo paese è online in questo momento — ti connetteremo con qualcuno da qualsiasi parte del mondo."
     },
     pt: {
-        siteTitle: "Randly - Chat de vídeo e texto aleatório",
+        siteTitle: "Chat de vídeo aleatório grátis e anônimo | Randly",
         logoTitle: "Randly 🎲",
         landingSub: "Fale com estranhos em todo o mundo com segurança!",
         onlineNow: "Online",
@@ -1418,7 +1458,7 @@ const translations = {
         noCountryMatchMsg: "Ninguém do seu país está online agora — vamos te conectar com alguém de qualquer lugar do mundo."
     },
     tr: {
-        siteTitle: "Randly - Yabancılarla Ücretsiz Rastgele Görüntülü Sohbet",
+        siteTitle: "Ücretsiz anonim rastgele görüntülü sohbet | Randly",
         logoTitle: "Randly 🎲",
         landingSub: "Dünyanın her yerinden rastgele insanlarla güvenli ve hızlı bir şekilde sohbet edin!",
         onlineNow: "Şu anda çevrimiçi",
@@ -1470,7 +1510,7 @@ const translations = {
         noCountryMatchMsg: "Şu anda ülkenizden kimse çevrimiçi değil — sizi dünyanın herhangi bir yerinden biriyle bağlıyoruz."
     },
     ru: {
-        siteTitle: "Randly - Бесплатный Случайный Видеочат с Незнакомцами",
+        siteTitle: "Бесплатный анонимный случайный видеочат | Randly",
         logoTitle: "Randly 🎲",
         landingSub: "Общайтесь со случайными людьми со всего мира безопасно и быстро!",
         onlineNow: "Сейчас онлайн",
@@ -1522,7 +1562,7 @@ const translations = {
         noCountryMatchMsg: "Сейчас никого из вашей страны нет онлайн — мы подключим вас с кем-то из любой точки мира."
     },
     hi: {
-        siteTitle: "Randly - अजनबियों के साथ मुफ्त रैंडम वीडियो चैट",
+        siteTitle: "मुफ़्त गुमनाम रैंडम वीडियो चैट | Randly",
         logoTitle: "Randly 🎲",
         landingSub: "दुनिया भर के रैंडम लोगों के साथ सुरक्षित और तेज़ी से चैट करें!",
         onlineNow: "अभी ऑनलाइन",
@@ -1574,7 +1614,7 @@ const translations = {
         noCountryMatchMsg: "अभी आपके देश से कोई ऑनलाइन नहीं है — हम आपको दुनिया में कहीं से भी किसी से जोड़ रहे हैं।"
     },
     id: {
-        siteTitle: "Randly - Video Chat Acak Gratis dengan Orang Asing",
+        siteTitle: "Video Chat Acak Gratis dan Anonim dengan Orang Asing | Randly",
         logoTitle: "Randly 🎲",
         landingSub: "Ngobrol dengan orang acak dari seluruh dunia dengan aman dan cepat!",
         onlineNow: "Online sekarang",
@@ -1626,7 +1666,7 @@ const translations = {
         noCountryMatchMsg: "Belum ada orang dari negara Anda yang online sekarang — kami akan menghubungkan Anda dengan seseorang dari mana saja."
     },
     zh: {
-        siteTitle: "Randly - 与陌生人免费随机视频聊天",
+        siteTitle: "免费匿名随机视频聊天，与陌生人交谈 | Randly",
         logoTitle: "Randly 🎲",
         landingSub: "安全快速地与来自世界各地的随机用户聊天！",
         onlineNow: "当前在线",
@@ -1705,21 +1745,7 @@ function changeGlobalLanguage(lang) {
         }
     });
 
-    if (currentPartnerCountry) {
-        const nameElement = document.getElementById('remoteUserCountryName');
-        if (nameElement) {
-            if (currentPartnerCountry === 'global') {
-                nameElement.textContent = translations[lang]?.matchGlobal || 'عالمي (Smart Match)';
-            } else {
-                try {
-                    const regionNames = new Intl.DisplayNames([lang], { type: 'region' });
-                    nameElement.textContent = '- ' + regionNames.of(currentPartnerCountry.toUpperCase());
-                } catch (e) {
-                    nameElement.textContent = '';
-                }
-            }
-        }
-    }
+    refreshPartnerCountry(lang);
 
     populateLanguageSelects();
     populateCountrySelects();

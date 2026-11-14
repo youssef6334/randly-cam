@@ -4,3 +4,8 @@ node_modules/
 backups/
 *.bak
 .env
+.env.*
+!.env.example
+.npm-cache/
+data/
+.test-data/
