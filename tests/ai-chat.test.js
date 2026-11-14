@@ -6,7 +6,11 @@ const path = require('path');
 const vm = require('vm');
 const ai = require('../ai-chat');
 const { createPersona } = require('../ai-personas');
-const session = (language = 'en') => ai.createSession(createPersona({ preferredCountry: 'EG', locale: language, pick: () => 0 }));
+const session = (language = 'en') => {
+    const s = ai.createSession(createPersona({ preferredCountry: 'EG', pick: () => 0 }));
+    s.language = language; // Seed conversation state for each isolated unit scenario.
+    return s;
+};
 const response = text => new Response(JSON.stringify({ choices: [{ message: { content: text } }] }), { headers: { 'Content-Type': 'application/json' } });
 const tick = () => new Promise(resolve => setImmediate(resolve));
 
@@ -140,4 +144,35 @@ test('concurrent provider work is capped and oversized provider bodies cannot en
     const large = ai.createEngine({ env: { GROQ_API_KEY: 'test' }, fetchImpl: async () => response('x'.repeat(70000)) });
     assert.equal(await large.generate(s), ai.COPY.en[2]);
     assert.equal(s.history.length, 1);
+});
+
+test('Swedish character follows message language, including short greetings, independently of the interface', async () => {
+    const s = ai.createSession(createPersona({ preferredCountry: 'SE', locale: 'ar' }));
+    const engine = ai.createEngine({ env: {} });
+    assert.equal(s.language, 'en');
+    for (const [text, expected] of [['hi', 'en'], ['سلام', 'ar'], ['hello', 'en'], ['اه', 'ar'], ['how r u', 'en'], ['ok', 'en'], ['🤔', 'en'], ['123', 'en']]) {
+        ai.startTurn(s, text); assert.equal(s.language, expected, text);
+    }
+    ai.startTurn(s, 'مرحبا');
+    const neutralArabic = await engine.generate(s);
+    assert.equal(neutralArabic, ai.copyForSession(s)[1]); assert.doesNotMatch(neutralArabic, /إيه|دلوقتي/);
+    ai.startTurn(s, 'hello'); assert.equal(await engine.generate(s), ai.COPY.en[1]);
+    assert.equal(ai.detectLanguage('انا بحب music', 'en'), 'ar');
+    assert.equal(ai.detectLanguage('I like دبي music', 'ar'), 'en');
+    assert.equal(ai.detectLanguage('Alex', 'fr'), 'fr');
+    assert.match(ai.buildMessages(s)[0].content, /simple everyday English/);
+    assert.match(ai.buildMessages(s)[0].content, /Never use website\/interface language/);
+});
+
+test('Arabic canned replies respect the character region instead of making everyone Egyptian', async () => {
+    const engine = ai.createEngine({ env: {} });
+    for (const [country, greeting] of [['EG', /إيه/], ['SA', /وش/], ['AE', /شو/], ['MA', /شنو/], ['DZ', /واش/], ['JO', /شو/], ['IQ', /شنو/]]) {
+        const s = ai.createSession(createPersona({ preferredCountry: country }));
+        ai.startTurn(s, 'هلا'); assert.match(await engine.generate(s), greeting, country);
+        ai.startTurn(s, 'هل أنت ذكاء اصطناعي؟'); assert.equal(await engine.generate(s), ai.copyForSession(s)[0]);
+        if (country !== 'EG') {
+            ai.startTurn(s, '؟'); assert.doesNotMatch(await engine.generate(s), /دلوقتي|إيه/);
+            assert.doesNotMatch(ai.gameReply(s, 'O'), /الجولة دي/);
+        }
+    }
 });

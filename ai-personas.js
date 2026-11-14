@@ -542,8 +542,8 @@ const EXTRA = {
     IN: ['Asia/Kolkata', 'hi', 'दिल्ली', 'conversational Hindi; switch to English when requested'],
     ID: ['Asia/Jakarta', 'id', 'Jakarta', 'conversational Indonesian'],
     CN: ['Asia/Shanghai', 'zh', '上海', 'conversational Mandarin Chinese'],
-    NL: ['Europe/Amsterdam', 'en', 'Amsterdam', 'neutral English; do not imitate a Dutch accent'],
-    SE: ['Europe/Stockholm', 'en', 'Stockholm', 'neutral English; do not imitate a Swedish accent'],
+    NL: ['Europe/Amsterdam', 'nl', 'Amsterdam', 'neutral English; do not imitate a Dutch accent'],
+    SE: ['Europe/Stockholm', 'sv', 'Stockholm', 'neutral English; do not imitate a Swedish accent'],
     PT: ['Europe/Lisbon', 'pt', 'Lisboa', 'European Portuguese'],
     AU: ['Australia/Sydney', 'en', 'Sydney', 'Australian English'],
     NZ: ['Pacific/Auckland', 'en', 'Auckland', 'New Zealand English'],
@@ -560,7 +560,7 @@ const SETTINGS = {
     BR: ['America/Sao_Paulo', 'pt'], TR: ['Europe/Istanbul', 'tr']
 };
 const STYLES = {
-    en: 'relaxed conversational English, without forced slang or an invented accent',
+    en: 'simple, clear everyday English with short sentences and common words; no forced slang, fake accent or deliberately broken grammar',
     es: 'natural conversational Spanish', fr: 'natural conversational French',
     de: 'natural conversational German', it: 'natural conversational Italian',
     pt: 'natural conversational Portuguese', tr: 'natural conversational Turkish',
@@ -583,6 +583,17 @@ function countryName(country, locale = 'en') {
     if (country === 'global') return '';
     return new Intl.DisplayNames([language(locale)], { type: 'region' }).of(country) || country;
 }
+function startingLanguage(country) {
+    const setting = SETTINGS[country] || EXTRA[country];
+    let native = setting ? setting[1] : null;
+    if (!native) {
+        try { native = new Intl.Locale('und-' + country).maximize().language; }
+        catch (_) { native = 'en'; }
+    }
+    // ICU's likely language is only a starting default for a fictional setting,
+    // never a claim about any real person's language or nationality.
+    return { nativeLanguage: native, language: language(native, 'en') };
+}
 function styleFor(persona, locale) {
     const code = language(locale), country = persona.country;
     if (code === 'ar' && persona.nativeLanguage === 'ar' && LOCAL_GEO[country]) return LOCAL_GEO[country].slang;
@@ -592,14 +603,13 @@ function styleFor(persona, locale) {
     if (code === 'en' && country === 'US') return 'natural conversational American English, without forced slang';
     return STYLES[code];
 }
-function createPersona({ preferredCountry, actualCountry, locale, interests = [], pick = n => crypto.randomInt(n) } = {}) {
+function createPersona({ preferredCountry, actualCountry, interests = [], pick = n => crypto.randomInt(n) } = {}) {
     let country = normalizeCountry(preferredCountry);
     if (country === 'global') country = normalizeCountry(actualCountry);
     if (country === 'global') country = WORLD[pick(WORLD.length)];
     const geo = LOCAL_GEO[country], extra = EXTRA[country];
     const setting = SETTINGS[country] || extra;
-    const nativeLanguage = setting ? setting[1] : null;
-    const replyLanguage = language(locale, nativeLanguage || 'en');
+    const { nativeLanguage, language: replyLanguage } = startingLanguage(country);
     const cityData = geo ? geo.cities[pick(geo.cities.length)] : null;
     const city = cityData ? cityData.city : (extra ? extra[2] : null);
     // A country can span several time zones. Use a curated representative zone,
@@ -621,4 +631,4 @@ function localTime(persona, date = new Date()) {
     if (!persona.timeZone) return null;
     return new Intl.DateTimeFormat('en-GB', { timeZone: persona.timeZone, hour: '2-digit', minute: '2-digit', hour12: false }).format(date);
 }
-module.exports = { LANGUAGES, WORLD: Object.freeze(WORLD), language, countryName, createPersona, styleFor, localTime };
+module.exports = { LANGUAGES, WORLD: Object.freeze(WORLD), language, countryName, startingLanguage, createPersona, styleFor, localTime };

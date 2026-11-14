@@ -14,10 +14,11 @@ test('every supported country retains its code without borrowing another country
         const p = make({ preferredCountry: country, locale: 'en' });
         assert.equal(p.country, country); assert.equal(p.kind, 'ai'); assert.ok(p.countryName);
         assert.doesNotThrow(() => personas.localTime(p));
-        if (!p.locallyCurated) { assert.equal(p.city, null); assert.equal(p.timeZone, null); assert.equal(p.nativeLanguage, null); }
+        if (!p.locallyCurated) { assert.equal(p.city, null); assert.equal(p.timeZone, null); }
+        assert.ok(personas.LANGUAGES.includes(p.language));
     }
     const canada = make({ preferredCountry: 'CA', actualCountry: 'EG', locale: 'ar' });
-    assert.equal(canada.country, 'CA'); assert.equal(canada.city, 'Toronto'); assert.equal(canada.language, 'ar');
+    assert.equal(canada.country, 'CA'); assert.equal(canada.city, 'Toronto'); assert.equal(canada.language, 'en');
     const unknown = make({ preferredCountry: 'AQ', locale: 'fr' }); assert.equal(unknown.city, null);
 });
 test('languages and local dialects follow supported profiles without forcing English or stereotypes', () => {
@@ -26,10 +27,18 @@ test('languages and local dialects follow supported profiles without forcing Eng
     assert.match(make({ preferredCountry: 'FR', locale: 'fr' }).style, /French/);
     assert.match(make({ preferredCountry: 'DE', locale: 'de' }).style, /German/);
     assert.match(make({ preferredCountry: 'BR', locale: 'pt' }).style, /Brazilian/);
-    assert.match(make({ preferredCountry: 'EG', locale: 'en' }).style, /English/);
+    assert.match(personas.styleFor(make({ preferredCountry: 'EG' }), 'en'), /English/);
     assert.match(personas.styleFor(make({ preferredCountry: 'EG', locale: 'en' }), 'ar'), /مصرية/);
-    for (const country of personas.WORLD) for (const locale of personas.LANGUAGES) {
-        const p = make({ preferredCountry: country, locale }); assert.equal(p.language, locale); assert.ok(p.name); assert.ok(p.style);
+    for (const country of personas.WORLD) {
+        const p = make({ preferredCountry: country }); assert.ok(personas.LANGUAGES.includes(p.language)); assert.ok(p.name); assert.ok(p.style);
+    }
+});
+test('country defaults stay independent of website locale, with English for unsupported native languages', () => {
+    for (const [country, native, initial] of [['SE', 'sv', 'en'], ['NL', 'nl', 'en'], ['JP', 'ja', 'en'], ['SA', 'ar', 'ar'], ['FR', 'fr', 'fr'], ['DE', 'de', 'de'], ['BR', 'pt', 'pt'], ['TN', 'ar', 'ar']]) {
+        const p = make({ preferredCountry: country, locale: 'ar' });
+        assert.equal(p.nativeLanguage, native, country); assert.equal(p.language, initial, country);
+        const otherUi = make({ preferredCountry: country, locale: 'en' });
+        assert.equal(otherUi.language, initial, country + ' with English UI');
     }
 });
 test('representative time uses the chosen city and profile data stays immutable', () => {

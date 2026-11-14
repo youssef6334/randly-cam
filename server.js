@@ -364,7 +364,7 @@ function aiSessionCurrent(socket, session) {
 function sendAiText(socket, session, fullText) {
     let reply = aiChat.sanitizeReply(fullText);
     if (!reply || !aiSessionCurrent(socket, session)) return;
-    const identity = aiChat.COPY[session.language][0];
+    const identity = aiChat.copyForSession(session)[0];
     if (!session.disclosed && !reply.startsWith(identity)) reply = aiChat.sanitizeReply(identity + ' ' + reply);
     const revision = session.revision;
     socket.emit('display-typing');
@@ -384,7 +384,7 @@ function scheduleAiReply(socket, session) {
         if (!aiSessionCurrent(socket, session) || revision !== session.revision) return;
         let reply;
         try { reply = await aiEngine.generate(session); }
-        catch (_) { reply = aiChat.COPY[session.language][2]; }
+        catch (_) { reply = aiChat.copyForSession(session)[2]; }
         if (!aiSessionCurrent(socket, session) || revision !== session.revision) return;
         if (reply) sendAiText(socket, session, reply);
         else socket.emit('hide-typing');
@@ -401,14 +401,14 @@ function pairWithAi(socket, prefs) {
     const user = activeUsers.get(socket.id);
     if (!socket.connected || !user) return;
     removeFromQueue(socket.id); clearFallback(socket.id); clearAiSession(socket.id);
-    const persona = aiPersonas.createPersona({ preferredCountry: prefs.country, actualCountry: user.actualCountry, locale: user.locale || prefs.locale, interests: prefs.interests });
+    const persona = aiPersonas.createPersona({ preferredCountry: prefs.country, actualCountry: user.actualCountry, interests: prefs.interests });
     user.room = 'room_' + crypto.randomUUID(); user.matchId = crypto.randomUUID(); user.peer = 'AI_BOT'; user.xoRole = 'X'; user.mode = 'text';
     const session = aiChat.createSession(persona);
     session.isArab = persona.language === 'ar';
     aiSessions.set(socket.id, session);
     socket.emit('matched', { isInitiator: false, xoRole: 'X', roomId: user.room, matchId: user.matchId,
         partnerType: 'ai', partnerName: persona.name, partnerCountry: publicCountry(persona.country), countryKind: 'fictional' });
-    sendAiText(socket, session, aiChat.COPY[session.language][1]);
+    sendAiText(socket, session, aiChat.copyForSession(session)[1]);
     addAiTimer(session, () => botLeave(socket, session), AI_SESSION_MS);
 }
 
@@ -694,12 +694,8 @@ io.on('connection', (socket) => {
         const user = activeUsers.get(socket.id);
         if (!user) return;
         user.locale = data.locale;
-        const session = aiSessions.get(socket.id);
-        if (!session || session.language === data.locale) return;
-        const pending = session.replyTimers.size > 0 || !!session.controller;
-        clearReplyTimers(socket, session);
-        session.language = data.locale; session.isArab = data.locale === 'ar'; session.revision++;
-        if (pending && session.history.at(-1)?.role === 'user') scheduleAiReply(socket, session);
+        // This selects interface text, not the character's conversation language.
+        // User message language and explicit language requests drive AI replies.
     });
 
     on(socket, 'stop-typing', [20, 5000], () => {
