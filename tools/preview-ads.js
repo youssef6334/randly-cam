@@ -26,8 +26,17 @@ document.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('cameraGateMessage')?.classList.add('is-hidden');
     document.getElementById('status').textContent='معاينة التصميم — بدون إعلان حقيقي';
 });`));
-app.get('/adsterra-frame.html', (req, res) => res.type('html').send('<!doctype html><html><head><link rel="stylesheet" href="/qa-creative.css"></head><body><div><b>Randly</b><span>معاينة موضع الإعلان · Advertisement preview</span><small>مساحة مستقلة عن المحادثة</small></div><script src="/qa-creative.js"></script></body></html>'));
-app.get('/qa-creative.css', (req, res) => res.type('css').send('body{margin:0;font:14px Arial;color:#c8d8cf;background:transparent}div{box-sizing:border-box;height:80px;padding:12px 18px;border:1px solid #24473a;border-radius:10px;background:linear-gradient(110deg,#102e22,#13181b);display:flex;gap:18px;align-items:center}b{font-size:24px;color:#26dba0}span{flex:1}small{color:#92a399}@media(max-width:500px){div{gap:10px;padding:10px}b{font-size:20px}small{display:none}span{font-size:11px}}'));
-app.get('/qa-creative.js', (req, res) => res.type('js').send("parent.postMessage({type:'randly-ad-layout',filled:true,height:80},location.origin);"));
+app.get('/ads.js', (req, res) => res.type('js').send(fs.readFileSync(path.join(root,'ads.js'),'utf8')
+    .replace('https://bicea.org/21/41a844b9e767c8981fc99be90925b350','/qa-native.js')
+    .replace('https://bicea.org/14/4cd723902c51674b52b1ac4b207c76d4','/qa-social.js')));
+app.get('/qa-native.js', (req, res) => res.type('js').send(`
+const tile=document.createElement('div');tile.textContent='معاينة موضع الإعلان — بدون إعلان حقيقي';
+Object.assign(tile.style,{padding:'24px',background:'#123125',borderRadius:'10px',color:'#bde7d1',textAlign:'center'});
+document.getElementById('container-41a844b9e767c8981fc99be90925b350').appendChild(tile);`));
+app.get('/qa-social.js', (req, res) => res.type('js').send(`
+const panel=document.createElement('aside'),close=document.createElement('button'),label=document.createElement('span');
+label.textContent='معاينة إعلان جانبي';close.textContent='×';close.setAttribute('aria-label','إغلاق المعاينة');close.onclick=()=>panel.remove();
+Object.assign(panel.style,{position:'fixed',right:'12px',top:'120px',zIndex:9999,background:'#184b39',color:'white',border:'1px solid #3e8b6a',borderRadius:'14px',padding:'12px',display:'flex',gap:'12px',alignItems:'center'});
+panel.append(label,close);document.body.appendChild(panel);`));
 app.use(express.static(root));
 app.listen(Number(process.env.PORT), '127.0.0.1', () => console.log('Ad preview: http://127.0.0.1:' + process.env.PORT));

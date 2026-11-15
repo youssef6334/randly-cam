@@ -177,33 +177,22 @@ function headers(req, res) {
     if (production) res.setHeader('Strict-Transport-Security', 'max-age=31536000');
     const pathname = (req.url || '/').split('?')[0];
     if (pathname === '/adsterra-frame.html') {
-        // Third-party creatives run only in an opaque, unprivileged document.
-        // Never add allow-same-origin: chat DOM, storage and camera stay isolated.
-        res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+        // Retired integration; retain the URL without executing ad code in an iframe.
         res.setHeader('X-Robots-Tag', 'noindex, nofollow');
-        res.setHeader('Referrer-Policy', 'strict-origin');
-        res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=()');
-        const sources = [...origins].join(' ');
-        res.setHeader('Content-Security-Policy', [
-            "default-src 'none'", "base-uri 'none'", "object-src 'none'", "form-action 'none'", "frame-ancestors 'self'",
-            'sandbox allow-scripts allow-popups allow-popups-to-escape-sandbox',
-            `script-src ${sources} https: 'unsafe-inline' 'unsafe-eval'`,
-            `style-src ${sources} https: 'unsafe-inline'`,
-            'img-src https: data:', 'font-src https: data:', 'frame-src https:',
-            'connect-src https:', 'media-src https: blob:', "worker-src 'none'",
-            ...(production ? ['upgrade-insecure-requests'] : [])
-        ].join('; '));
-        return;
     }
+    const isChat = pathname === '/' || /^\/(index|ar|en|es|fr|de|it|pt|tr|ru|hi|id|zh)\.html$/.test(pathname);
+    // Social Bar is a page-level placement. Only its known loader host is trusted
+    // for scripts; keep inline handlers and eval blocked on the chat page.
+    const adScript = isChat ? ' https://bicea.org' : '';
     const filename = pathname === '/' ? 'index.html' : pathname.slice(1);
     const hashes = hashCache.get(filename) || [];
     res.setHeader('Content-Security-Policy', [
         "default-src 'self'", "base-uri 'none'", "object-src 'none'", "frame-ancestors 'none'", "form-action 'self'",
-        `script-src 'self' ${hashes.join(' ')} https://pagead2.googlesyndication.com https://www.googletagservices.com https://www.google.com https://www.gstatic.com`,
+        `script-src 'self' ${hashes.join(' ')} https://pagead2.googlesyndication.com https://www.googletagservices.com https://www.google.com https://www.gstatic.com${adScript}`,
         "script-src-attr 'none'", "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com",
-        "font-src 'self' https://cdnjs.cloudflare.com", "img-src 'self' data: https://*.googlesyndication.com https://*.doubleclick.net https://www.google.com",
-        "media-src 'self' blob:", "connect-src 'self' https://randly.live wss://randly.live https://*.googlesyndication.com https://*.doubleclick.net https://www.google.com",
-        "frame-src 'self' https://*.googlesyndication.com https://*.doubleclick.net https://www.google.com",
+        "font-src 'self' https://cdnjs.cloudflare.com", isChat ? "img-src 'self' data: https:" : "img-src 'self' data: https://*.googlesyndication.com https://*.doubleclick.net https://www.google.com",
+        "media-src 'self' blob:", isChat ? "connect-src 'self' https: wss://randly.live" : "connect-src 'self' https://randly.live wss://randly.live https://*.googlesyndication.com https://*.doubleclick.net https://www.google.com",
+        isChat ? "frame-src https:" : "frame-src https://*.googlesyndication.com https://*.doubleclick.net https://www.google.com",
         "worker-src 'self' blob:", ...(production ? ['upgrade-insecure-requests'] : [])
     ].join('; '));
 }
