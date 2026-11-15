@@ -3423,8 +3423,8 @@ select.site-lang-select:focus-visible {
 .randly-ad-toggle:focus-visible { outline: 2px solid #10b981; outline-offset: -2px; }
 .randly-ad-toggle span { font: 22px/1 Arial,sans-serif; }
 .randly-ad[data-collapsed="true"] .randly-ad-toggle span { transform: rotate(180deg); }
-#adContainer.randly-ad #adContent { display: block; width: 100%; min-height: 0; max-height: 160px; padding: 0 12px 10px; overflow: auto; box-sizing: border-box; scrollbar-width: thin; scrollbar-color: #305548 transparent; }
-.randly-ad-slot { width: 100%; min-width: 0; }
+#adContainer.randly-ad #adContent { display: block; width: 100%; min-height: 0; max-height: none; padding: 0 12px 10px; box-sizing: border-box; }
+.randly-ad-slot { width: 100%; max-width: 640px; min-width: 0; margin-inline: auto; }
 .randly-ad-frame { display: block; width: 100%; height: 1px; border: 0; color-scheme: normal; }
 .randly-ad-loading { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 44px; color: #829188; font-size: 11px; }
 .randly-ad-loading::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #10b981; opacity: .65; }
@@ -3432,7 +3432,7 @@ html[data-theme="light"] .rl-app > #adContainer.randly-ad, body.light-mode .rl-a
 html[data-theme="light"] .randly-ad-label, body.light-mode .randly-ad-label { color: #52675a; }
 @media (max-width: 768px) {
     .rl-app > #adContainer.randly-ad { border-radius: 10px; margin-bottom: 8px; }
-    #adContainer.randly-ad #adContent { max-height: 110px; padding: 0 8px 8px; }
+    #adContainer.randly-ad #adContent { padding: 0 8px 8px; }
     .randly-ad-heading { padding: 3px 8px; }
     .rl-app .rl-video-mode .rl-stage { height: max(120px, calc(min(75vw, 38dvh) - var(--randly-ad-space, 0px))); }
 }
