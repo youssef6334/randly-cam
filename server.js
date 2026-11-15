@@ -557,8 +557,10 @@ io.on('connection', (socket) => {
     const actualCountry = lookupCountry(socket.data.ip);
     if (actualCountry === 'unknown' && !warnedCountryProxy && socket.handshake.headers['x-forwarded-for']) {
         warnedCountryProxy = true;
-        // Log the configuration hint once; do not log visitor addresses.
-        console.warn('[COUNTRY] Country lookup unavailable behind ingress. Check TRUSTED_PROXY_CIDRS, forwarded IP format and GeoIP coverage (DEPLOY.md).');
+        // Identify an internal ingress hop without logging public visitor IPs,
+        // forwarded header values, conversation content or environment secrets.
+        console.warn('[COUNTRY]', JSON.stringify(security.ingressDiagnostics(socket.handshake.headers, socket.handshake.address)),
+            'Check TRUSTED_PROXY_CIDRS, forwarded IP format and GeoIP coverage (DEPLOY.md).');
     }
     activeUsers.set(socket.id, {
         room: null, peer: null, actualCountry, ipHash, xoRole: null

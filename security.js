@@ -30,6 +30,25 @@ function normalizeIp(value) {
 function isTrusted(ip) {
     return !!ip && trusted.check(ip, net.isIP(ip) === 4 ? 'ipv4' : 'ipv6');
 }
+// Diagnostic classification only. These ranges are NOT automatically trusted.
+const internalPeers = new net.BlockList();
+for (const [network, prefix, family] of [
+    ['127.0.0.0', 8, 'ipv4'], ['10.0.0.0', 8, 'ipv4'], ['172.16.0.0', 12, 'ipv4'],
+    ['192.168.0.0', 16, 'ipv4'], ['169.254.0.0', 16, 'ipv4'],
+    ['::1', 128, 'ipv6'], ['fc00::', 7, 'ipv6'], ['fe80::', 10, 'ipv6']
+]) internalPeers.addSubnet(network, prefix, family);
+function ingressDiagnostics(headers, address) {
+    const peer = normalizeIp(address);
+    const internal = !!peer && internalPeers.check(peer, net.isIP(peer) === 4 ? 'ipv4' : 'ipv6');
+    return {
+        internalPeer: internal ? peer : null,
+        peerTrusted: isTrusted(peer),
+        trustedProxyConfigured: !!(process.env.TRUSTED_PROXY_CIDRS || '').trim(),
+        forwardedHopCount: typeof headers['x-forwarded-for'] === 'string'
+            ? Math.min(16, headers['x-forwarded-for'].split(',').length) : 0,
+        cloudflareHeaderPresent: typeof headers['cf-connecting-ip'] === 'string'
+    };
+}
 function forwardedIp(value) {
     if (typeof value !== 'string') return '';
     const plain = normalizeIp(value);
@@ -155,4 +174,4 @@ function headers(req, res) {
         "worker-src 'self' blob:", ...(production ? ['upgrade-insecure-requests'] : [])
     ].join('; '));
 }
-module.exports = { origins, originAllowed, clientIp, rateKey, rates, Limiter, validPacket, validSignal, text, headers, prepareHeaders };
+module.exports = { origins, originAllowed, clientIp, ingressDiagnostics, rateKey, rates, Limiter, validPacket, validSignal, text, headers, prepareHeaders };

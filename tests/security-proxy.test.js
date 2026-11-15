@@ -46,6 +46,23 @@ test('forwarded endpoints do not bypass proxy trust or select an attacker-suppli
     }
 });
 
+test('ingress diagnostics identify internal hops without trusting them or disclosing visitor addresses', () => {
+    const security = loadSecurity();
+    const headers = { 'x-forwarded-for': '8.8.8.8, 1.1.1.1', 'cf-connecting-ip': '8.8.8.8' };
+    const diagnostic = security.ingressDiagnostics(headers, '::ffff:169.254.129.1');
+    assert.equal(diagnostic.internalPeer, '169.254.129.1');
+    assert.equal(diagnostic.peerTrusted, false);
+    assert.equal(diagnostic.trustedProxyConfigured, false);
+    assert.equal(diagnostic.forwardedHopCount, 2);
+    assert.equal(diagnostic.cloudflareHeaderPresent, true);
+    assert.equal(security.clientIp(headers, '169.254.129.1'), '169.254.129.1');
+    assert.doesNotMatch(JSON.stringify(diagnostic), /8\.8\.8\.8|1\.1\.1\.1/);
+    assert.equal(security.ingressDiagnostics(headers, '8.8.8.8').internalPeer, null);
+    assert.equal(security.ingressDiagnostics({}, 'invalid').internalPeer, null);
+    const configured = loadSecurity('169.254.129.1/32');
+    assert.equal(configured.ingressDiagnostics({}, '169.254.129.1').peerTrusted, true);
+});
+
 test('real matches receive the peer country through trusted ingress with source ports', { timeout: 30000 }, async t => {
     const port = 22000 + crypto.randomInt(8000);
     const root = path.join(__dirname, '..');
