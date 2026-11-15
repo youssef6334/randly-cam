@@ -49,6 +49,20 @@ function ingressDiagnostics(headers, address) {
         cloudflareHeaderPresent: typeof headers['cf-connecting-ip'] === 'string'
     };
 }
+async function saveIngressDiagnostics(directory, diagnostic) {
+    // Admin-only filesystem record, independent of stdout capture settings.
+    // Never persist forwarded header values or a public visitor address.
+    const record = {
+        recordedAt: new Date().toISOString(),
+        internalPeer: diagnostic.internalPeer,
+        peerTrusted: diagnostic.peerTrusted,
+        trustedProxyConfigured: diagnostic.trustedProxyConfigured,
+        forwardedHopCount: diagnostic.forwardedHopCount,
+        cloudflareHeaderPresent: diagnostic.cloudflareHeaderPresent
+    };
+    await fs.promises.mkdir(directory, { recursive: true, mode: 0o700 });
+    await fs.promises.writeFile(path.join(directory, 'randly-country-ingress.json'), JSON.stringify(record, null, 2) + '\n', { mode: 0o600 });
+}
 function forwardedIp(value) {
     if (typeof value !== 'string') return '';
     const plain = normalizeIp(value);
@@ -174,4 +188,4 @@ function headers(req, res) {
         "worker-src 'self' blob:", ...(production ? ['upgrade-insecure-requests'] : [])
     ].join('; '));
 }
-module.exports = { origins, originAllowed, clientIp, ingressDiagnostics, rateKey, rates, Limiter, validPacket, validSignal, text, headers, prepareHeaders };
+module.exports = { origins, originAllowed, clientIp, ingressDiagnostics, saveIngressDiagnostics, rateKey, rates, Limiter, validPacket, validSignal, text, headers, prepareHeaders };

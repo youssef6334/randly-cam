@@ -559,8 +559,20 @@ io.on('connection', (socket) => {
         warnedCountryProxy = true;
         // Identify an internal ingress hop without logging public visitor IPs,
         // forwarded header values, conversation content or environment secrets.
-        console.warn('[COUNTRY]', JSON.stringify(security.ingressDiagnostics(socket.handshake.headers, socket.handshake.address)),
+        const diagnostic = security.ingressDiagnostics(socket.handshake.headers, socket.handshake.address);
+        console.warn('[COUNTRY]', JSON.stringify(diagnostic),
             'Check TRUSTED_PROXY_CIDRS, forwarded IP format and GeoIP coverage (DEPLOY.md).');
+        const diagnosticDir = process.env.WEBSITE_SITE_NAME ? '/home/LogFiles'
+            : (process.env.DATA_DIR || path.join(__dirname, 'data'));
+        // LogFiles is accessible through the authenticated Azure/Kudu console,
+        // and is outside the public static root. At most one write per process.
+        const resolvedDir = path.resolve(diagnosticDir);
+        const publicRelative = path.relative(publicDir, resolvedDir);
+        if (publicRelative.startsWith('..' + path.sep) || path.isAbsolute(publicRelative)) {
+            security.saveIngressDiagnostics(resolvedDir, diagnostic).catch(() => {
+                console.warn('[COUNTRY] Private ingress diagnostic could not be saved.');
+            });
+        }
     }
     activeUsers.set(socket.id, {
         room: null, peer: null, actualCountry, ipHash, xoRole: null

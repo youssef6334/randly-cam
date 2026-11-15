@@ -63,6 +63,26 @@ test('ingress diagnostics identify internal hops without trusting them or disclo
     assert.equal(configured.ingressDiagnostics({}, '169.254.129.1').peerTrusted, true);
 });
 
+test('the private ingress record has a bounded schema and excludes extra fields and public visitor IPs', async t => {
+    const security = loadSecurity();
+    const parent = path.join(__dirname, '..', '.test-data');
+    fs.mkdirSync(parent, { recursive: true });
+    const directory = fs.mkdtempSync(path.join(parent, 'country-ingress-'));
+    const file = path.join(directory, 'randly-country-ingress.json');
+    t.after(() => { if (fs.existsSync(file)) fs.unlinkSync(file); fs.rmdirSync(directory); });
+    const diagnostic = security.ingressDiagnostics({ 'x-forwarded-for': '8.8.8.8' }, '::ffff:169.254.129.1');
+    await security.saveIngressDiagnostics(directory, { ...diagnostic, apiKey: 'never-write-this', forwardedAddress: '8.8.8.8' });
+    const content = fs.readFileSync(file, 'utf8');
+    const saved = JSON.parse(content);
+    assert.equal(saved.internalPeer, '169.254.129.1');
+    assert.equal(saved.peerTrusted, false);
+    assert.ok(Number.isFinite(Date.parse(saved.recordedAt)));
+    assert.doesNotMatch(content, /never-write-this|8\.8\.8\.8|apiKey|forwardedAddress/);
+    await security.saveIngressDiagnostics(directory, security.ingressDiagnostics({}, '8.8.8.8'));
+    assert.equal(JSON.parse(fs.readFileSync(file, 'utf8')).internalPeer, null);
+    assert.equal(fs.readdirSync(directory).length, 1);
+});
+
 test('real matches receive the peer country through trusted ingress with source ports', { timeout: 30000 }, async t => {
     const port = 22000 + crypto.randomInt(8000);
     const root = path.join(__dirname, '..');
