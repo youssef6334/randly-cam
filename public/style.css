@@ -3316,6 +3316,9 @@ select.site-lang-select:focus-visible {
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    white-space: nowrap;
     direction: ltr;
     color: #fff;
     opacity: .9;
