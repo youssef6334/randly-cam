@@ -21,7 +21,7 @@
 ["touchstart","mousedown","keydown","scroll"].forEach(function(e){addEventListener(e,go,{once:true,passive:true});});
 addEventListener("load",function(){setTimeout(go,4000);});})();
 </script>
-<link rel="stylesheet" href="style.css?v=20261114-ai-session">
+<link rel="stylesheet" href="style.css?v=20261115-video-layout">
 
     <!-- مكتبة الأيقونات الحديثة (FontAwesome) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -303,12 +303,8 @@ addEventListener("load",function(){setTimeout(go,4000);});})();
                         <span class="camera-gate-emoji">😊</span>
                         <span data-i18n="showFaceMessage">اظهر وجهك أمام الكاميرا للعثور على شخص والتواصل معه</span>
                     </div>
-                    <!-- عرض اسم وعلم دولة الطرف الآخر -->
-                    <span class="video-label" style="display: flex; align-items: center; gap: 8px;">
-                        <span data-i18n="remoteUser">الطرف الآخر</span>
-                        <span id="remoteUserFlag" class="country-flag-icon"></span>
-                        <span id="remoteUserCountryName" style="color: #ffd700; font-weight: bold; font-size: 14px;"></span>
-                    </span>
+                    <!-- Brand watermark; partner country is displayed in the chat. -->
+                    <span class="randly-watermark" aria-label="Randly.live"><img src="/randly-mark.svg" width="28" height="28" alt="" decoding="async"><span>Randly<small>.live</small></span></span>
                 </div>
                 <div class="video-box local-box" style="position: relative;">
                     <video id="localVideo" autoplay playsinline muted></video>

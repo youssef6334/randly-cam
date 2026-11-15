@@ -30,6 +30,16 @@ function normalizeIp(value) {
 function isTrusted(ip) {
     return !!ip && trusted.check(ip, net.isIP(ip) === 4 ? 'ipv4' : 'ipv6');
 }
+function forwardedIp(value) {
+    if (typeof value !== 'string') return '';
+    const plain = normalizeIp(value);
+    if (plain) return plain;
+    // Some ingress proxies append the source port. IPv6 with a port must be
+    // bracketed so that its final hextet is never mistaken for a port.
+    const endpoint = value.trim().match(/^(?:\[([^\]]+)\]|(\d{1,3}(?:\.\d{1,3}){3})):(\d{1,5})$/);
+    if (!endpoint || Number(endpoint[3]) > 65535) return '';
+    return normalizeIp(endpoint[1] || endpoint[2]);
+}
 function clientIp(headers, address) {
     let ip = normalizeIp(address);
     if (!isTrusted(ip)) return ip || 'unknown';
@@ -42,7 +52,7 @@ function clientIp(headers, address) {
     const chain = typeof headers['x-forwarded-for'] === 'string'
         ? headers['x-forwarded-for'].split(',').slice(-16) : [];
     for (let i = chain.length - 1; i >= 0 && isTrusted(ip); i--) {
-        const next = normalizeIp(chain[i]);
+        const next = forwardedIp(chain[i]);
         if (!next) break;
         ip = next;
     }

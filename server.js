@@ -78,6 +78,7 @@ const REPORT_WINDOW_MS = 60 * 60 * 1000;
 const BAN_MS = Number(process.env.BAN_MINUTES || 15) * 60 * 1000;
 const IP_HASH_SALT = process.env.IP_HASH_SALT || crypto.randomBytes(16).toString('hex');
 const DEV_COUNTRY = process.env.DEV_COUNTRY || null;
+let warnedCountryProxy = false;
 
 // ---------------------------------------------------------------- Express
 app.disable('x-powered-by');
@@ -553,8 +554,14 @@ io.on('connection', (socket) => {
     ipConnections.set(ip, (ipConnections.get(ip) || 0) + 1);
 
     const ipHash = hashIp(ip);
+    const actualCountry = lookupCountry(socket.data.ip);
+    if (actualCountry === 'unknown' && !warnedCountryProxy && socket.handshake.headers['x-forwarded-for']) {
+        warnedCountryProxy = true;
+        // Log the configuration hint once; do not log visitor addresses.
+        console.warn('[COUNTRY] Country lookup unavailable behind ingress. Check TRUSTED_PROXY_CIDRS, forwarded IP format and GeoIP coverage (DEPLOY.md).');
+    }
     activeUsers.set(socket.id, {
-        room: null, peer: null, actualCountry: lookupCountry(socket.data.ip), ipHash, xoRole: null
+        room: null, peer: null, actualCountry, ipHash, xoRole: null
     });
     socket.emit('online-count', getDisplayOnlineCount());
 
