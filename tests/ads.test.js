@@ -12,6 +12,8 @@ test('Adsterra script permission is limited to chat routes; inline scripts and e
   const scripts=csp.split(';').find(x=>x.trim().startsWith('script-src '));
   assert.match(scripts,/https:\/\/bicea\.org/);assert.doesNotMatch(scripts,/unsafe-inline|unsafe-eval|https:\s|\*/);
   assert.match(scripts,/https:\/\/ep2\.adtrafficquality\.google/);
+  assert.match(csp,/style-src [^;]*https:\/\/fonts\.googleapis\.com/);
+  assert.match(csp,/font-src [^;]*https:\/\/fonts\.gstatic\.com/);
   assert.match(csp,/script-src-attr 'none'/);assert.equal(h['X-Frame-Options'],'DENY');
  }
  for(const url of ['/about.html','/en.html/extra','/adsterra-frame.html']){

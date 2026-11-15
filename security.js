@@ -189,8 +189,8 @@ function headers(req, res) {
     res.setHeader('Content-Security-Policy', [
         "default-src 'self'", "base-uri 'none'", "object-src 'none'", "frame-ancestors 'none'", "form-action 'self'",
         `script-src 'self' ${hashes.join(' ')} https://pagead2.googlesyndication.com https://www.googletagservices.com https://www.google.com https://www.gstatic.com https://ep2.adtrafficquality.google${adScript}`,
-        "script-src-attr 'none'", "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com",
-        "font-src 'self' https://cdnjs.cloudflare.com", isChat ? "img-src 'self' data: https:" : "img-src 'self' data: https://*.googlesyndication.com https://*.doubleclick.net https://www.google.com",
+        "script-src-attr 'none'", "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com",
+        "font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com", isChat ? "img-src 'self' data: https:" : "img-src 'self' data: https://*.googlesyndication.com https://*.doubleclick.net https://www.google.com",
         "media-src 'self' blob:", isChat ? "connect-src 'self' https: wss://randly.live" : "connect-src 'self' https://randly.live wss://randly.live https://*.googlesyndication.com https://*.doubleclick.net https://www.google.com",
         isChat ? "frame-src https:" : "frame-src https://*.googlesyndication.com https://*.doubleclick.net https://www.google.com",
         "worker-src 'self' blob:", ...(production ? ['upgrade-insecure-requests'] : [])
