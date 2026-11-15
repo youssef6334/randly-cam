@@ -176,6 +176,25 @@ function headers(req, res) {
     res.setHeader('X-Permitted-Cross-Domain-Policies', 'none');
     if (production) res.setHeader('Strict-Transport-Security', 'max-age=31536000');
     const pathname = (req.url || '/').split('?')[0];
+    if (pathname === '/adsterra-frame.html') {
+        // Third-party creatives run only in an opaque, unprivileged document.
+        // Never add allow-same-origin: chat DOM, storage and camera stay isolated.
+        res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+        res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+        res.setHeader('Referrer-Policy', 'strict-origin');
+        res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=()');
+        const sources = [...origins].join(' ');
+        res.setHeader('Content-Security-Policy', [
+            "default-src 'none'", "base-uri 'none'", "object-src 'none'", "form-action 'none'", "frame-ancestors 'self'",
+            'sandbox allow-scripts allow-popups allow-popups-to-escape-sandbox',
+            `script-src ${sources} https: 'unsafe-inline' 'unsafe-eval'`,
+            `style-src ${sources} https: 'unsafe-inline'`,
+            'img-src https: data:', 'font-src https: data:', 'frame-src https:',
+            'connect-src https:', 'media-src https: blob:', "worker-src 'none'",
+            ...(production ? ['upgrade-insecure-requests'] : [])
+        ].join('; '));
+        return;
+    }
     const filename = pathname === '/' ? 'index.html' : pathname.slice(1);
     const hashes = hashCache.get(filename) || [];
     res.setHeader('Content-Security-Policy', [
@@ -184,7 +203,7 @@ function headers(req, res) {
         "script-src-attr 'none'", "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com",
         "font-src 'self' https://cdnjs.cloudflare.com", "img-src 'self' data: https://*.googlesyndication.com https://*.doubleclick.net https://www.google.com",
         "media-src 'self' blob:", "connect-src 'self' https://randly.live wss://randly.live https://*.googlesyndication.com https://*.doubleclick.net https://www.google.com",
-        "frame-src https://*.googlesyndication.com https://*.doubleclick.net https://www.google.com",
+        "frame-src 'self' https://*.googlesyndication.com https://*.doubleclick.net https://www.google.com",
         "worker-src 'self' blob:", ...(production ? ['upgrade-insecure-requests'] : [])
     ].join('; '));
 }

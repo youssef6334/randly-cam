@@ -6,7 +6,7 @@ const root = path.join(__dirname, '..', 'public');
 const handlers = new Map();
 for (const file of fs.readdirSync(root).filter(f => f.endsWith('.html'))) {
     let html = fs.readFileSync(path.join(root, file), 'utf8');
-    // Third-party popunder code can execute with the same rights as the chat UI.
+    // Legacy direct loaders are replaced by the sandboxed adsterra-frame integration.
     html = html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, block => block.includes('effectivecpmnetwork.com') ? '' : block);
     // A normal stylesheet does not need an inline onload script.
     html = html.replace(/<link\b[^>]*onload="this.onload=null;this.rel='stylesheet'"[^>]*>/g, tag => tag.replace('rel="preload"', 'rel="stylesheet"').replace(/\s+as="style"/, '').replace(/\s+onload="[^"]*"/, ''));
@@ -25,4 +25,4 @@ if (handlers.size) {
     const js = existing + [...handlers].filter(([id, h]) => !existing.includes(`data-handler-${h.event}="${id}"`)).map(([id, h]) => `document.querySelectorAll('[data-handler-${h.event}="${id}"]').forEach(function (element) {\n    element.addEventListener(${JSON.stringify(h.event)}, function (event) { ${h.body}; });\n});`).join('\n') + '\n';
     fs.writeFileSync(path.join(root, 'page-actions.js'), js);
 }
-console.log(`Migrated ${handlers.size} distinct inline handlers; removed third-party popunders.`);
+console.log(`Migrated ${handlers.size} distinct inline handlers; removed legacy direct ad loaders.`);

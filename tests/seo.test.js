@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const root = path.join(__dirname, '..', 'public');
 const base = 'https://randly.live';
-const files = fs.readdirSync(root).filter(f => f.endsWith('.html') && f !== 'ar.html' && !f.startsWith('google'));
+const files = fs.readdirSync(root).filter(f => f.endsWith('.html') && !['ar.html', 'adsterra-frame.html'].includes(f) && !f.startsWith('google'));
 test('all canonical pages have reciprocal language clusters, one canonical and valid metadata', () => {
     assert.equal(files.length, 78);
     const pages = files.map(file => {

@@ -1,0 +1,5 @@
+html { color-scheme: dark; background: transparent; }
+body { margin: 0; min-width: 0; color: #e8e8e8; background: transparent; font: 15px/1.5 Arial, sans-serif; overflow-wrap: anywhere; }
+html[data-theme="light"] { color-scheme: light; }
+html[data-theme="light"] body { color: #172b24; }
+body > div { width: 100%; min-width: 0; }

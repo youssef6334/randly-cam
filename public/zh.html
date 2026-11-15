@@ -15,7 +15,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="siteTitle">免费匿名随机视频聊天，与陌生人交谈 | Randly</title>
 <meta name="author" content="Randly">
-<link rel="stylesheet" href="style.css?v=2102db0b59a5">
+<link rel="stylesheet" href="style.css?v=4b340898138d">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
 
@@ -260,15 +260,16 @@ addEventListener("load",function(){setTimeout(go,4000);});})();
 <button class="theme-switch-btn theme-toggle" data-handler-click="1dacba5d181c" aria-label="Toggle dark/light mode"><span class="switch-knob">🌙</span></button>
 </div>
 </header>
-<div class="top-ad-bar" id="adContainer" style="min-height: 60px;">
-<div id="adContent">
-
-<div id="container-f66aa4bb4789b5ab486c7c42e435623d"></div>
-</div>
-<button class="toggle-ad-btn" data-handler-click="75da431a9263" aria-label="收起/展开广告">
-<span id="arrowIcon">▲</span>
-</button>
-</div>
+<section class="top-ad-bar randly-ad" id="adContainer" aria-label="Advertisement">
+            <div class="randly-ad-heading">
+                <span class="randly-ad-label" data-ad-label>Advertisement</span>
+                <button type="button" class="randly-ad-toggle" data-ad-toggle aria-controls="adContent" aria-expanded="true" aria-label="Collapse advertisement"><span aria-hidden="true">⌃</span></button>
+            </div>
+            <div id="adContent" class="randly-ad-content">
+                <div class="randly-ad-loading" data-ad-loading>Loading advertisement</div>
+                <div class="randly-ad-slot" data-ad-slot></div>
+            </div>
+        </section>
 <div class="content-wrapper">
 <div id="videoSection" class="video-section">
 <div class="video-box remote-box">
@@ -375,7 +376,8 @@ addEventListener("load",function(){setTimeout(go,4000);});})();
 </div>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/country-display.js?v=20261114-flags"></script>
-<script src="script.js?v=20261114-ai-session"></script>
+<script src="/ads.js?v=0bd5e5bff17f" defer></script>
+<script src="script.js?v=49075d28e585"></script>
 <script src="i18n-extra.js?v=20261114-ai-session"></script>
 <script src="randly-extra.js?v=20261114-ai-session"></script>
 <script src="moderation-client.js?v=2"></script>

@@ -528,6 +528,7 @@ function toggleTheme() {
 
 let isAdCollapsed = false;
 function toggleAd() {
+    if (window.RandlyAds) return window.RandlyAds.toggle();
     var adContent = document.getElementById("adContent");
     var adContainer = document.getElementById("adContainer");
     var arrow = document.getElementById("arrowIcon");

@@ -22,7 +22,7 @@ const copy = {
 const escape = s => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const decode = s => s.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#x27;|&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 const url = file => base + (file === 'index.html' ? '/' : '/' + file);
-const files = fs.readdirSync(root).filter(f => f.endsWith('.html') && !['ar.html'].includes(f) && !f.startsWith('google'));
+const files = fs.readdirSync(root).filter(f => f.endsWith('.html') && !['ar.html', 'adsterra-frame.html'].includes(f) && !f.startsWith('google'));
 const pages = files.map(file => {
     const html = fs.readFileSync(path.join(root, file), 'utf8');
     const lang = html.match(/<html[^>]*\blang="([^"]+)"/i)?.[1];
