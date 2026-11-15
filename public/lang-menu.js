@@ -2,9 +2,8 @@
    Replaces the plain language <select> in page headers with a flag menu.
    - Languages and links come from the page's own <link rel="alternate" hreflang="..."> tags,
      so any new page that has those tags + these two files gets the menu automatically.
-   - Items are real links (crawlable, work without extra JS).
-   - On the chat home pages only the landing-page selector is replaced (the old <select> stays hidden in the
-     page so the existing scripts keep working); the chat screen itself is untouched. */
+   - Landing/content choices remain crawlable links; chat choices change the interface in place.
+   - Chat and video share this design and change language without leaving the session. */
 (function () {
   'use strict';
   var HOME = !!document.getElementById('landingPage');
@@ -52,105 +51,140 @@
     return 'en';
   }
 
-  function init() {
-    if (document.querySelector('[data-lm]')) return;
-    var stale = document.querySelectorAll('.lm-pop');
-    for (var si = 0; si < stale.length; si++) if (stale[si].parentNode) stale[si].parentNode.removeChild(stale[si]);
-    var map = collect();
-    if (window.RANDLY_LEGAL) {
-      for (var li = 0; li < window.RANDLY_LEGAL.langs.length; li++) { var lc = window.RANDLY_LEGAL.langs[li]; if (!map[lc]) map[lc] = '#' + lc; }
-    }
-    var codes = ORDER.filter(function (c) { return map[c]; });
-    if (codes.length < 2) return;
-    var cur = currentLang(map);
-    if (!map[cur]) cur = codes[0];
-
-    var select = HOME ? document.getElementById('landingLangSelect') : document.querySelector('.app-header select.site-lang-select');
-    var host = select ? select.parentNode : (HOME ? null : (document.querySelector('.app-header .header-right') || document.querySelector('.app-header')));
+  var controllers = [], nextId = 0;
+  function hideNative(select) {
+    if (!select) return;
+    select.hidden = true;
+    select.style.display = 'none';
+    select.setAttribute('aria-hidden', 'true');
+    select.tabIndex = -1;
+  }
+  function closeAll(except) {
+    controllers.forEach(function (api) { if (api !== except) api.close(false); });
+  }
+  function build(select, map, codes) {
+    var host = select ? select.parentNode : (document.querySelector('.app-header .header-right') || document.querySelector('.app-header'));
     if (!host) return;
-
-    var id = 'lmPop' + Math.floor(Math.random() * 1e6);
+    var chat = HOME && select && select.id === 'siteLang';
+    var id = 'lmPop-' + (++nextId), painted = '';
     var wrap = document.createElement('div');
     wrap.className = 'lm';
     wrap.setAttribute('data-lm', '');
-    wrap.innerHTML = '<button type="button" class="lm-btn" aria-haspopup="true" aria-expanded="false" aria-controls="' + id + '" aria-label="Language: ' + esc(NAMES[cur]) + '">' +
-      '<span class="lm-flag">' + FLAGS[cur] + '</span><span>' + cur.toUpperCase() + '</span>' + CHEV + '</button>';
-    var btn = wrap.firstChild;
-
+    wrap.setAttribute('data-lm-select', select ? select.id : 'page');
+    var btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'lm-btn';
+    btn.setAttribute('aria-haspopup', 'true');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.setAttribute('aria-controls', id);
+    wrap.appendChild(btn);
     var pop = document.createElement('nav');
-    pop.className = 'lm-pop';
-    pop.id = id;
-    pop.hidden = true;
+    pop.className = 'lm-pop'; pop.id = id; pop.hidden = true;
     pop.setAttribute('aria-label', 'Language');
     pop.innerHTML = codes.map(function (c) {
-      return '<a class="lm-item" href="' + esc(map[c]) + '" hreflang="' + c + '" lang="' + c + '"' + (c === cur ? ' aria-current="true"' : '') + '>' +
-        '<span class="lm-flag">' + FLAGS[c] + '</span><span class="lm-name">' + esc(NAMES[c]) + '</span>' + (c === cur ? CHECK : '') + '</a>';
+      var tag = chat ? 'button' : 'a';
+      var attrs = chat ? ' type="button" data-lm-lang="' + c + '"' : ' href="' + esc(map[c]) + '" hreflang="' + c + '"';
+      return '<' + tag + ' class="lm-item"' + attrs + ' lang="' + c + '"><span class="lm-flag">' + FLAGS[c] +
+        '</span><span class="lm-name">' + esc(NAMES[c]) + '</span></' + tag + '>';
     }).join('');
-
-    if (select && HOME) {
-      host.insertBefore(wrap, select);
-      select.hidden = true; select.style.display = 'none'; select.setAttribute('aria-hidden', 'true'); select.tabIndex = -1;
-    } else if (select) host.replaceChild(wrap, select);
+    if (select) { host.insertBefore(wrap, select); hideNative(select); }
     else host.appendChild(wrap);
     document.body.appendChild(pop);
-
+    function refresh() {
+      hideNative(select);
+      var cur = currentLang(map);
+      if (cur === painted) return;
+      painted = cur;
+      btn.setAttribute('aria-label', 'Language: ' + NAMES[cur]);
+      btn.innerHTML = '<span class="lm-flag">' + FLAGS[cur] + '</span><span>' + cur.toUpperCase() + '</span>' + CHEV;
+      Array.prototype.forEach.call(pop.querySelectorAll('.lm-item'), function (item) {
+        var selected = item.getAttribute(chat ? 'data-lm-lang' : 'hreflang') === cur;
+        var check = item.querySelector('.lm-check');
+        if (selected) { item.setAttribute('aria-current', 'true'); if (!check) item.insertAdjacentHTML('beforeend', CHECK); }
+        else { item.removeAttribute('aria-current'); if (check) check.remove(); }
+      });
+    }
     function place() {
-      var r = btn.getBoundingClientRect();
-      var w = Math.min(280, window.innerWidth - 16);
-      var left = (r.left + r.width / 2 > window.innerWidth / 2) ? r.right - w : r.left;
-      left = Math.max(8, Math.min(left, window.innerWidth - w - 8));
-      pop.style.left = left + 'px';
-      pop.style.top = (r.bottom + 8) + 'px';
-      pop.style.width = w + 'px';
+      var r = btn.getBoundingClientRect(), width = Math.min(280, window.innerWidth - 16);
+      var left = r.left + r.width / 2 > window.innerWidth / 2 ? r.right - width : r.left;
+      var below = window.innerHeight - r.bottom - 16, above = r.top - 16;
+      var upwards = below < 240 && above > below;
+      var height = Math.max(80, Math.min(window.innerHeight - 24, upwards ? above : below));
+      pop.style.width = width + 'px';
+      pop.style.maxHeight = height + 'px';
+      pop.style.left = Math.max(8, Math.min(left, window.innerWidth - width - 8)) + 'px';
+      pop.style.top = (upwards ? Math.max(8, r.top - Math.min(pop.scrollHeight, height) - 8) : r.bottom + 8) + 'px';
     }
-    function open() {
-      pop.hidden = false; btn.setAttribute('aria-expanded', 'true'); place();
-    }
-    function close(focusBtn) {
-      pop.hidden = true; btn.setAttribute('aria-expanded', 'false');
-      if (focusBtn) btn.focus();
-    }
-    btn.addEventListener('click', function (e) { e.stopPropagation(); pop.hidden ? open() : close(false); });
-    document.addEventListener('click', function (e) { if (!pop.hidden && !pop.contains(e.target) && !wrap.contains(e.target)) close(false); });
+    function close(focus) { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); if (focus) btn.focus(); }
+    var api = { select: select, wrap: wrap, pop: pop, close: close, refresh: refresh };
+    controllers.push(api);
+    btn.addEventListener('click', function (event) {
+      event.stopPropagation();
+      if (!pop.hidden) { close(false); return; }
+      closeAll(api); refresh(); pop.hidden = false; btn.setAttribute('aria-expanded', 'true'); place();
+    });
+    pop.addEventListener('click', function (event) {
+      var item = event.target.closest ? event.target.closest('.lm-item') : null;
+      if (!item || !pop.contains(item)) return;
+      var code = item.getAttribute(chat ? 'data-lm-lang' : 'hreflang');
+      if (codes.indexOf(code) < 0) return;
+      if (chat) {
+        event.preventDefault();
+        select.value = code;
+        // Use the existing in-place translation path, never page navigation.
+        if (typeof window.changeGlobalLanguage === 'function') window.changeGlobalLanguage(code);
+        else select.dispatchEvent(new Event('change', { bubbles: true }));
+        controllers.forEach(function (controller) { controller.refresh(); });
+        close(true);
+      } else {
+        try { localStorage.setItem('randly_lang', code); } catch (_) {}
+      }
+    });
+    document.addEventListener('click', function (event) {
+      if (!pop.hidden && !pop.contains(event.target) && !wrap.contains(event.target)) close(false);
+    });
+    document.addEventListener('keydown', function (event) {
+      if (pop.hidden) return;
+      var items = Array.prototype.slice.call(pop.querySelectorAll('.lm-item'));
+      var index = items.indexOf(document.activeElement);
+      if (event.key === 'Escape') { event.preventDefault(); close(true); }
+      else if (event.key === 'ArrowDown') { event.preventDefault(); items[(index + 1 + items.length) % items.length].focus(); }
+      else if (event.key === 'ArrowUp') { event.preventDefault(); items[(index <= 0 ? items.length : index) - 1].focus(); }
+      else if (event.key === 'Home') { event.preventDefault(); items[0].focus(); }
+      else if (event.key === 'End') { event.preventDefault(); items[items.length - 1].focus(); }
+    });
     window.addEventListener('resize', function () { if (!pop.hidden) place(); });
     window.addEventListener('scroll', function () { if (!pop.hidden) place(); }, { passive: true });
-    pop.addEventListener('click', function (e) {
-      var a = e.target.closest ? e.target.closest('a.lm-item') : null;
-      if (a) { try { localStorage.setItem('randly_lang', a.getAttribute('hreflang')); } catch (err) {} }
+    refresh();
+  }
+  function init() {
+    controllers = controllers.filter(function (api) {
+      if (api.wrap.isConnected && (!api.select || api.select.isConnected)) return true;
+      api.pop.remove(); api.wrap.remove(); return false;
     });
-    document.addEventListener('keydown', function (e) {
-      if (pop.hidden) return;
-      var items = Array.prototype.slice.call(pop.querySelectorAll('a.lm-item'));
-      var i = items.indexOf(document.activeElement);
-      if (e.key === 'Escape') { e.preventDefault(); close(true); }
-      else if (e.key === 'ArrowDown') { e.preventDefault(); items[(i + 1 + items.length) % items.length].focus(); }
-      else if (e.key === 'ArrowUp') { e.preventDefault(); items[(i <= 0 ? items.length : i) - 1].focus(); }
-      else if (e.key === 'Home') { e.preventDefault(); items[0].focus(); }
-      else if (e.key === 'End') { e.preventDefault(); items[items.length - 1].focus(); }
+    var map = collect();
+    if (window.RANDLY_LEGAL) window.RANDLY_LEGAL.langs.forEach(function (code) { if (!map[code]) map[code] = '#' + code; });
+    var codes = ORDER.filter(function (code) { return map[code]; });
+    if (codes.length < 2) return;
+    var selects = HOME ? [document.getElementById('landingLangSelect'), document.getElementById('siteLang')].filter(Boolean) :
+      [document.querySelector('.app-header select.site-lang-select')];
+    selects.forEach(function (select) {
+      var existing = controllers.find(function (api) { return api.select === select; });
+      if (existing) existing.refresh(); else build(select, map, codes);
     });
   }
-
+  function start() {
+    init();
+    var pending = null;
+    var observeHeaders = new MutationObserver(function () {
+      if (!pending) pending = setTimeout(function () { pending = null; init(); }, 30);
+    });
+    document.querySelectorAll('.app-header').forEach(function (header) { observeHeaders.observe(header, { childList: true, subtree: true }); });
+    new MutationObserver(function () {
+      controllers.forEach(function (api) { api.refresh(); }); closeAll();
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    var app = document.querySelector('.main-container');
+    if (app) new MutationObserver(function () { closeAll(); }).observe(app, { attributes: true, attributeFilter: ['hidden'] });
+  }
   window.RandlyLangMenu = { init: init };
-
-  if (HOME) {
-    // The home pages' own scripts rebuild the header after load and can wipe the menu,
-    // so (re)build it when needed and keep the old <select> hidden.
-    var timer = null;
-    var tick = function () {
-      timer = null;
-      var s = document.getElementById('landingLangSelect');
-      if (!s) return;
-      if (document.querySelector('[data-lm]')) { s.hidden = true; s.style.display = 'none'; }
-      else init();
-    };
-    var soon = function () { if (!timer) timer = setTimeout(tick, 30); };
-    var go = function () { setTimeout(tick, 0); setTimeout(tick, 500); setTimeout(tick, 1500); };
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
-    window.addEventListener('load', go);
-    if (window.MutationObserver) {
-      var mo = new MutationObserver(soon);
-      var start = function () { mo.observe(document.body, { childList: true, subtree: true }); setTimeout(function () { mo.disconnect(); }, 15000); };
-      if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
-    }
-  } else if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();

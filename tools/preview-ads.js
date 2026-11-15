@@ -8,20 +8,28 @@ const path = require('node:path');
 const security = require('../security');
 const app = express(), root = path.join(__dirname, '..', 'public');
 app.use((req, res, next) => { security.headers(req, res); next(); });
+app.get('/qa-content', (req, res) => {
+    const file = ['about.html', 'rules.html', 'blog-ar.html'].includes(req.query.page) ? req.query.page : 'about.html';
+    const html = fs.readFileSync(path.join(root, file), 'utf8').replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
+        .replace('</body>', '<script src="/lang-menu.js" defer></script></body>');
+    res.type('html').send(html);
+});
 app.get('/', (req, res) => {
     const page = req.query.lang === 'en' ? 'en.html' : 'index.html';
     let html = fs.readFileSync(path.join(root, page), 'utf8').replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
-    html = html.replace('</body>', '<script src="/qa-socket.js"></script><script src="/country-display.js"></script><script src="/script.js"></script><script src="/qa-layout.js" defer></script><script src="/ads.js" defer></script></body>');
+    html = html.replace('</body>', '<script src="/qa-socket.js"></script><script src="/country-display.js"></script><script src="/script.js"></script><script src="/i18n-extra.js"></script><script src="/randly-extra.js"></script><script src="/qa-layout.js" defer></script><script src="/lang-menu.js" defer></script><script src="/page-actions.js" defer></script><script src="/ads.js" defer></script></body>');
     res.type('html').send(html);
 });
 app.get('/qa-socket.js', (req, res) => res.type('js').send('window.io=()=>({on(){},emit(){},disconnect(){}});'));
 app.get('/api/ice', (req, res) => res.json({iceServers:[]}));
 app.get('/qa-layout.js', (req, res) => res.type('js').send(`
 document.addEventListener('DOMContentLoaded',()=>{
+    const view = new URLSearchParams(location.search).get('view') || 'video';
+    if (view === 'landing') return;
     document.getElementById('landingPage').style.display='none';
     document.querySelector('.main-container').hidden=false;
-    setReferenceMode('video');
-    document.getElementById('videoSection').style.setProperty('display','flex','important');
+    setReferenceMode(view === 'text' ? 'text' : 'video');
+    document.getElementById('videoSection').style.setProperty('display',view === 'text' ? 'none' : 'flex','important');
     document.querySelector('.local-box').style.setProperty('display','block','important');
     document.getElementById('cameraGateMessage')?.classList.add('is-hidden');
     document.getElementById('status').textContent='معاينة التصميم — بدون إعلان حقيقي';

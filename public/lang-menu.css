@@ -43,8 +43,8 @@ html[data-theme="light"] .lm-pop {
 .lm-btn .lm-flag { width: 24px; height: 24px; }
 .lm-btn .lm-flag svg { width: 24px; height: 24px; }
 /* chat home pages: the language control sits in the second header row next to the online badge */
-.rl-top-row2 .lm { flex: 1 1 auto; min-width: 0; }
-.rl-top-row2 .lm-btn { width: 100%; max-width: 170px; justify-content: flex-start; }
+.rl-top-row2 .lm { flex: 0 1 auto; min-width: 0; }
+.rl-top-row2 .lm-btn { width: auto; max-width: 170px; justify-content: flex-start; }
 .rl-top-row2 .lm-btn .lm-chev { margin-inline-start: auto; }
 .lm-chev { transition: transform .15s ease; }
 .lm-btn[aria-expanded="true"] .lm-chev { transform: rotate(180deg); }
@@ -85,6 +85,9 @@ html[data-theme="light"] .lm-pop {
     -webkit-tap-highlight-color: transparent;
 }
 .lm-item:hover { background: var(--lm-hover); }
+.lm-pop button.lm-item { width: 100%; border: 0; background: transparent; cursor: pointer; }
+.lm-pop button.lm-item:hover { background: var(--lm-hover); }
+.app-header .site-lang-select[hidden] { display: none !important; }
 .lm-item[aria-current="true"] {
     background: var(--lm-sel-bg);
     color: var(--lm-accent);

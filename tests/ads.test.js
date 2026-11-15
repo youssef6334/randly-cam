@@ -58,9 +58,10 @@ function fixture(readyState='complete',visibilityState='visible'){
  return {handlers,observers,resizers,timers,ids,app,card,content,slot,toggle,label,loading,body,document,window,Element,writes:()=>writes,updateApp:()=>observers.find(x=>x.target===app).fn()};
 }
 
-test('Social Bar starts on the landing page after load, native starts only when chat opens, neither repeats',()=>{
- const f=fixture('interactive');assert.equal(f.body.children.length,0);
- f.handlers.load();f.handlers.load();assert.equal(f.body.children.length,1);
+test('Social Bar starts at DOM readiness before image/window load, native starts only when chat opens, neither repeats',()=>{
+ const f=fixture('interactive');assert.equal(f.body.children.length,1);
+ assert.equal(f.handlers.load,undefined,'must not wait for the full window load');
+ f.handlers.visibilitychange();f.handlers.visibilitychange();assert.equal(f.body.children.length,1);
  const social=f.ids.get('randly-adsterra-social');assert.match(social.src,/\/14\//);assert.equal(social.dataset.loadState,'loading');
  social.listeners.load();assert.equal(social.dataset.loadState,'loaded');
  assert.equal(f.ids.has('randly-adsterra-native'),false);

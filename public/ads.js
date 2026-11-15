@@ -107,8 +107,8 @@
         new MutationObserver(() => { measure(); loadNative(); if (started) detectFill(); }).observe(app, {attributes:true,attributeFilter:['hidden','style']});
         new MutationObserver(labels).observe(document.documentElement, {attributes:true,attributeFilter:['lang']});
         document.addEventListener('visibilitychange', () => { loadSocial(); loadNative(); });
-        if (document.readyState === 'complete') loadSocial();
-        else window.addEventListener('load', loadSocial, {once:true});
+        // Start on DOM readiness; images and other ad networks must not delay Social Bar.
+        loadSocial();
         setCollapsed(false);
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
