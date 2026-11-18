@@ -88,7 +88,8 @@ for (const p of pages) {
 }
 const sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' + pages.map(p => {
     const siblings = pages.filter(q => q.family === p.family), fallback = siblings.find(q => q.lang === 'en') || siblings[0];
-    return `  <url>\n    <loc>${url(p.file)}</loc>\n` + [...siblings.map(q => `    <xhtml:link rel="alternate" hreflang="${q.lang}" href="${url(q.file)}"/>`), `    <xhtml:link rel="alternate" hreflang="x-default" href="${url(fallback.file)}"/>`].join('\n') + '\n  </url>';
+    const modified = p.html.match(/<meta property="article:modified_time" content="(\d{4}-\d{2}-\d{2})"/)?.[1];
+    return `  <url>\n    <loc>${url(p.file)}</loc>\n` + (modified ? `    <lastmod>${modified}</lastmod>\n` : '') + [...siblings.map(q => `    <xhtml:link rel="alternate" hreflang="${q.lang}" href="${url(q.file)}"/>`), `    <xhtml:link rel="alternate" hreflang="x-default" href="${url(fallback.file)}"/>`].join('\n') + '\n  </url>';
 }).join('\n') + '\n</urlset>\n';
 fs.writeFileSync(path.join(root, 'sitemap.xml'), sitemap);
 fs.writeFileSync(path.join(root, 'robots.txt'), 'User-agent: *\nAllow: /\nDisallow: /socket.io/\nDisallow: /api/\nDisallow: /healthz\n\nSitemap: https://randly.live/sitemap.xml\n');

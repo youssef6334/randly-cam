@@ -3,16 +3,9 @@ const socket = io(window.location.origin, {
     secure: true
 });
 
-let rtcConfig = {
-    iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' }
-    ]
-};
-// السيرفر بيرجّع STUN + TURN (من متغيرات البيئة). لو فشل نكمل بالـ STUN الافتراضي
-fetch('/api/ice').then(r => r.json()).then(d => {
-    if (d && Array.isArray(d.iceServers) && d.iceServers.length) rtcConfig = { iceServers: d.iceServers };
-}).catch(() => {});
+// Refresh short-lived TURN credentials before a new call; ICE can still choose a direct path.
+const rtcConfigProvider = RandlyRTC.createProvider();
+rtcConfigProvider.get();
 
 let localStream = null;
 let peerConnection = null;
@@ -91,7 +84,7 @@ const FAMOUS_COUNTRY_CODES = [
     "CA","AU","KR","TR","EG","MX","QA","KW","NL","SE","CH"
 ];
 const REMAINING_COUNTRY_CODES = [
-    "AF","AL","AD","AO","AG","AM","AT","AZ","BS","BD","BB","BY","BE","BZ","BJ","BT",
+    "AF","AL","AD","AO","AG","AM","AT","AZ","BS","BD","BH","BB","BY","BE","BZ","BJ","BT",
     "BO","BA","BW","BN","BG","BF","BI","KH","CM","CV","CF","TD","CL","CO","KM","CG","CD",
     "CR","CI","HR","CU","CY","CZ","DK","DJ","DM","DO","DZ","EC","SV","GQ","ER","EE","SZ","ET","FJ","FI",
     "GA","GM","GE","GH","GR","GD","GT","GN","GW","GY","HT","HN","HU","IS","IR","IQ",
@@ -862,11 +855,14 @@ socket.on('xo-receive-move', (data) => {
     if(gameStatus) gameStatus.textContent = `${t.turnText} ( ${myGameSymbol} )`;
 });
 
-function createPeerConnection() {
-    peerConnection = new RTCPeerConnection(rtcConfig);
-    const connection = peerConnection;
+async function createPeerConnection() {
     const roomId = currentRoomId;
     const matchId = currentMatchId;
+    const config = await rtcConfigProvider.get();
+    if (currentMode !== 'video' || !matchId || matchId !== currentMatchId || roomId !== currentRoomId) return null;
+    if (peerConnection) return peerConnection;
+    peerConnection = new RTCPeerConnection(config);
+    const connection = peerConnection;
     let streamToSend = localStream;
 
     if (streamToSend && currentMode === 'video') {
@@ -888,10 +884,11 @@ function createPeerConnection() {
     };
 
     peerConnection.onconnectionstatechange = () => {
-        if (peerConnection && peerConnection.connectionState === 'failed') {
+        if (connection === peerConnection && connection.connectionState === 'failed') {
             appendSystemMessage(tr('rtcFailed'));
         }
     };
+    return connection;
 }
 
 async function flushPendingCandidates() {
@@ -958,7 +955,9 @@ socket.on('matched', async (data) => {
     resetXOBoard();
 
     if (currentMode === 'video') {
-        if (!peerConnection) createPeerConnection();   // ممكن يكون اتعمل بسبب offer وصل بدري
+        const expectedMatch = currentMatchId;
+        const readyConnection = peerConnection || await createPeerConnection();
+        if (!readyConnection || expectedMatch !== currentMatchId) return;
         if (data.isInitiator) {
             const connection = peerConnection, matchId = currentMatchId, roomId = currentRoomId;
             try {
@@ -981,7 +980,8 @@ socket.on('signal', async (data) => {
     if (!data || currentMode !== 'video' || data.roomId !== currentRoomId || data.matchId !== currentMatchId) return;
     const matchId = currentMatchId;
     try {
-        if (!peerConnection) createPeerConnection();
+        if (!peerConnection && !await createPeerConnection()) return;
+        if (matchId !== currentMatchId) return;
         const connection = peerConnection;
         if (data.offer) {
             await connection.setRemoteDescription(new RTCSessionDescription(data.offer));

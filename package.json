@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "patch-languages": "node patch-languages.js",
+    "build:articles": "node tools/build-articles.js",
+    "build:assets": "node tools/version-assets.js",
     "build:seo": "node tools/build-seo.js",
     "test": "node --test tests/*.test.js"
   },

@@ -107,7 +107,7 @@ test('production HTTP and Socket.IO hardening with real clients', { timeout: 600
         const data = await r.json(), turn = data.iceServers[1];
         assert.ok(turn); assert.match(turn.username, /^\d+:[a-f0-9]+$/);
         const ttl = Number(turn.username.split(':')[0]) - Math.floor(Date.now() / 1000);
-        assert.ok(ttl > 590 && ttl <= 600);
+        assert.ok(ttl > 3590 && ttl <= 3600);
         assert.equal(turn.credential, crypto.createHmac('sha1', 'integration-test-only-secret').update(turn.username).digest('base64'));
         assert.doesNotMatch(JSON.stringify(data), /must-not-be-returned|integration-test-only-secret/);
     });

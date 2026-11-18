@@ -7,7 +7,7 @@ const root = path.join(__dirname, '..', 'public');
 const base = 'https://randly.live';
 const files = fs.readdirSync(root).filter(f => f.endsWith('.html') && !['ar.html', 'adsterra-frame.html'].includes(f) && !f.startsWith('google'));
 test('all canonical pages have reciprocal language clusters, one canonical and valid metadata', () => {
-    assert.equal(files.length, 78);
+    assert.equal(files.length, 102);
     const pages = files.map(file => {
         const html = fs.readFileSync(path.join(root, file), 'utf8');
         const canonical = [...html.matchAll(/<link rel="canonical" href="([^"]+)"/g)];
@@ -34,7 +34,7 @@ test('all canonical pages have reciprocal language clusters, one canonical and v
     }
     const sitemap = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
     const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]);
-    assert.equal(new Set(locs).size, 78); assert.deepEqual(locs.sort(), pages.map(p => p.url).sort());
+    assert.equal(new Set(locs).size, 102); assert.deepEqual(locs.sort(), pages.map(p => p.url).sort());
     assert.doesNotMatch(sitemap, /index\.html|\/ar\.html|google7|#/);
     assert.match(fs.readFileSync(path.join(root, 'robots.txt'), 'utf8'), /Sitemap: https:\/\/randly.live\/sitemap.xml/);
 });

@@ -9,3 +9,5 @@ backups/
 .npm-cache/
 data/
 .test-data/
+build-info.json
+__pycache__/
