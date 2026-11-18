@@ -44,6 +44,8 @@ app.use((req, res, next) => {
         return res.status(204).end();
     }
     if (req.path === '/index.html' || req.path === '/ar.html') return res.redirect(301, '/');
+    const articleAlias = req.path.match(/^\/(ar|en|es|fr|de|it|pt|tr|ru|hi|id|zh)\/blog\/(is-random-video-chat-safe|chat-with-people-from-around-the-world)\/?$/);
+    if (articleAlias) return res.redirect(301, `/post-${articleAlias[2]}-${articleAlias[1]}.html`);
     next();
 });
 
@@ -148,7 +150,9 @@ app.get('/api/ice', (req, res) => {
     res.setHeader('Cache-Control', 'no-store');
     const iceServers = [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }];
     if (process.env.TURN_URLS && process.env.TURN_SHARED_SECRET) {
-        const username = `${Math.floor(Date.now() / 1000) + 600}:${crypto.randomBytes(12).toString('hex')}`;
+        const configuredTTL = Number(process.env.TURN_CREDENTIAL_TTL_SECONDS || 3600);
+        const ttl = Number.isFinite(configuredTTL) ? Math.min(3600, Math.max(600, Math.floor(configuredTTL))) : 3600;
+        const username = `${Math.floor(Date.now() / 1000) + ttl}:${crypto.randomBytes(12).toString('hex')}`;
         iceServers.push({
             urls: process.env.TURN_URLS.split(',').map(x => x.trim()).filter(x => /^turns?:[^\s]+$/.test(x)),
             username,
@@ -158,7 +162,12 @@ app.get('/api/ice', (req, res) => {
     res.json({ iceServers });
 });
 
-app.get('/healthz', (req, res) => res.json({ ok: true, online: activeUsers.size }));
+let releaseId = null;
+try {
+    const info = JSON.parse(fs.readFileSync(path.join(__dirname, 'build-info.json'), 'utf8'));
+    if (/^[a-f0-9]{40}$/.test(info.revision)) releaseId = info.revision;
+} catch (_) { /* Local development does not require release metadata. */ }
+app.get('/healthz', (req, res) => res.json({ ok: true, online: activeUsers.size, revision: releaseId }));
 
 app.use((req, res, next) => {
     if (req.path.startsWith('/api/')) return next();
@@ -806,4 +815,4 @@ process.on('SIGINT', shutdown);
 
 const onListen = () => console.log(`Server is running on ${PORT}`);
 if (Number.isNaN(Number(PORT))) server.listen(PORT, onListen);
-else server.listen(Number(PORT), '0.0.0.0', onListen);
+else server.listen(Number(PORT), process.env.BIND_HOST || '0.0.0.0', onListen);
