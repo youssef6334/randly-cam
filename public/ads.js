@@ -43,6 +43,7 @@
             card.querySelector('[data-ad-label]').textContent = text[0];
             card.querySelector('[data-ad-loading]').textContent = text[1];
             card.setAttribute('aria-label', text[0]);
+            content.setAttribute('aria-label', text[0]);
             toggle.setAttribute('aria-label', text[collapsed ? 3 : 2]);
         }
         function measure() {

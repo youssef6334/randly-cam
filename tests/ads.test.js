@@ -28,7 +28,9 @@ test('all 12 languages use one shared loader, approved codes, and no iframe plac
  assert.equal(pages.length,12);
  for(const file of pages){const html=fs.readFileSync(path.join(root,file),'utf8');
   assert.equal([...html.matchAll(/src="\/ads\.js\?/g)].length,1,file);
-  assert.doesNotMatch(html,/bicea\.org|effectivecpmnetwork\.com|container-f66aa4|data-handler-click="75da431a9263"/,file);
+  assert.doesNotMatch(html,/effectivecpmnetwork\.com|container-f66aa4|data-handler-click="75da431a9263"/,file);
+  assert.equal([...html.matchAll(/id="randly-adsterra-social"/g)].length,1,file);
+  assert.match(html,/<script id="randly-adsterra-social"[^>]+src="https:\/\/bicea\.org\/14\/4cd723902c51674b52b1ac4b207c76d4"><\/script>\s*<\/body>/,file);
  }
  assert.match(source,/https:\/\/bicea\.org\/21\/41a844b9e767c8981fc99be90925b350/);
  assert.match(source,/https:\/\/bicea\.org\/14\/4cd723902c51674b52b1ac4b207c76d4/);
@@ -37,7 +39,7 @@ test('all 12 languages use one shared loader, approved codes, and no iframe plac
  assert.doesNotMatch(fs.readFileSync(path.join(root,'sitemap.xml'),'utf8'),/adsterra-frame/);
 });
 
-function fixture(readyState='complete',visibilityState='visible'){
+function fixture(readyState='complete',visibilityState='visible',embeddedSocial=false){
  const handlers={},observers=[],resizers=[],timers=[],ids=new Map();let writes=0;
  class Element{
   constructor(tag='div'){this.tagName=tag.toUpperCase();this.children=[];this.dataset={};this.listeners={};this.textContent='';this.hidden=false;this.height=0;this.style={values:{},getPropertyValue(k){return this.values[k];},setProperty(k,v){this.values[k]=v;writes++;}};}
@@ -50,6 +52,7 @@ function fixture(readyState='complete',visibilityState='visible'){
  app.hidden=true;card.height=80;card.closest=()=>app;
  card.querySelector=s=>({'[data-ad-toggle]':toggle,'[data-ad-slot]':slot,'[data-ad-label]':label,'[data-ad-loading]':loading}[s]);
  ids.set('adContainer',card);ids.set('adContent',content);
+ if(embeddedSocial){const script=new Element('script');script.id='randly-adsterra-social';body.appendChild(script);}
  const document={readyState,visibilityState,body,documentElement:{lang:'en',dataset:{}},getElementById:id=>ids.get(id),createElement:tag=>new Element(tag),addEventListener:(k,fn)=>handlers[k]=fn};
  const window={addEventListener:(k,fn)=>handlers[k]=fn};
  class MutationObserver{constructor(fn){this.fn=fn;observers.push(this);}observe(target){this.target=target;}}
@@ -84,4 +87,13 @@ test('blank responses do not count as filled; late real content restores its car
  f.observers.find(x=>x.target===f.slot).fn();assert.equal(f.card.hidden,false);assert.equal(f.card.dataset.filled,'true');assert.equal(f.loading.hidden,true);
  assert.equal(f.timers[0].cleared,true);
  f.handlers.visibilitychange();assert.equal(f.body.children.length,1);assert.equal(f.content.children.length,1);
+});
+
+test('the official embedded Social Bar code is never inserted a second time',()=>{
+ const f=fixture('complete','visible',true);
+ assert.equal(f.body.children.length,1);
+ f.app.hidden=false;f.updateApp();
+ for(let i=0;i<10;i++) f.handlers.visibilitychange();
+ assert.equal(f.body.children.length,1);
+ assert.equal(f.content.children.length,1,'native still loads normally');
 });

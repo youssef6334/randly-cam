@@ -23,12 +23,14 @@ app.get('/', (req, res) => {
 app.get('/qa-socket.js', (req, res) => res.type('js').send('window.io=()=>({on(){},emit(){},disconnect(){}});'));
 app.get('/api/ice', (req, res) => res.json({iceServers:[]}));
 app.get('/qa-layout.js', (req, res) => res.type('js').send(`
-document.addEventListener('DOMContentLoaded',()=>{
+window.addEventListener('DOMContentLoaded',()=>{
     const view = new URLSearchParams(location.search).get('view') || 'video';
     if (view === 'landing') return;
     document.getElementById('landingPage').style.display='none';
     document.querySelector('.main-container').hidden=false;
+    currentMode = view === 'text' ? 'text' : 'video';
     setReferenceMode(view === 'text' ? 'text' : 'video');
+    document.querySelectorAll('.online-badge-modern').forEach(b => { b.style.display=''; const counter=b.querySelector('[id]'); if(counter) counter.textContent='4253'; });
     document.getElementById('videoSection').style.setProperty('display',view === 'text' ? 'none' : 'flex','important');
     document.querySelector('.local-box').style.setProperty('display','block','important');
     document.getElementById('cameraGateMessage')?.classList.add('is-hidden');
@@ -38,9 +40,11 @@ app.get('/ads.js', (req, res) => res.type('js').send(fs.readFileSync(path.join(r
     .replace('https://bicea.org/21/41a844b9e767c8981fc99be90925b350','/qa-native.js')
     .replace('https://bicea.org/14/4cd723902c51674b52b1ac4b207c76d4','/qa-social.js')));
 app.get('/qa-native.js', (req, res) => res.type('js').send(`
-const tile=document.createElement('div');tile.textContent='معاينة موضع الإعلان — بدون إعلان حقيقي';
-Object.assign(tile.style,{padding:'24px',background:'#123125',borderRadius:'10px',color:'#bde7d1',textAlign:'center'});
-document.getElementById('container-41a844b9e767c8981fc99be90925b350').appendChild(tile);`));
+for(let i=1;i<=4;i++){
+const tile=document.createElement('div');tile.textContent='معاينة موضع الإعلان '+i+' — بدون إعلان حقيقي';
+Object.assign(tile.style,{padding:'24px',minHeight:'280px',marginBottom:'12px',background:'linear-gradient(140deg,#123125,#1b5140)',borderRadius:'10px',color:'#bde7d1',textAlign:'center',display:'grid',placeItems:'center'});
+document.getElementById('container-41a844b9e767c8981fc99be90925b350').appendChild(tile);
+}`));
 app.get('/qa-social.js', (req, res) => res.type('js').send(`
 const panel=document.createElement('aside'),close=document.createElement('button'),label=document.createElement('span');
 label.textContent='معاينة إعلان جانبي';close.textContent='×';close.setAttribute('aria-label','إغلاق المعاينة');close.onclick=()=>panel.remove();
