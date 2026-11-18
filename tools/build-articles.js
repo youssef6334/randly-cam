@@ -120,7 +120,9 @@ for (const lang of languages) {
     const file = path.join(publicDir, `blog-${lang}.html`);
     let html = fs.readFileSync(file, 'utf8').replace(/\n?<!-- localized-guides:start -->[\s\S]*?<!-- localized-guides:end -->\n?/g, '');
     const displayDate = new Intl.DateTimeFormat(lang === 'pt' ? 'pt-BR' : lang, { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Africa/Cairo' }).format(new Date(`${date}T12:00:00Z`));
-    const cards = articles.filter(a => a.lang === lang).map(a => `<article class="blog-card"><h2><a href="post-${a.slug}-${lang}.html">${escape(a.title)}</a></h2><p>${escape(a.summary)}</p><time datetime="${date}">${escape(displayDate)}</time></article>`).join('\n');
+    const readMore = html.match(/<a class="blog-more"[^>]*>([^<]+)<\/a>/)?.[1];
+    if (!readMore) throw new Error(`Missing localized read-more label in blog-${lang}.html`);
+    const cards = articles.filter(a => a.lang === lang).map(a => `<article class="blog-card"><h2><a href="post-${a.slug}-${lang}.html">${escape(a.title)}</a></h2><p>${escape(a.summary)} <a class="blog-more" href="post-${a.slug}-${lang}.html">${readMore}</a></p><time datetime="${date}">${escape(displayDate)}</time></article>`).join('\n');
     html = html.replace('<div class="blog-grid">', `<div class="blog-grid">\n<!-- localized-guides:start -->\n${cards}\n<!-- localized-guides:end -->\n`);
     fs.writeFileSync(file, html);
     for (const oldSlug of ['free-video-chat', 'omegle-alternative', 'randly-vs-ome-tv']) {
