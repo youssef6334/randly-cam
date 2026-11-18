@@ -29,10 +29,10 @@ if settings_file.exists():
             settings[key] = json.loads(value)
 settings.update({key: value for key, value in incoming.items() if value})
 settings.update({'NODE_ENV': 'production', 'PORT': '3000', 'BIND_HOST': '127.0.0.1',
-                 'DATA_DIR': str(runtime / 'data'), 'TRUSTED_PROXY_CIDRS': '127.0.0.1/32,::1/128',
-                 'BEHIND_CLOUDFLARE': 'false',
-                 'TURN_URLS': 'turn:129.159.29.111:3478?transport=udp,turn:129.159.29.111:3478?transport=tcp',
+                 'DATA_DIR': str(runtime / 'data'), 'BEHIND_CLOUDFLARE': 'false',
                  'TURN_SHARED_SECRET': (runtime / 'turn-shared-secret').read_text().strip()})
+settings.setdefault('TRUSTED_PROXY_CIDRS', '127.0.0.1/32,::1/128')
+settings.setdefault('TURN_URLS', 'turn:129.159.29.111:3478?transport=udp,turn:129.159.29.111:3478?transport=tcp')
 settings.setdefault('IP_HASH_SALT', secrets.token_hex(32))
 settings.setdefault('AI_HEALTH_TOKEN', secrets.token_hex(32))
 data = runtime / 'data'
