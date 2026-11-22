@@ -21,6 +21,7 @@ const copy = {
 };
 // Update this date only when the homepage editorial content actually changes.
 const homeModified = '2026-11-22';
+const homeDescriptions = require('./home-copy.json');
 const guideIntro = {
     ar: ['أدلة الدردشة العشوائية على Randly.live', 'Randly.live موقع للدردشة العشوائية بالفيديو والنص للبالغين من عمر 18 عامًا، دون إنشاء حساب. تعرّف على طريقة البدء، وقارن خيارات الدردشة، واقرأ خطوات حماية خصوصيتك عند التحدث مع أشخاص من حول العالم.'],
     en: ['Explore random chat on Randly.live', 'Randly.live offers free random video and text chat for adults 18+, with no sign-up. These guides explain how to start, compare chat options and protect your privacy while talking to people around the world.'],
@@ -60,6 +61,10 @@ for (const p of pages) {
     html = html.replace(/<title([^>]*)>[\s\S]*?<\/title>/i, `<title$1>${escape(title)}</title>`);
     if (home) {
         html = html.replace(/<h1([^>]*)>[\s\S]*?<\/h1>/i, `<h1$1>${escape(title.replace(/\s*[|\-]\s*Randly$/, ''))}</h1>`);
+        for (const [key, value] of Object.entries(homeDescriptions[lang])) {
+            const re = new RegExp('(<p\\b[^>]*data-i18n="' + key + '"[^>]*>)[\\s\\S]*?(</p>)', 'i');
+            html = html.replace(re, (_, open, close) => open + escape(value) + close);
+        }
         html = html.replace(/(<h2\b[^>]*data-i18n="feat1Title"[^>]*>)[\s\S]*?(<\/h2>)/i, `$1${escape(copy[lang][3])}$2`);
         html = html.replace(/\s*<!-- home-guides:start -->[\s\S]*?<!-- home-guides:end -->\s*/g, '\n');
         const slugs = ['free-video-chat', 'omegle-alternative', 'randly-vs-ome-tv', 'is-random-video-chat-safe', 'chat-with-people-from-around-the-world'];
@@ -126,4 +131,23 @@ for (const lang of langs) {
     script = script.replace(re, (_, prefix) => prefix + JSON.stringify(copy[lang][0]));
 }
 fs.writeFileSync(path.join(root, 'script.js'), script);
+for (const file of ['script.js', 'i18n-extra.js']) {
+    const labels = fs.readFileSync(path.join(root, file), 'utf8');
+    const declaration = file === 'script.js' ? 'const translations = {' : 'const NEW_LANGS = {';
+    const at = labels.indexOf(declaration);
+    if (at < 0) throw new Error('Missing translation dictionary: ' + file);
+    let dictionary = labels.slice(at);
+    for (const lang of langs) {
+        const block = new RegExp('(^[ \\t]*' + lang + ':\\s*\\{)([\\s\\S]*?)(^[ \\t]*\\},?)', 'm');
+        dictionary = dictionary.replace(block, (_, open, body, close) => {
+            for (const [key, value] of Object.entries(homeDescriptions[lang])) {
+                const field = new RegExp('(\\b' + key + ':\\s*)"[^"\\r\\n]*"');
+                if (!field.test(body)) throw new Error('Missing home label: ' + file + '/' + lang + '/' + key);
+                body = body.replace(field, (_, prefix) => prefix + JSON.stringify(value));
+            }
+            return open + body + close;
+        });
+    }
+    fs.writeFileSync(path.join(root, file), labels.slice(0, at) + dictionary);
+}
 console.log(`Updated ${pages.length} canonical pages in ${langs.length} languages.`);

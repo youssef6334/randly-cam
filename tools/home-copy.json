@@ -1,0 +1,50 @@
+{
+  "en": {
+    "feat1Desc": "Start video or text chat without creating an account. Keep personal details private.",
+    "feat3Desc": "Choose a country preference or global matching. Availability varies."
+  },
+  "ar": {
+    "feat1Desc": "ابدأ دردشة بالفيديو أو النص دون إنشاء حساب، وحافظ على خصوصية بياناتك الشخصية.",
+    "feat3Desc": "اختر تفضيل دولة أو المطابقة العالمية؛ توفر المشاركين يختلف."
+  },
+  "es": {
+    "feat1Desc": "Empieza un chat de vídeo o texto sin crear una cuenta. Protege tus datos personales.",
+    "feat3Desc": "Elige un país como preferencia o la búsqueda global. La disponibilidad varía."
+  },
+  "fr": {
+    "feat1Desc": "Lancez un chat vidéo ou texte sans créer de compte. Gardez vos informations personnelles privées.",
+    "feat3Desc": "Choisissez un pays de préférence ou la recherche mondiale. La disponibilité varie."
+  },
+  "de": {
+    "feat1Desc": "Starte Video- oder Textchat ohne Konto. Halte persönliche Angaben privat.",
+    "feat3Desc": "Wähle ein bevorzugtes Land oder die weltweite Suche. Die Verfügbarkeit variiert."
+  },
+  "it": {
+    "feat1Desc": "Avvia una chat video o di testo senza creare un account. Proteggi i tuoi dati personali.",
+    "feat3Desc": "Scegli un paese come preferenza o la ricerca globale. La disponibilità varia."
+  },
+  "pt": {
+    "feat1Desc": "Comece um chat de vídeo ou texto sem criar conta. Mantenha seus dados pessoais privados.",
+    "feat3Desc": "Escolha um país como preferência ou a busca global. A disponibilidade varia."
+  },
+  "tr": {
+    "feat1Desc": "Hesap oluşturmadan görüntülü veya yazılı sohbet başlatın. Kişisel bilgilerinizi gizli tutun.",
+    "feat3Desc": "Bir ülke tercihi veya küresel eşleştirme seçin. Katılımcı bulunabilirliği değişir."
+  },
+  "ru": {
+    "feat1Desc": "Начните видео- или текстовый чат без создания аккаунта. Не раскрывайте личные данные.",
+    "feat3Desc": "Выберите предпочтительную страну или глобальный поиск. Доступность участников меняется."
+  },
+  "hi": {
+    "feat1Desc": "खाता बनाए बिना वीडियो या टेक्स्ट चैट शुरू करें। अपनी निजी जानकारी साझा न करें।",
+    "feat3Desc": "किसी देश की प्राथमिकता या वैश्विक खोज चुनें। उपलब्धता बदल सकती है।"
+  },
+  "id": {
+    "feat1Desc": "Mulai video chat atau obrolan teks tanpa membuat akun. Jaga data pribadi Anda.",
+    "feat3Desc": "Pilih preferensi negara atau pencarian global. Ketersediaan peserta berbeda-beda."
+  },
+  "zh": {
+    "feat1Desc": "无需创建账号即可开始视频或文字聊天。请保护个人信息。",
+    "feat3Desc": "选择偏好的国家或全球匹配；参与者的可用情况会变化。"
+  }
+}
