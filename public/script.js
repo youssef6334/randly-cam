@@ -1116,7 +1116,7 @@ function appendSystemMessage(text) {
 // --- نظام الترجمة (الـ 12 لغة كاملة) ---
 const translations = {
     ar: {
-        siteTitle: "شات فيديو عشوائي مجاني ومجهول مع الغرباء | Randly",
+        siteTitle: "Randly — شات فيديو عشوائي مجاني ومجهول مع الغرباء",
         logoTitle: "Randly 🎲",
         landingSub: "تحدث مع أناس عشوائيين حول العالم بكل أمان وسرعة!",
         onlineNow: "المتصلون الآن",
@@ -1170,7 +1170,7 @@ const translations = {
         cameraRequired: "لازم تسمح بالكاميرا وتظهر وجهك قبل بدء المحادثة."
     },
     en: {
-        siteTitle: "Free Anonymous Random Video Chat | Talk to Strangers - Randly",
+        siteTitle: "Randly — Free Anonymous Random Video Chat | Talk to Strangers",
         logoTitle: "Randly 🎲",
         landingSub: "Talk to random people around the world safely and fast!",
         onlineNow: "Online now",
@@ -1224,7 +1224,7 @@ const translations = {
         cameraRequired: "Allow camera access and show your face before starting."
     },
     es: {
-        siteTitle: "Videochat aleatorio gratis y anónimo con extraños | Randly",
+        siteTitle: "Randly — Videochat aleatorio gratis y anónimo con extraños",
         logoTitle: "Randly 🎲",
         landingSub: "¡Habla con personas aleatorias de todo el mundo de forma segura!",
         onlineNow: "En línea",
@@ -1276,7 +1276,7 @@ const translations = {
         noCountryMatchMsg: "No hay nadie de tu país conectado ahora mismo — te conectaremos con alguien de cualquier parte del mundo."
     },
     fr: {
-        siteTitle: "Chat vidéo aléatoire gratuit et anonyme | Randly",
+        siteTitle: "Randly — Chat vidéo aléatoire gratuit et anonyme",
         logoTitle: "Randly 🎲",
         landingSub: "Parlez à des inconnus du monde entier en toute sécurité !",
         onlineNow: "En ligne",
@@ -1328,7 +1328,7 @@ const translations = {
         noCountryMatchMsg: "Personne de votre pays n'est connecté en ce moment — nous vous connectons avec quelqu'un du monde entier."
     },
     de: {
-        siteTitle: "Kostenloser anonymer Zufalls-Videochat mit Fremden | Randly",
+        siteTitle: "Randly — Kostenloser anonymer Zufalls-Videochat mit Fremden",
         logoTitle: "Randly 🎲",
         landingSub: "Sicher mit Fremden weltweit chatten!",
         onlineNow: "Online",
@@ -1380,7 +1380,7 @@ const translations = {
         noCountryMatchMsg: "Gerade ist niemand aus deinem Land online — wir verbinden dich mit jemandem von überall."
     },
     it: {
-        siteTitle: "Videochat casuale gratis e anonima con sconosciuti | Randly",
+        siteTitle: "Randly — Videochat casuale gratis e anonima con sconosciuti",
         logoTitle: "Randly 🎲",
         landingSub: "Parla con estranei in tutto il mondo in sicurezza!",
         onlineNow: "Online",
@@ -1432,7 +1432,7 @@ const translations = {
         noCountryMatchMsg: "Nessuno dal tuo paese è online in questo momento — ti connetteremo con qualcuno da qualsiasi parte del mondo."
     },
     pt: {
-        siteTitle: "Chat de vídeo aleatório grátis e anônimo | Randly",
+        siteTitle: "Randly — Chat de vídeo aleatório grátis e anônimo",
         logoTitle: "Randly 🎲",
         landingSub: "Fale com estranhos em todo o mundo com segurança!",
         onlineNow: "Online",
@@ -1484,7 +1484,7 @@ const translations = {
         noCountryMatchMsg: "Ninguém do seu país está online agora — vamos te conectar com alguém de qualquer lugar do mundo."
     },
     tr: {
-        siteTitle: "Ücretsiz anonim rastgele görüntülü sohbet | Randly",
+        siteTitle: "Randly — Ücretsiz anonim rastgele görüntülü sohbet",
         logoTitle: "Randly 🎲",
         landingSub: "Dünyanın her yerinden rastgele insanlarla güvenli ve hızlı bir şekilde sohbet edin!",
         onlineNow: "Şu anda çevrimiçi",
@@ -1536,7 +1536,7 @@ const translations = {
         noCountryMatchMsg: "Şu anda ülkenizden kimse çevrimiçi değil — sizi dünyanın herhangi bir yerinden biriyle bağlıyoruz."
     },
     ru: {
-        siteTitle: "Бесплатный анонимный случайный видеочат | Randly",
+        siteTitle: "Randly — Бесплатный анонимный случайный видеочат",
         logoTitle: "Randly 🎲",
         landingSub: "Общайтесь со случайными людьми со всего мира безопасно и быстро!",
         onlineNow: "Сейчас онлайн",
@@ -1588,7 +1588,7 @@ const translations = {
         noCountryMatchMsg: "Сейчас никого из вашей страны нет онлайн — мы подключим вас с кем-то из любой точки мира."
     },
     hi: {
-        siteTitle: "मुफ़्त गुमनाम रैंडम वीडियो चैट | Randly",
+        siteTitle: "Randly — मुफ़्त गुमनाम रैंडम वीडियो चैट",
         logoTitle: "Randly 🎲",
         landingSub: "दुनिया भर के रैंडम लोगों के साथ सुरक्षित और तेज़ी से चैट करें!",
         onlineNow: "अभी ऑनलाइन",
@@ -1640,7 +1640,7 @@ const translations = {
         noCountryMatchMsg: "अभी आपके देश से कोई ऑनलाइन नहीं है — हम आपको दुनिया में कहीं से भी किसी से जोड़ रहे हैं।"
     },
     id: {
-        siteTitle: "Video Chat Acak Gratis dan Anonim dengan Orang Asing | Randly",
+        siteTitle: "Randly — Video Chat Acak Gratis dan Anonim dengan Orang Asing",
         logoTitle: "Randly 🎲",
         landingSub: "Ngobrol dengan orang acak dari seluruh dunia dengan aman dan cepat!",
         onlineNow: "Online sekarang",
@@ -1692,7 +1692,7 @@ const translations = {
         noCountryMatchMsg: "Belum ada orang dari negara Anda yang online sekarang — kami akan menghubungkan Anda dengan seseorang dari mana saja."
     },
     zh: {
-        siteTitle: "免费匿名随机视频聊天，与陌生人交谈 | Randly",
+        siteTitle: "Randly — 免费匿名随机视频聊天，与陌生人交谈",
         logoTitle: "Randly 🎲",
         landingSub: "安全快速地与来自世界各地的随机用户聊天！",
         onlineNow: "当前在线",

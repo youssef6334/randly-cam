@@ -741,6 +741,21 @@ html[data-theme="light"] .app-header {
     margin-bottom: 40px;
 }
 
+.home-guides {
+    margin-bottom: 40px;
+    padding: 24px 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--bg-card);
+    line-height: 1.7;
+}
+.home-guides h2 { margin: 0 0 12px; font-size: 1.4rem; color: var(--accent-purple); }
+.home-guides p { margin: 0 0 16px; color: var(--text-muted); }
+.home-guides ul { margin: 0; padding-inline-start: 22px; }
+.home-guides li + li { margin-top: 10px; }
+.home-guides a { color: var(--accent-purple); overflow-wrap: anywhere; text-underline-offset: 3px; }
+.home-guides a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+
 .faq-section h2 {
     margin-bottom: 25px;
     text-align: center;

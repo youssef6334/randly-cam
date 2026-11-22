@@ -19,6 +19,23 @@ const copy = {
     id: ['Video Chat Acak Gratis dan Anonim dengan Orang Asing | Randly', 'Ngobrol dengan orang asing di seluruh dunia lewat video dan teks acak gratis tanpa daftar. Jelajahi filter negara dan minat di Randly. Khusus dewasa 18 tahun ke atas.', 'Panduan Chat Acak dan Mengobrol dengan Orang Asing', 'Chat Acak Gratis Tanpa Daftar'],
     zh: ['免费匿名随机视频聊天，与陌生人交谈 | Randly', '在 Randly 与世界各地的陌生人免费随机视频和文字聊天，无需注册。探索国家和兴趣筛选功能，结识新朋友。仅限年满18周岁的成年人使用。', '随机聊天与陌生人交谈指南', '无需注册的免费随机聊天']
 };
+// Update this date only when the homepage editorial content actually changes.
+const homeModified = '2026-11-22';
+const guideIntro = {
+    ar: ['أدلة الدردشة العشوائية على Randly.live', 'Randly.live موقع للدردشة العشوائية بالفيديو والنص للبالغين من عمر 18 عامًا، دون إنشاء حساب. تعرّف على طريقة البدء، وقارن خيارات الدردشة، واقرأ خطوات حماية خصوصيتك عند التحدث مع أشخاص من حول العالم.'],
+    en: ['Explore random chat on Randly.live', 'Randly.live offers free random video and text chat for adults 18+, with no sign-up. These guides explain how to start, compare chat options and protect your privacy while talking to people around the world.'],
+    es: ['Guías de chat aleatorio en Randly.live', 'Randly.live ofrece videochat aleatorio y chat de texto gratis para mayores de 18 años, sin registro. Aprende a empezar, compara opciones y descubre cómo proteger tu privacidad al hablar con personas de todo el mundo.'],
+    fr: ['Les guides du chat aléatoire sur Randly.live', 'Randly.live propose un chat vidéo aléatoire et un chat texte gratuits, sans inscription, pour les adultes de 18 ans et plus. Ces guides expliquent comment commencer, comparer les options et protéger sa vie privée en parlant à des personnes du monde entier.'],
+    de: ['Ratgeber für Zufallschats auf Randly.live', 'Randly.live bietet Erwachsenen ab 18 Jahren kostenlosen zufälligen Video- und Textchat ohne Anmeldung. Diese Ratgeber erklären den Einstieg, vergleichen Chatmöglichkeiten und zeigen, wie du beim Gespräch mit Menschen aus aller Welt deine Privatsphäre schützt.'],
+    it: ['Guide alla chat casuale su Randly.live', 'Randly.live offre videochat casuale e chat di testo gratuite, senza registrazione, per maggiorenni. Scopri come iniziare, confronta le opzioni e leggi come proteggere la tua privacy mentre parli con persone di tutto il mondo.'],
+    pt: ['Guias de chat aleatório no Randly.live', 'O Randly.live oferece chat de vídeo aleatório e conversa por texto grátis, sem cadastro, para maiores de 18 anos. Veja como começar, compare as opções e aprenda a proteger sua privacidade ao conversar com pessoas do mundo todo.'],
+    tr: ['Randly.live rastgele sohbet rehberleri', 'Randly.live, 18 yaş ve üzerindeki yetişkinler için üyelik gerektirmeyen ücretsiz rastgele görüntülü ve yazılı sohbet sunar. Nasıl başlayacağınızı öğrenin, sohbet seçeneklerini karşılaştırın ve dünyanın farklı yerlerinden insanlarla konuşurken gizliliğinizi koruyun.'],
+    ru: ['Руководства по случайному чату на Randly.live', 'Randly.live предлагает бесплатный случайный видео- и текстовый чат без регистрации для взрослых от 18 лет. Узнайте, как начать общение, сравнить варианты чата и защитить свою приватность в разговорах с людьми из разных стран.'],
+    hi: ['Randly.live पर रैंडम चैट की गाइड', 'Randly.live पर 18 वर्ष या उससे अधिक उम्र के वयस्क बिना रजिस्ट्रेशन के मुफ़्त रैंडम वीडियो और टेक्स्ट चैट कर सकते हैं। इन गाइड में शुरुआत करने, चैट के विकल्प समझने और दुनिया भर के लोगों से बात करते समय अपनी निजता सुरक्षित रखने के तरीके जानें।'],
+    id: ['Panduan chat acak di Randly.live', 'Randly.live menyediakan video chat acak dan obrolan teks gratis tanpa pendaftaran untuk orang dewasa berusia 18 tahun ke atas. Pelajari cara memulai, bandingkan pilihan chat, dan lindungi privasi saat berbicara dengan orang dari berbagai negara.'],
+    zh: ['Randly.live 随机聊天指南', 'Randly.live 为年满18周岁的成年人提供免费随机视频聊天和文字聊天，无需注册。这些指南介绍如何开始聊天、比较不同选择，以及在与世界各地的人交谈时保护个人隐私。']
+};
+for (const lang of langs) copy[lang][0] = 'Randly — ' + copy[lang][0].replace(/\s*[|\-]\s*Randly$/, '');
 const escape = s => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const decode = s => s.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#x27;|&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 const url = file => base + (file === 'index.html' ? '/' : '/' + file);
@@ -44,6 +61,16 @@ for (const p of pages) {
     if (home) {
         html = html.replace(/<h1([^>]*)>[\s\S]*?<\/h1>/i, `<h1$1>${escape(title.replace(/\s*[|\-]\s*Randly$/, ''))}</h1>`);
         html = html.replace(/(<h2\b[^>]*data-i18n="feat1Title"[^>]*>)[\s\S]*?(<\/h2>)/i, `$1${escape(copy[lang][3])}$2`);
+        html = html.replace(/\s*<!-- home-guides:start -->[\s\S]*?<!-- home-guides:end -->\s*/g, '\n');
+        const slugs = ['free-video-chat', 'omegle-alternative', 'randly-vs-ome-tv', 'is-random-video-chat-safe', 'chat-with-people-from-around-the-world'];
+        const links = slugs.map(slug => {
+            const guide = pages.find(q => q.file === `post-${slug}-${lang}.html`);
+            if (!guide) throw new Error(`Missing homepage guide: ${slug}/${lang}`);
+            const heading = decode(guide.html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)[1].replace(/<[^>]*>/g, ''));
+            return `<li><a href="/post-${slug}-${lang}.html">${escape(heading)}</a></li>`;
+        }).join('\n');
+        const guides = `<!-- home-guides:start -->\n<section class="home-guides" aria-labelledby="homeGuidesHeading"><h2 id="homeGuidesHeading">${escape(guideIntro[lang][0])}</h2><p>${escape(guideIntro[lang][1])}</p><ul>${links}</ul></section>\n<!-- home-guides:end -->\n`;
+        html = html.replace('<section class="faq-section">', guides + '<section class="faq-section">');
     } else if (family === 'blog.html') html = html.replace(/<h1([^>]*)>[\s\S]*?<\/h1>/i, `<h1$1>${escape(copy[lang][2])}</h1>`);
     // Replace managed tags as one block so there is exactly one source of truth.
     html = html.replace(/<meta\b[^>]*(?:name="(?:description|robots|twitter:[^"]+)"|property="og:[^"]+")[^>]*>\s*/gi, '');
@@ -77,9 +104,9 @@ for (const p of pages) {
     const appId = base + '/#app';
     const graph = {
         '@context': 'https://schema.org', '@graph': [
-            { '@type': 'WebSite', '@id': base + '/#website', name: 'Randly', url: base + '/', inLanguage: langs },
+            { '@type': 'WebSite', '@id': base + '/#website', name: 'Randly', alternateName: 'randly.live', url: base + '/', inLanguage: langs },
             { '@type': 'WebApplication', '@id': appId, name: 'Randly', url: base + '/', applicationCategory: 'SocialNetworkingApplication', operatingSystem: 'Web', browserRequirements: 'Requires JavaScript and WebRTC for video chat', isAccessibleForFree: true, inLanguage: langs, image, offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } },
-            { '@type': 'WebPage', '@id': url(file) + '#webpage', url: url(file), name: title, description: desc, inLanguage: lang, isPartOf: { '@id': base + '/#website' }, about: { '@id': appId }, ...(home ? { mainEntity: { '@id': appId } } : {}) }
+            { '@type': 'WebPage', '@id': url(file) + '#webpage', url: url(file), name: title, description: desc, inLanguage: lang, isPartOf: { '@id': base + '/#website' }, about: { '@id': appId }, ...(home ? { mainEntity: { '@id': appId }, dateModified: homeModified } : {}) }
         ]
     };
     tags.push(`<script type="application/ld+json">${JSON.stringify(graph).replace(/</g, '\\u003c')}</script>`);
@@ -88,7 +115,7 @@ for (const p of pages) {
 }
 const sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' + pages.map(p => {
     const siblings = pages.filter(q => q.family === p.family), fallback = siblings.find(q => q.lang === 'en') || siblings[0];
-    const modified = p.html.match(/<meta property="article:modified_time" content="(\d{4}-\d{2}-\d{2})"/)?.[1];
+    const modified = p.home ? homeModified : p.html.match(/<meta property="article:modified_time" content="(\d{4}-\d{2}-\d{2})"/)?.[1];
     return `  <url>\n    <loc>${url(p.file)}</loc>\n` + (modified ? `    <lastmod>${modified}</lastmod>\n` : '') + [...siblings.map(q => `    <xhtml:link rel="alternate" hreflang="${q.lang}" href="${url(q.file)}"/>`), `    <xhtml:link rel="alternate" hreflang="x-default" href="${url(fallback.file)}"/>`].join('\n') + '\n  </url>';
 }).join('\n') + '\n</urlset>\n';
 fs.writeFileSync(path.join(root, 'sitemap.xml'), sitemap);

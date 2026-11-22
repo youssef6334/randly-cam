@@ -115,13 +115,16 @@
   };
 
   // دمج بدل الاستبدال: عشان مفاتيح الـ FAQ (faq3..faq8) الموجودة في script.js ما تضيعش
-  Object.keys(NEW_LANGS).forEach(l => { translations[l] = Object.assign({}, translations[l] || {}, NEW_LANGS[l]); });
+  Object.keys(NEW_LANGS).forEach(l => {
+    const { siteTitle: legacyTitle, ...labels } = NEW_LANGS[l];
+    // Keep the title generated from the same source as the HTML/OG metadata.
+    translations[l] = Object.assign({}, translations[l] || {}, labels);
+  });
   Object.keys(V).forEach(l => {
     translations[l] = translations[l] || {};
     K.forEach((k, i) => { translations[l][k] = V[l][i]; });
   });
   // تصحيح: عنوان البرتغالي كان فيه كلمة فرنسية (aléatoire)
-  translations.pt.siteTitle = "Randly - Chat aleatório de vídeo e texto com estranhos";
 })();
 
 // ---------- 3) قايمة اللغات الموحدة (12 لغة) ----------
