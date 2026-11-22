@@ -167,7 +167,7 @@ try {
     const info = JSON.parse(fs.readFileSync(path.join(__dirname, 'build-info.json'), 'utf8'));
     if (/^[a-f0-9]{40}$/.test(info.revision)) releaseId = info.revision;
 } catch (_) { /* Local development does not require release metadata. */ }
-app.get('/healthz', (req, res) => res.json({ ok: true, online: activeUsers.size, revision: releaseId }));
+app.get('/healthz', (req, res) => res.json({ ok: true, online: onlineVisitors.size, revision: releaseId }));
 
 app.use((req, res, next) => {
     if (req.path.startsWith('/api/')) return next();
@@ -211,6 +211,7 @@ io.engine.use((req, res, next) => {
 
 // ---------------------------------------------------------------- الحالة (في الذاكرة)
 const activeUsers = new Map();
+const onlineVisitors = new Map();
 let waitingQueue = [];
 const savedRooms = new Map();
 const fallbackTimers = new Map();
@@ -231,7 +232,7 @@ setInterval(() => {
 // عداد المتصلين الذكي: يتحرك بنعومة بين 2000 و 6000 + أول رقم على اليمين يمثل العدد الحقيقي
 let fakeBaseTens = 240 + Math.floor(Math.random() * 200); // يبدأ بين 2400 و 4400
 function getDisplayOnlineCount() {
-    const real = activeUsers.size;
+    const real = onlineVisitors.size;
     return (fakeBaseTens * 10) + real;
 }
 
@@ -586,7 +587,13 @@ io.on('connection', (socket) => {
     activeUsers.set(socket.id, {
         room: null, peer: null, actualCountry, ipHash, xoRole: null
     });
-    socket.emit('online-count', getDisplayOnlineCount());
+    // An anonymous browser hint deduplicates overlapping language-page sockets.
+    // It is never used for authentication, bans, matching or per-IP budgets.
+    const visitorId = socket.handshake.auth && socket.handshake.auth.visitorId;
+    const visitorKey = typeof visitorId === 'string' && /^[a-f0-9]{32}$/.test(visitorId)
+        ? 'visitor:' + visitorId : 'socket:' + socket.id;
+    onlineVisitors.set(visitorKey, (onlineVisitors.get(visitorKey) || 0) + 1);
+    io.emit('online-count', getDisplayOnlineCount());
 
     // Validate and throttle before moderation, its queue and its text filter.
     socket.use((packet, next) => {
@@ -785,10 +792,16 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         try {
             detach(socket);
+        } catch (err) { console.error('[ERR] disconnect', err && err.message); }
+        finally {
             activeUsers.delete(socket.id);
+            const connections = (onlineVisitors.get(visitorKey) || 1) - 1;
+            if (connections <= 0) onlineVisitors.delete(visitorKey);
+            else onlineVisitors.set(visitorKey, connections);
             const n = (ipConnections.get(ip) || 1) - 1;
             if (n <= 0) ipConnections.delete(ip); else ipConnections.set(ip, n);
-        } catch (err) { console.error('[ERR] disconnect', err && err.message); }
+            io.emit('online-count', getDisplayOnlineCount());
+        }
     });
 });
 

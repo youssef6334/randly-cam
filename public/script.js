@@ -1,6 +1,7 @@
 const socket = io(window.location.origin, {
     transports: ["websocket"],
-    secure: true
+    secure: true,
+    auth: { visitorId: RandlySession.visitorId(window) }
 });
 
 // Refresh short-lived TURN credentials before a new call; ICE can still choose a direct path.
@@ -19,6 +20,12 @@ let currentPartnerCountry = null;
 let currentPartnerType = null;
 let pendingCandidates = [];
 let skipConfirmTimer = null;
+let sessionGeneration = 0;
+const sessionNavigation = RandlySession.navigation(window, {
+    leave: resetSession,
+    suspend: () => socket.disconnect(),
+    resume: () => socket.connect()
+});
 
 
 // العناصر الأساسية
@@ -478,7 +485,7 @@ socket.on('connect', () => {
     const savedRoom = urlParams.get('room');
     if (savedRoom) {
         currentMode = urlParams.get('mode') || 'text';
-        window.history.pushState({}, document.title, window.location.pathname);
+        window.history.replaceState(window.history.state, document.title, window.location.pathname);
         startSession(currentMode, savedRoom);
     }
 });
@@ -630,6 +637,8 @@ function toggleCam() {
 }
 
 async function startSession(mode, specificRoomId = null) {
+    if (!sessionNavigation.enter()) return;
+    const generation = ++sessionGeneration;
     currentMode = mode;
     setupReferenceLayout();
     setReferenceMode(mode);
@@ -646,16 +655,24 @@ async function startSession(mode, specificRoomId = null) {
         if (localBox) localBox.style.setProperty('display', 'flex', 'important');
         videoOnlyBtns.forEach(btn => btn.classList.remove('d-none'));
         try {
-            if (!localStream) localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            const stream = localStream || await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            if (generation !== sessionGeneration) {
+                if (stream !== localStream) stream.getTracks().forEach(track => track.stop());
+                return;
+            }
+            localStream = stream;
             if (localVideo) {
                 localVideo.srcObject = localStream;
             }
-            if (!await waitForCameraPreview()) {
+            const ready = await waitForCameraPreview();
+            if (generation !== sessionGeneration) return;
+            if (!ready) {
                 appendSystemMessage(tr('cameraRequired'));
                 if (statusDiv) statusDiv.textContent = tr('cameraRequired');
                 return;
             }
         } catch (err) {
+            if (generation !== sessionGeneration) return;
             appendSystemMessage(tr('cameraError'));
             setCameraGate(true);
             if (statusDiv) statusDiv.textContent = tr('cameraRequired');
@@ -675,6 +692,7 @@ async function startSession(mode, specificRoomId = null) {
         setCameraGate(true);
     }
 
+    if (generation !== sessionGeneration) return;
     if (specificRoomId) {
         joinSpecificRoom(specificRoomId);
     } else {
@@ -754,11 +772,17 @@ function joinSpecificRoom(roomId) {
 }
 
 function leaveSession() {
+    sessionNavigation.leave();
+}
+
+function resetSession() {
+    sessionGeneration++;
     clearRemoteVideo();
     if (localStream) {
         localStream.getTracks().forEach(track => track.stop());
         localStream = null;
     }
+    if (localVideo) localVideo.srcObject = null;
     if (landingPage) landingPage.style.display = 'flex';
     const mainBoxLeave = document.querySelector('.main-container');
     if (mainBoxLeave) mainBoxLeave.hidden = true;
@@ -768,9 +792,10 @@ function leaveSession() {
     buttonState = 'start';
     currentRoomId = null;
     clearTimeout(skipConfirmTimer);
+    clearTimeout(typingTimer);
+    if (typingIndicator) typingIndicator.style.display = 'none';
     setNextBtn('start');
-    window.history.pushState({}, document.title, window.location.pathname);
-    socket.emit('leave-room');
+    if (socket.connected) socket.emit('leave-room');
 }
 
 function reportUser() {
@@ -933,7 +958,7 @@ function showAiChatNotice() {
 }
 
 socket.on('matched', async (data) => {
-    if (!data || typeof data.roomId !== 'string') return;
+    if (buttonState === 'start' || !data || typeof data.roomId !== 'string') return;
     currentMatchId = data.matchId || null;
     currentPartnerType = data.partnerType === 'ai' ? 'ai' : 'human';
     const currentLang = document.documentElement.lang || 'ar';

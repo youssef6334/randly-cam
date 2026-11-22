@@ -10,6 +10,9 @@ for (const file of fs.readdirSync(root).filter(f => f.endsWith('.html'))) {
     if (/<script src="\/?script\.js(?:\?[^"]*)?"/.test(html) && !html.includes('src="/rtc-config.js')) {
         html = html.replace(/<script src="\/?script\.js(?:\?[^"]*)?"/, '<script src="/rtc-config.js"></script>\n<script src="script.js"');
     }
+    if (/<script src="\/?script\.js(?:\?[^"]*)?"/.test(html) && !html.includes('src="/session-state.js')) {
+        html = html.replace(/<script src="\/?script\.js(?:\?[^"]*)?"/, '<script src="/session-state.js"></script>\n<script src="script.js"');
+    }
     html = html.replace(/\b(src|href)="([^"?]+\.(?:js|css))(?:\?([^"]*))?"/g, (all, attr, url, query) => {
         if (/^(?:https?:)?\/\//.test(url)) return all;
         const local = path.resolve(root, url.replace(/^\//, ''));
