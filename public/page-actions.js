@@ -81,3 +81,11 @@ document.querySelectorAll('[data-handler-click="fd240138c436"]').forEach(functio
 document.querySelectorAll('[data-handler-click="55cd3cf53495"]').forEach(function (element) {
     element.addEventListener("click", function (event) { makeMove(8); });
 });
+
+// Container controls stay usable when an ad blocker/network failure stops ads.js.
+// Share the binding marker with the loader so one press cannot toggle twice.
+document.querySelectorAll('[data-ad-toggle]').forEach(function (element) {
+    if (element.dataset.randlyAdBound) return;
+    element.dataset.randlyAdBound = 'true';
+    element.addEventListener('click', function () { toggleAd(); });
+});

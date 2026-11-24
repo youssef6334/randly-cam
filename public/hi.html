@@ -15,7 +15,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="siteTitle">Randly — मुफ़्त गुमनाम रैंडम वीडियो चैट</title>
 <meta name="author" content="Randly">
-<link rel="stylesheet" href="style.css?v=5c826dd6263a">
+<link rel="stylesheet" href="style.css?v=a4788ad50a41">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
 
@@ -263,15 +263,19 @@ addEventListener("load",function(){setTimeout(go,4000);});})();
 <button class="theme-switch-btn theme-toggle" data-handler-click="1dacba5d181c" aria-label="Toggle dark/light mode"><span class="switch-knob">🌙</span></button>
 </div>
 </header>
-<section class="top-ad-bar randly-ad" id="adContainer" aria-label="Advertisement">
+<section class="top-ad-bar randly-ad" id="adContainer" aria-label="Advertisement" data-collapsed="false">
+            <div class="randly-ad-drawer" data-ad-drawer><div class="randly-ad-clip"><div class="randly-ad-sheet">
             <div class="randly-ad-heading">
                 <span class="randly-ad-label" data-ad-label>Advertisement</span>
-                <button type="button" class="randly-ad-toggle" data-ad-toggle aria-controls="adContent" aria-expanded="true" aria-label="Collapse advertisement"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 14 6-6 6 6"/></svg></button>
+
             </div>
             <div id="adContent" class="randly-ad-content" tabindex="0" role="region" aria-label="Advertisement">
                 <div class="randly-ad-loading" data-ad-loading>Loading advertisement</div>
                 <div class="randly-ad-slot" data-ad-slot></div>
             </div>
+
+            </div></div></div>
+            <button type="button" class="randly-ad-toggle" data-ad-toggle aria-controls="adContent" aria-expanded="true" aria-label="Collapse advertisement"><span class="randly-ad-rail" aria-hidden="true"><span class="randly-ad-dot"></span><span class="randly-ad-grip"></span><span class="randly-ad-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 14 6-6 6 6"/></svg></span></span></button>
         </section>
 <div class="content-wrapper">
 <div id="videoSection" class="video-section">
@@ -380,16 +384,16 @@ addEventListener("load",function(){setTimeout(go,4000);});})();
 </div>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/country-display.js?v=535a426ddc46"></script>
-<script src="/ads.js?v=2ad08501ee99" defer></script>
+<script src="/ads.js?v=ed7963d46d9f" defer></script>
 <script src="/rtc-config.js?v=c8b57a0ce94e"></script>
-<script src="/session-state.js?v=541f968d39e2"></script>
-<script src="script.js?v=7409406d1f32"></script>
-<script src="i18n-extra.js?v=3a71c4f6bdd3"></script>
+<script src="/session-state.js?v=7ca46b5b4aa6"></script>
+<script src="script.js?v=1ea44c722b07"></script>
+<script src="i18n-extra.js?v=7af0a74c0aec"></script>
 <script src="randly-extra.js?v=6ca4cf40f8cc"></script>
 <script src="moderation-client.js?v=e34991589a8e"></script>
 
 <script src="/lang-menu.js?v=5a19feb3bb9a" defer></script>
-<script src="/smart-select.js?v=f0c116ae7056" defer></script><script src="/page-actions.js?v=5ca2a26d050e" defer></script>
+<script src="/smart-select.js?v=f0c116ae7056" defer></script><script src="/page-actions.js?v=5a8994386bc6" defer></script>
 <script id="randly-adsterra-social" async data-cfasync="false" data-load-state="embedded" referrerpolicy="strict-origin-when-cross-origin" src="https://bicea.org/14/4cd723902c51674b52b1ac4b207c76d4"></script>
 </body>
 </html>

@@ -46,9 +46,23 @@
             content.setAttribute('aria-label', text[0]);
             toggle.setAttribute('aria-label', text[collapsed ? 3 : 2]);
         }
+        let measurePending = false;
         function measure() {
+            if (measurePending) return;
+            measurePending = true;
+            requestAnimationFrame(() => { measurePending = false; measureNow(); });
+        }
+        function measureNow() {
             const space = card.hidden ? '0px' : Math.ceil(card.getBoundingClientRect().height + 12) + 'px';
             if (app.style.getPropertyValue('--randly-ad-space') !== space) app.style.setProperty('--randly-ad-space', space);
+            // Anchor the overlay to the actual chat edge, including the centered desktop text layout.
+            const edge = card.getBoundingClientRect();
+            for (const [id, variable, side] of [['chatSection', '--randly-ad-tab-right', 'right'], ['videoSection', '--randly-ad-tab-left', 'left']]) {
+                const target = document.getElementById(id)?.getBoundingClientRect();
+                if (!target?.width || !Number.isFinite(edge[side]) || !Number.isFinite(target[side])) continue;
+                const offset = Math.max(0, Math.round((side === 'right' ? edge.right - target.right : target.left - edge.left) - 12)) + 'px';
+                if (app.style.getPropertyValue(variable) !== offset) app.style.setProperty(variable, offset);
+            }
         }
         function insertScript(kind, parent) {
             const id = 'randly-adsterra-' + kind;
@@ -65,7 +79,7 @@
             parent.appendChild(script);
         }
         function detectFill() {
-            if (app.hidden || collapsed) return;
+            if (app.hidden) return;
             const wasHidden = card.hidden;
             if (wasHidden) card.hidden = false;
             const visible = Array.from(slot.children).some(el =>
@@ -96,21 +110,29 @@
         }
         function setCollapsed(value) {
             collapsed = value;
-            content.hidden = collapsed;
+            // Keep the creative mounted: folding never reloads the advertising placement.
+            content.hidden = false;
+            content.inert = collapsed;
+            content.setAttribute('aria-hidden', String(collapsed));
+            card.querySelector('[data-ad-drawer]')?.setAttribute('aria-hidden', String(collapsed));
             toggle.setAttribute('aria-expanded', String(!collapsed));
             card.dataset.collapsed = String(collapsed);
             labels(); measure(); loadNative();
             if (started && !collapsed) detectFill();
         }
-        toggle.addEventListener('click', () => setCollapsed(!collapsed));
+        if (!toggle.dataset.randlyAdBound) {
+            toggle.dataset.randlyAdBound = 'true';
+            toggle.addEventListener('click', () => setCollapsed(!collapsed));
+        }
         window.RandlyAds = Object.freeze({toggle: () => setCollapsed(!collapsed)});
         new ResizeObserver(measure).observe(card);
+        for (const id of ['chatSection', 'videoSection']) { const target = document.getElementById(id); if (target) new ResizeObserver(measure).observe(target); }
         new MutationObserver(() => { measure(); loadNative(); if (started) detectFill(); }).observe(app, {attributes:true,attributeFilter:['hidden','style']});
         new MutationObserver(labels).observe(document.documentElement, {attributes:true,attributeFilter:['lang']});
         document.addEventListener('visibilitychange', () => { loadSocial(); loadNative(); });
         // Start on DOM readiness; images and other ad networks must not delay Social Bar.
         loadSocial();
-        setCollapsed(false);
+        setCollapsed(card.dataset.collapsed === 'true' || content.hidden);
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
     else boot();

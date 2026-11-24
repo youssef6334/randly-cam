@@ -4,6 +4,23 @@
     else root.RandlySession = factory();
 })(typeof window === 'object' ? window : this, function () {
     'use strict';
+    // UI preferences must keep working when storage is blocked or its quota is full.
+    // The fallback lasts for this page only and never transmits preferences.
+    function preferences(platform) {
+        const memory = new Map();
+        return {
+            get(key) {
+                if (memory.has(key)) return memory.get(key);
+                try { return platform.localStorage.getItem(key); } catch (_) { return null; }
+            },
+            set(key, value) {
+                const text = String(value);
+                memory.set(key, text);
+                try { platform.localStorage.setItem(key, text); } catch (_) {}
+            }
+        };
+    }
+
     function visitorId(platform) {
         const key = 'randly_online_visitor';
         try {
@@ -69,5 +86,5 @@
             }
         };
     }
-    return { visitorId, navigation };
+    return { visitorId, navigation, preferences };
 });

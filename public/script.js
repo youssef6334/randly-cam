@@ -1,3 +1,5 @@
+const uiPreferences = RandlySession.preferences(window);
+
 const socket = io(window.location.origin, {
     transports: ["websocket"],
     secure: true,
@@ -184,7 +186,9 @@ function updateControlLabels() {
     };
     const current = labels[document.documentElement.lang] || labels.en;
     document.querySelectorAll('[data-control-label]').forEach(el => {
-        el.textContent = current[el.dataset.controlLabel] || '';
+        const label = current[el.dataset.controlLabel] || '';
+        el.textContent = label;
+        el.closest('button')?.setAttribute('aria-label', label);
     });
     const settingsPanel = document.getElementById('settingsPanel');
     if (settingsPanel) {
@@ -362,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', event => {
         if (event.key === 'Escape') closeSettingsPanel();
     });
-    const savedTheme = localStorage.getItem('randly_theme');
+    const savedTheme = uiPreferences.get('randly_theme');
     if (savedTheme === 'light') {
         document.documentElement.setAttribute('data-theme', 'light');
         const themeBtns = document.querySelectorAll('.theme-toggle');
@@ -410,13 +414,13 @@ function restoreSettingsValues() {
     const country = document.getElementById('countrySelect');
     const translation = document.getElementById('translationLang');
     if (country) {
-        const savedCountry = localStorage.getItem('randly_match_country');
+        const savedCountry = uiPreferences.get('randly_match_country');
         if (savedCountry && Array.from(country.options).some(option => option.value === savedCountry)) {
             country.value = savedCountry;
         }
     }
     if (translation) {
-        const savedTranslation = localStorage.getItem('randly_translation_lang');
+        const savedTranslation = uiPreferences.get('randly_translation_lang');
         if (savedTranslation && Array.from(translation.options).some(option => option.value === savedTranslation)) {
             translation.value = savedTranslation;
         }
@@ -426,9 +430,9 @@ function restoreSettingsValues() {
 document.addEventListener('change', (event) => {
     const target = event.target;
     if (target?.id === 'countrySelect') {
-        localStorage.setItem('randly_match_country', target.value);
+        uiPreferences.set('randly_match_country', target.value);
     } else if (target?.id === 'translationLang') {
-        localStorage.setItem('randly_translation_lang', target.value);
+        uiPreferences.set('randly_translation_lang', target.value);
     }
 });
 
@@ -462,7 +466,7 @@ function renderInterestTags() {
 // --- إعدادات الأصوات ---
 const matchSound = new Audio('/sounds/match.wav');
 const msgSound = new Audio('/sounds/msg.wav');
-let isSoundMuted = localStorage.getItem('randly_sound_muted') === 'true';
+let isSoundMuted = uiPreferences.get('randly_sound_muted') === 'true';
 
 function setControlIcon(id, off, onIcon, offIcon, onLabel, offLabel) {
     const button = document.getElementById(id);
@@ -500,7 +504,7 @@ socket.on('no-country-match', () => {
 
 function toggleSoundMute() {
     isSoundMuted = !isSoundMuted;
-    localStorage.setItem('randly_sound_muted', isSoundMuted);
+    uiPreferences.set('randly_sound_muted', isSoundMuted);
     if (remoteVideo) remoteVideo.muted = isSoundMuted;
     setControlIcon('muteBtn', isSoundMuted, '#i-volume', '#i-volume-off', 'Mute speaker', 'Unmute speaker');
 }
@@ -515,33 +519,34 @@ function toggleTheme() {
             const knob = btn.querySelector('.switch-knob');
             if (knob) knob.textContent = '🌙';
         });
-        localStorage.setItem('randly_theme', 'dark');
+        uiPreferences.set('randly_theme', 'dark');
     } else {
         htmlElement.setAttribute('data-theme', 'light');
         themeBtns.forEach(btn => {
             const knob = btn.querySelector('.switch-knob');
             if (knob) knob.textContent = '☀️';
         });
-        localStorage.setItem('randly_theme', 'light');
+        uiPreferences.set('randly_theme', 'light');
     }
 }
 
 let isAdCollapsed = false;
 function toggleAd() {
-    if (window.RandlyAds) return window.RandlyAds.toggle();
-    var adContent = document.getElementById("adContent");
-    var adContainer = document.getElementById("adContainer");
-    var arrow = document.getElementById("arrowIcon");
-    isAdCollapsed = !isAdCollapsed;
-    if (isAdCollapsed) {
-        adContent.style.display = "none";
-        if (adContainer) adContainer.style.height = "24px";
-        arrow.innerHTML = "▼";
-    } else {
-        adContent.style.display = "flex";
-        if (adContainer) adContainer.style.height = "auto";
-        arrow.innerHTML = "▲";
-    }
+    if (typeof window.RandlyAds?.toggle === 'function') return window.RandlyAds.toggle();
+    const content = document.getElementById('adContent');
+    const card = document.getElementById('adContainer');
+    if (!content || !card) return;
+    // Collapsing the container must work even if the advertising loader is blocked.
+    isAdCollapsed = !(card.dataset.collapsed === 'true' || content.hidden || content.style.display === 'none');
+    content.hidden = false;
+    content.inert = isAdCollapsed;
+    content.setAttribute('aria-hidden', String(isAdCollapsed));
+    content.style.removeProperty('display');
+    card.querySelector('[data-ad-drawer]')?.setAttribute('aria-hidden', String(isAdCollapsed));
+    card.dataset.collapsed = String(isAdCollapsed);
+    card.querySelector('[data-ad-toggle]')?.setAttribute('aria-expanded', String(!isAdCollapsed));
+    const arrow = document.getElementById('arrowIcon');
+    if (arrow) arrow.textContent = isAdCollapsed ? '▼' : '▲';
 }
 
 function saveRoomLink() {
@@ -1781,7 +1786,7 @@ function changeGlobalLanguage(lang) {
     if (landingSelect) landingSelect.value = lang;
     if (siteLangSelect) siteLangSelect.value = lang;
 
-    localStorage.setItem('randly_lang', lang);
+    uiPreferences.set('randly_lang', lang);
 }
 
 // تهيئة اللغة بتتم في i18n-extra.js من <html lang> (من غير اكتشاف لغة المتصفح، عشان الصفحة تفضل بلغتها الثابتة)

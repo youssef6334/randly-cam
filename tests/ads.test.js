@@ -39,12 +39,12 @@ test('all 12 languages use one shared loader, approved codes, and no iframe plac
  assert.doesNotMatch(fs.readFileSync(path.join(root,'sitemap.xml'),'utf8'),/adsterra-frame/);
 });
 
-function fixture(readyState='complete',visibilityState='visible',embeddedSocial=false){
- const handlers={},observers=[],resizers=[],timers=[],ids=new Map();let writes=0;
+function fixture(readyState='complete',visibilityState='visible',embeddedSocial=false,queuedFrames=false){
+ const handlers={},observers=[],resizers=[],timers=[],frames=[],ids=new Map();let writes=0;
  class Element{
-  constructor(tag='div'){this.tagName=tag.toUpperCase();this.children=[];this.dataset={};this.listeners={};this.textContent='';this.hidden=false;this.height=0;this.style={values:{},getPropertyValue(k){return this.values[k];},setProperty(k,v){this.values[k]=v;writes++;}};}
+  constructor(tag='div'){this.tagName=tag.toUpperCase();this.children=[];this.dataset={};this.listeners={};this.listenerCounts={};this.textContent='';this.hidden=false;this.height=0;this.style={values:{},getPropertyValue(k){return this.values[k];},removeProperty(k){delete this.values[k];},setProperty(k,v){this.values[k]=v;writes++;}};}
   appendChild(el){this.children.push(el);if(el.id)ids.set(el.id,el);return el;}
-  addEventListener(k,fn){this.listeners[k]=fn;}
+  addEventListener(k,fn){this.listeners[k]=fn;this.listenerCounts[k]=(this.listenerCounts[k]||0)+1;}
   setAttribute(k,v){this[k]=v;}
   getBoundingClientRect(){return {height:app.hidden||card.hidden||content.hidden?0:this.height};}
  }
@@ -57,8 +57,8 @@ function fixture(readyState='complete',visibilityState='visible',embeddedSocial=
  const window={addEventListener:(k,fn)=>handlers[k]=fn};
  class MutationObserver{constructor(fn){this.fn=fn;observers.push(this);}observe(target){this.target=target;}}
  class ResizeObserver{constructor(fn){this.fn=fn;resizers.push(this);}observe(target){this.target=target;}}
- vm.runInNewContext(source,{document,window,MutationObserver,ResizeObserver,setTimeout:fn=>{const t={fn,cleared:false};timers.push(t);return t;},clearTimeout:t=>{if(t)t.cleared=true;}});
- return {handlers,observers,resizers,timers,ids,app,card,content,slot,toggle,label,loading,body,document,window,Element,writes:()=>writes,updateApp:()=>observers.find(x=>x.target===app).fn()};
+ vm.runInNewContext(source,{document,window,MutationObserver,ResizeObserver,requestAnimationFrame:fn=>queuedFrames?frames.push(fn):fn(),setTimeout:fn=>{const t={fn,cleared:false};timers.push(t);return t;},clearTimeout:t=>{if(t)t.cleared=true;}});
+ return {handlers,observers,resizers,timers,frames,flushFrame:()=>frames.splice(0).forEach(fn=>fn()),ids,app,card,content,slot,toggle,label,loading,body,document,window,Element,writes:()=>writes,updateApp:()=>observers.find(x=>x.target===app).fn()};
 }
 
 test('Social Bar starts at DOM readiness before image/window load, native starts only when chat opens, neither repeats',()=>{
@@ -73,8 +73,8 @@ test('Social Bar starts at DOM readiness before image/window load, native starts
  const native=f.ids.get('randly-adsterra-native');assert.match(native.src,/\/21\//);
  assert.equal(native.referrerPolicy,'strict-origin-when-cross-origin');
  const writes=f.writes();f.updateApp();assert.equal(f.writes(),writes,'no style/observer feedback loop');
- f.toggle.listeners.click();assert.equal(f.content.hidden,true);assert.equal(f.body.children.length,1,'native collapse must not hide Social Bar');
- f.toggle.listeners.click();assert.equal(f.content.hidden,false);assert.equal(f.content.children.length,1);
+ f.toggle.listeners.click();assert.equal(f.content.inert,true);assert.equal(f.body.children.length,1,'native collapse must not hide Social Bar');
+ f.toggle.listeners.click();assert.equal(f.content.inert,false);assert.equal(f.content.children.length,1);
 });
 
 test('blank responses do not count as filled; late real content restores its card; hidden pages defer loads',()=>{
@@ -96,4 +96,50 @@ test('the official embedded Social Bar code is never inserted a second time',()=
  for(let i=0;i<10;i++) f.handlers.visibilitychange();
  assert.equal(f.body.children.length,1);
  assert.equal(f.content.children.length,1,'native still loads normally');
+});
+
+test('ad collapse works without the loader and binds once when the loader starts late',()=>{
+ const f=fixture('loading');
+ const main=fs.readFileSync(path.join(root,'script.js'),'utf8');
+ const toggle=main.match(/function toggleAd\(\) \{[\s\S]*?\n\}/)[0];
+ const actions=fs.readFileSync(path.join(root,'page-actions.js'),'utf8');
+ f.document.querySelectorAll=selector=>selector==='[data-ad-toggle]'?[f.toggle]:[];
+ const context=vm.createContext({document:f.document,window:f.window,isAdCollapsed:false});
+ vm.runInContext(toggle,context);vm.runInContext(actions,context);vm.runInContext(actions,context);
+ f.toggle.listeners.click();assert.equal(f.content.inert,true);assert.equal(f.toggle['aria-expanded'],'false');
+ f.app.hidden=false;f.handlers.DOMContentLoaded();
+ assert.equal(f.content.inert,true,'late loader preserves the user collapse');
+ assert.equal(f.ids.has('randly-adsterra-native'),false);
+ assert.equal(f.toggle.listenerCounts.click,1,'one press must not run two toggles');
+ f.toggle.listeners.click();assert.equal(f.content.inert,false);assert.equal(f.toggle['aria-expanded'],'true');
+ assert.equal(f.ids.has('randly-adsterra-native'),true);
+ f.toggle.listeners.click();assert.equal(f.content.inert,true);
+ assert.doesNotThrow(()=>vm.runInNewContext(toggle+';toggleAd();',{document:{getElementById:()=>null},window:{}}));
+});
+
+
+test('folding keeps one creative mounted and catches a late fill while the tab is closed',()=>{
+ const f=fixture();f.app.hidden=false;f.updateApp();
+ const native=f.ids.get('randly-adsterra-native'),host=f.slot.children[0];
+ f.toggle.listeners.click();assert.equal(f.content.inert,true);
+ assert.equal(f.content.hidden,false,'CSS animates the drawer instead of destroying its layout immediately');
+ assert.equal(f.content['aria-hidden'],'true');
+ const creative=new f.Element();creative.textContent='Late creative';host.appendChild(creative);host.height=80;
+ f.observers.find(x=>x.target===f.slot).fn();
+ assert.equal(f.card.dataset.filled,'true');assert.equal(f.timers[0].cleared,true);
+ for(let i=0;i<20;i++)f.toggle.listeners.click();
+ assert.equal(f.content.inert,true);assert.equal(f.ids.get('randly-adsterra-native'),native);
+ assert.equal(f.slot.children[0],host);assert.equal(f.content.children.length,1);
+ assert.equal(f.toggle['aria-expanded'],'false');
+});
+
+
+test('layout measurements are coalesced outside ResizeObserver delivery',()=>{
+ const f=fixture('complete','visible',false,true);f.app.hidden=false;
+ for(let i=0;i<30;i++)f.updateApp();
+ assert.equal(f.frames.length,1);assert.equal(f.writes(),0);
+ f.flushFrame();const writes=f.writes();assert.ok(writes>0);
+ for(const observer of f.resizers)observer.fn();
+ assert.equal(f.frames.length,1);f.flushFrame();
+ assert.equal(f.writes(),writes,'stable geometry never rewrites the app style');
 });

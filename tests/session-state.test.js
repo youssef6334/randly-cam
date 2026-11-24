@@ -108,3 +108,27 @@ test('overlapping language connections count once without bypassing connection l
     const invalidA = await connect('invalid'), invalidB = await connect('invalid');
     await expectOnline(2); invalidA.close(); invalidB.close(); await expectOnline(0);
 });
+
+test('UI preferences survive blocked storage and quota failures without disabling controls', () => {
+    const blocked = session.preferences({ get localStorage() { throw new Error('blocked'); } });
+    assert.equal(blocked.get('randly_lang'), null);
+    blocked.set('randly_lang', 'fr');
+    blocked.set('randly_sound_muted', true);
+    assert.equal(blocked.get('randly_lang'), 'fr');
+    assert.equal(blocked.get('randly_sound_muted'), 'true');
+    const values = new Map([['randly_theme', 'light']]);
+    const quota = session.preferences({ localStorage: {
+        getItem: key => values.get(key) ?? null,
+        setItem() { throw new Error('quota'); }
+    } });
+    assert.equal(quota.get('randly_theme'), 'light');
+    quota.set('randly_theme', 'dark');
+    assert.equal(quota.get('randly_theme'), 'dark');
+    assert.equal(values.get('randly_theme'), 'light', 'fallback does not clear existing storage');
+    const normal = session.preferences({localStorage: {
+        getItem: key => values.get(key) ?? null,
+        setItem: (key, value) => values.set(key, value)
+    }});
+    normal.set('randly_lang', 'ar');
+    assert.equal(values.get('randly_lang'), 'ar');
+});

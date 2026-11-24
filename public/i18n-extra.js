@@ -245,7 +245,7 @@ function applyLanguage(lang, initial) {
 
   if (!initial) {
     document.title = t.siteTitle;
-    localStorage.setItem('randly_lang', lang);
+    uiPreferences.set('randly_lang', lang);
   }
   refreshPartnerKind();
   if (socket.connected) socket.emit('chat-language', { locale: lang });
@@ -257,7 +257,7 @@ function changeGlobalLanguage(lang) {
   const landing = document.getElementById('landingPage');
   const onLanding = landing && getComputedStyle(landing).display !== 'none';
   if (randlyLangReady && onLanding && lang !== document.documentElement.lang) {
-    localStorage.setItem('randly_lang', lang);
+    uiPreferences.set('randly_lang', lang);
     location.href = lang === 'ar' ? '/' : '/' + lang + '.html';
     return;
   }

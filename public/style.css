@@ -3416,44 +3416,66 @@ select.site-lang-select:focus-visible {
     .randly-watermark small { font-size: 13px; }
 }
 
-/* Advertising stays inside its own card and never covers chat controls. */
+/* Only the disclosure tab overlaps the chat/video edge; ads retain their own scroll area. */
 .rl-app > #adContainer.randly-ad {
     display: block;
+    position: relative;
+    z-index: 20;
     flex: 0 0 auto;
     min-height: 0 !important;
     max-height: none !important;
     height: auto !important;
     margin: 0 0 6px;
     padding: 0;
-    overflow: hidden;
-    border: 1px solid rgba(16,185,129,.14);
-    border-radius: 12px;
-    background: linear-gradient(120deg,rgba(16,185,129,.035),transparent 65%), #101215;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
 }
 #adContainer.randly-ad[hidden], #adContainer.randly-ad [hidden] { display: none !important; }
-.randly-ad-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 2px 10px; }
-.randly-ad-label { display: inline-flex; align-items: center; gap: 5px; padding: 2px 6px; border-radius: 5px; color: #a8b4ae; background: rgba(16,185,129,.07); font-size: 9px; line-height: 1.2; font-weight: 600; letter-spacing: .03em; }
+.randly-ad-drawer { display: grid; grid-template-rows: 1fr; transition: grid-template-rows .26s cubic-bezier(.2,.8,.2,1); }
+.randly-ad[data-collapsed="true"] .randly-ad-drawer { grid-template-rows: 0fr; }
+.randly-ad-clip { min-height: 0; overflow: hidden; }
+.randly-ad-sheet { border: 1px solid rgba(16,185,129,.14); border-radius: 11px; background: linear-gradient(120deg,rgba(16,185,129,.035),transparent 65%), #101215; transform: translateY(0); transition: transform .26s cubic-bezier(.2,.8,.2,1); }
+.randly-ad[data-collapsed="true"] .randly-ad-sheet { transform: translateY(-100%); }
+.randly-ad-heading { display: flex; align-items: center; padding: 5px 10px 3px; }
+.randly-ad-label { display: inline-flex; align-items: center; gap: 5px; color: #a8b4ae; font-size: 10px; line-height: 1.3; font-weight: 600; }
 .randly-ad-label::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: #12b886; }
-.randly-ad-toggle { display: grid; place-items: center; width: 30px; height: 24px; min-height: 0; padding: 0; border: 0; border-radius: 7px; color: #a8b4ae; background: transparent; cursor: pointer; }
-.randly-ad-toggle:hover { background: rgba(16,185,129,.12); color: #34d399; }
+.randly-ad-toggle { position: absolute; right: var(--randly-ad-tab-right, 0px); bottom: -62px; z-index: 1; display: flex; justify-content: center; align-items: flex-start; width: 44px; height: 88px; min-height: 44px; padding: 0; border: 0; border-radius: 0; color: #12b886; background: transparent; cursor: pointer; touch-action: manipulation; transition: bottom .26s cubic-bezier(.2,.8,.2,1); }
+.randly-ad-toggle:hover { background: transparent; color: #34d399; }
 .randly-ad-toggle:focus-visible { outline: 2px solid #10b981; outline-offset: -2px; }
-.randly-ad-toggle svg { display: block; transition: transform .15s ease; }
-.randly-ad[data-collapsed="true"] .randly-ad-toggle svg { transform: rotate(180deg); }
-#adContainer.randly-ad #adContent { display: block; width: 100%; min-height: 0; max-height: 180px; max-height: min(180px, 25dvh); padding: 0 10px 6px; box-sizing: border-box; overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: contain; scrollbar-width: thin; scrollbar-color: #31715c transparent; -webkit-overflow-scrolling: touch; }
+.randly-ad-rail { position: absolute; top: 0; width: 22px; height: 88px; filter: drop-shadow(0 0 4px rgba(16,185,129,.16)); transition: transform .26s cubic-bezier(.2,.8,.2,1); }
+.randly-ad-rail::before, .randly-ad-rail::after { content: ''; position: absolute; inset: 0; clip-path: polygon(0 7px,7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%); }
+.randly-ad-rail::before { background: linear-gradient(180deg,#12b886,#2b5f4a 48%,#12b886); }
+.randly-ad-rail::after { inset: 1px; background: linear-gradient(90deg,#10291e,#17211d); }
+.randly-ad-dot { position: absolute; top: 8px; left: 9px; z-index: 1; width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
+.randly-ad-grip { position: absolute; top: 26px; left: 10px; z-index: 1; width: 2px; height: 30px; border-radius: 2px; background: currentColor; opacity: .8; }
+.randly-ad-arrow { position: absolute; bottom: 5px; left: 4px; z-index: 1; display: flex; transition: transform .26s ease; }
+.randly-ad-arrow svg { display: block; width: 14px; height: 14px; }
+.randly-ad[data-collapsed="true"] .randly-ad-toggle { bottom: -44px; height: 44px; overflow: hidden; }
+.randly-ad[data-collapsed="true"] .randly-ad-rail { transform: translateY(-68px); }
+.randly-ad[data-collapsed="true"] .randly-ad-arrow { transform: rotate(180deg); }
+#adContainer.randly-ad #adContent { display: block; width: 100%; min-height: 0; max-height: 160px; max-height: min(160px, 23dvh); padding: 0 10px 8px; box-sizing: border-box; overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: contain; scrollbar-width: thin; scrollbar-color: #31715c transparent; -webkit-overflow-scrolling: touch; }
 #adContainer.randly-ad #adContent:focus-visible { outline: 2px solid #12b886; outline-offset: -2px; }
 .randly-ad-slot { width: 100%; max-width: 640px; min-width: 0; margin-inline: auto; }
 .randly-ad-frame { display: block; width: 100%; height: 1px; border: 0; color-scheme: normal; }
 .randly-ad-loading { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 44px; color: #829188; font-size: 11px; }
 .randly-ad-loading::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #10b981; opacity: .65; }
-html[data-theme="light"] .rl-app > #adContainer.randly-ad, body.light-mode .rl-app > #adContainer.randly-ad { background: #f6faf8; border-color: #dcebe3; }
+html[data-theme="light"] .randly-ad-sheet, body.light-mode .randly-ad-sheet { background: #f6faf8; border-color: #dcebe3; }
 html[data-theme="light"] .randly-ad-label, body.light-mode .randly-ad-label { color: #52675a; }
+html[data-theme="light"] .randly-ad-rail::after, body.light-mode .randly-ad-rail::after { background: linear-gradient(90deg,#dff2e8,#f5fcf8); }
+@media (max-width: 899.98px) {
+    /* Keep the tab clear of the self-preview in the video's top-right corner. */
+    .rl-app:has(.rl-video-mode) .randly-ad-toggle { right: auto; left: var(--randly-ad-tab-left, 0px); }
+}
 @media (max-width: 768px) {
-    .rl-app > #adContainer.randly-ad { border-radius: 10px; margin-bottom: 6px; }
-    #adContainer.randly-ad #adContent { max-height: 140px; max-height: min(140px, 22dvh); padding: 0 8px 6px; }
-    .randly-ad-heading { padding: 1px 8px; }
-    .randly-ad-toggle { height: 28px; width: 32px; }
+    #adContainer.randly-ad #adContent { max-height: 120px; max-height: min(120px, 20dvh); padding: 0 8px 8px; }
+    .randly-ad-heading { padding-inline: 8px; }
     .rl-app .rl-video-mode .rl-stage { height: max(120px, calc(min(75vw, 38dvh) - var(--randly-ad-space, 0px))); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .randly-ad-drawer, .randly-ad-sheet, .randly-ad-toggle, .randly-ad-rail, .randly-ad-arrow { transition: none; }
 }
 
 /* Chat/video: place the language picker directly below the theme switch. */
